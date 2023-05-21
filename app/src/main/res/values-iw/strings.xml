@@ -19,7 +19,6 @@
     <string name="nav_header_title">אנדרואיד סטודיו</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">כותרת ניווט</string>
-
     <string name="menu_home">בית</string>
     <string name="menu_gallery">גלריה</string>
     <string name="menu_slideshow">מצגת</string>
@@ -32,16 +31,8 @@
     <string name="february">פברואר %d</string>
     <string name="march">מרץ %d</string>
     <string name="april">אפריל %d</string>
-    <string name="tac1">תנאי השירות
-\n\nעדכון אחרון: 31 במרץ 2023 (סעיף א\')\n\n
-סעיף א\' תנאים\n\n
-מבוא וסקירה\n\n
-תודה שבחרת באפליקציית Bill Tracker. Bill Tracker, יחד עם כל אם, חברה בת, חברה קשורה או קשורה מכונים בהוראות אלה "Bill Tracker Group" או פשוט "Bill Tracker" או "אנחנו".\n
-כאשר אתה משתמש באפליקציה אתה מתקשר איתנו בחוזה מחייב. כל סעיף בהסכם מתחיל בביאור נטוי שנועד לעזור לך לנווט בהסכם. ההערות לא לגמרי
-        עם זאת, לסכם את ההסכם, וכדאי לקרוא כל סעיף בעיון ובמלוא. הדגשנו גם כמה תחומים שמדברים על זכויות משפטיות חשובות, וכדאי להקפיד לקרוא את הסעיפים הללו בעיון.
-        הוראות אלה בסעיף א\' חלות על האפליקציה באופן כללי.\n
-אם אתה אדם פרטי הפועל מטעם החברה או הלקוח שלך, אתה מקבל הוראות אלה בשמם והמונח "אתה" יתייחס אליך, לחברה שלך או ללקוח שלך.\n\n
-הסכמה לתנאים אלה\n\n</string>
+    <string name="emailAddressUpdatedSuccessfully">כתובת הדוא"ל עודכנה בהצלחה</string>
+    <string name="tac1">"תנאים והגבלות עודכנו לאחרונה: 31 במרץ 2023 (סעיף א\') סעיף א\' תנאים מבוא וסקירה תודה שבחרת באפליקציית Bill Tracker. Bill Tracker, יחד עם כל הורה, חברה בת, שותפה או חברות קשורות מתייחסים באלה הוראות כמו "Bill Tracker Group" או פשוט "Bill Tracker" או "אנחנו". כאשר אתה משתמש באפליקציה אתה מתקשר איתנו בחוזה מחייב. כל סעיף בהסכם מתחיל בביאור נטוי שנועד לעזור לך לנווט בהסכם. הביאורים אינם מסכמים לחלוטין את ההסכם, עם זאת, כדאי לקרוא כל סעיף בקפידה ומלאה. הדגשנו גם כמה תחומים שמדברים על זכויות משפטיות חשובות, ואתה צריך להקפיד לקרוא את הסעיפים האלה בעיון. הוראות אלה בסעיף א\' חלות על האפליקציה באופן כללי. אם אתה אדם שפועל בשם החברה או הלקוח שלך, אתה מקבל הוראות אלה בשמם והמונח "אתה" יתייחס אליך, לחברה שלך או ללקוח שלך. הסכמה לתנאים אלה "</string>
     <string name="tac2">עליך להסכים לתנאים אלה כדי להשתמש באפליקציה שלנו. Bill Tracker לא ישתף את המידע האישי שלך עם צדדים שלישיים, אלא אם קיבלת הוראה ספציפית לעשות זאת על ידיך כדי לספק שירותים נוספים בתוך האפליקציה.\n
 כדי לגשת ו/או להשתמש באפליקציה, אתה מאשר ומסכים:\n\n
 לתנאים ולהגבלות של הסכם זה ("הסכם"), הכולל:\n\n
@@ -238,9 +229,9 @@ Bill Tracker אינו בודק את פרטי החשבון של צד שלישי �
         נכנס לכל בית משפט בעל סמכות שיפוט. הסכם זה לבוררות לא ימנע מכל צד לבוררות בכל עת לבקש צווי מניעה או צורות אחרות של סעד הוגן בסיוע בוררות מבית משפט
         של סמכות שיפוט מתאימה לרבות האם מוגשת דרישה לבוררות תוך הפרה של הסכם זה.</string>
     <string name="tac20">אלא אם כן אתה או ביל Tracker מבקשים להכריע בתביעה בבית משפט לתביעות קטנות, הבורר יקבע את כל נושאי החבות לגופו של כל תביעה שהועלתה על ידך או על ידך על ידך או על ידך על יד ביל Tracker והוא עשוי לפסוק הצהרתי או צו מניעה
-        סעד רק לטובת הצד הבודד המבקש סעד ורק במידה הדרושה למתן סעד המתחייב בתביעה הפרטנית של אותו צד. במידה שאתה או ביל Tracker גוברים על תביעה ובקשה
+        סעד רק לטובת הצד הבודד המבקש סעד ורק במידה הדרושה למתן סעד המתחייב בתביעה הפרטנית של אותו צד. במידה שאתה או ביל Tracker גוברות על תביעה ובקשה
         סעד של צו מניעה ציבורי (כלומר, סעד של צו מניעה שמטרתו והשפעתו העיקרית היא לאסור פעולות בלתי חוקיות המאיימות בפגיעה עתידית בציבור), הזכאות וההיקף של סעד זה חייבות להיות
-        התדיינות בבית משפט אזרחי בעל סמכות שיפוט מוסמכת ולא בבוררות. הצדדים מסכימים כי התדיינות משפטית בכל נושא של סעד של צו מניעה ציבורי תיעצר עד לתוצאות הצדקות של כל אדם
+        התדיינות בבית משפט אזרחי בעל סמכות שיפוט מוסמכת ולא בבוררות. הצדדים מסכימים כי התדיינות משפטית בכל נושא של סעד של צו מניעה ציבורי תיעצר עד לתוצאות הצדק של כל אדם
         תביעות בבוררות. לפני שבית משפט בעל סמכות שיפוט מוסמכת יוציא סעד של צו מניעה ציבורי כלשהו, ​​הוא יבדוק את הממצאים העובדתיים של פסק הבוררות שעליו יינתן כל צו מניעה ללא התחשבות ב</string>
     <string name="tac21">בּוֹרֵר.
 תשלום כל שכר טרחת ההגשה, הניהול והבורר יהיה כפוף לכללי AAA. אתה נדרש לשלם את עמלת ההגשה הראשונית של AAA, אך ביל Tracker יחזיר לך את עמלת ההגשה הזו בסיום
@@ -309,7 +300,7 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="isLowercaseLetter">אות קטנה</string>
     <string name="noNumber">מספר x</string>
     <string name="isNumber">מספר</string>
-    <string name="passwordsDontMatch">x סיסמאות אינן תואמות</string>
+    <string name="passwords_dont_match">x סיסמאות אינן תואמות</string>
     <string name="passwordsMatch">סיסמאות תואמות</string>
     <string name="billerAlreadyExists">בילר בשם זה כבר קיים</string>
     <string name="billerNameIsTooShort">שם בילר קצר מדי</string>
@@ -340,7 +331,7 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="b">בחר המשך כדי לפתוח את הגדרות האפליקציה שלך ולהפעיל הודעות</string>
     <string name="c">הגדרות התראות</string>
     <string name="d">הודעות מאפשרות לאפליקציית מעקב חשבונות לשלוח הודעות דחיפה כאשר החשבונות שלך עומדים לפירעון. אפשר הודעות דחיפה ולעולם אל תחמיצו שוב תאריך יעד!</string>
-    <string name="e">התראות מופעלות כעת</string>
+    <string name="e">הודעות מופעלות כעת</string>
     <string name="f">הודעות כבויות כרגע</string>
     <string name="g">כבה את ההתראות</string>
     <string name="back">חזור</string>
@@ -732,6 +723,118 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="plant">צמח</string>
     <string name="ijustearnedthe">הרווחתי הרגע את</string>
     <string name="badgeonbilltracker">תג על ביל Tracker!</string>
+    <string name="googleSignInFailed">הכניסה לגוגל נכשלה</string>
+    <string name="facebook_app_id">223148510311094</string>
+    <string name="fb_login_protocol_scheme">fb223148510311094</string>
+    <string name="facebook_client_token">a5a2a8a9c13289fbbeaccd95c4323a92</string>
+    <string name="billerNameCantBeBlank">שם בילר לא יכול להיות ריק</string>
+    <string name="save">להציל</string>
+    <string name="loginWithFacebookError">התחבר עם שגיאת פייסבוק</string>
+    <string name="my_achievements">ההישגים שלי</string>
+    <string name="payments_remaining">תשלומים שנותרו:</string>
+    <string name="continuous">רָצִיף</string>
+    <string name="set_payments_until_paid_off">להגדיר תשלומים עד לפירעון?</string>
+    <string name="number_of_payments">מספר תשלומים:</string>
+    <string name="paid_in_full">שולם במלואו</string>
+    <string name="final_payment">תשלום סופי!</string>
+    <string name="create_a_new_budget">צור תקציב חדש</string>
+    <string name="automotive">רכב</string>
+    <string name="groceries">מצרכים</string>
+    <string name="beauty">יוֹפִי</string>
+    <string name="clothing">הַלבָּשָׁה</string>
+    <string name="restaurants">מסעדות</string>
+    <string name="health">בְּרִיאוּת</string>
+    <string name="other">אַחֵר</string>
+    <string name="transaction_titled">עסקה שכותרתה:</string>
+    <string name="has_been_removed">הוסר</string>
+    <string name="create_a_budget">צור תקציב</string>
+    <string name="pay_amount">סכום תשלום:</string>
+    <string name="pay_frequency">תדירות תשלום:</string>
+    <string name="savings_amount">סכום חיסכון:</string>
+    <string name="weekly_bills_average">ממוצע חשבונות שבועי:</string>
+    <string name="weekly_disposable_income">הכנסה שבועית פנויה:</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income">ערכים באחוזים הם אחוז מההכנסה הפנויה שלך</string>
+    <string name="create_a_budget_for_me">צור תקציב בשבילי:</string>
+    <string name="automotive_budget">תקציב רכב:</string>
+    <string name="beauty_budget">תקציב יופי:</string>
+    <string name="clothing_budget">תקציב בגדים:</string>
+    <string name="entertainment_budget">תקציב בידור:</string>
+    <string name="groceries_budget">תקציב מצרכים:</string>
+    <string name="health_budget">תקציב בריאות:</string>
+    <string name="restaurants_budget">תקציב מסעדות:</string>
+    <string name="other_budget">תקציב אחר:</string>
+    <string name="budget_start_date">תאריך התחלה של תקציב:</string>
+    <string name="budget_end_date">תאריך סיום תקציב:</string>
+    <string name="apply_budget">החל תקציב</string>
+    <string name="all_fields_must_be_filled_in">יש למלא את כל השדות</string>
+    <string name="re_create_this_budget_for_me">צור מחדש את התקציב הזה בשבילי:</string>
+    <string name="current_budget">תקציב נוכחי</string>
+    <string name="apply_changes">החל שינויים</string>
+    <string name="you_don_t_have_a_budget_set_for_the_current_date">אין לך תקציב מוגדר לתאריך הנוכחי</string>
+    <string name="transactions">עסקאות</string>
+    <string name="budget_remaining">תקציב שנותר:</string>
+    <string name="budget_not_set">תקציב לא מוגדר</string>
+    <string name="total_spent">סך הוצאה:</string>
+    <string name="spending">הוצאה</string>
+    <string name="date">תַאֲרִיך:</string>
+    <string name="cost">עֲלוּת:</string>
+    <string name="description">תיאור:</string>
+    <string name="add_expense">הוסף הוצאה</string>
+    <string name="your_budget_has_been_updated_successfully">התקציב שלך עודכן בהצלחה</string>
+    <string name="use_default_values">השתמש בערכי ברירת מחדל:</string>
+    <string name="percent_values_cannot_exceed_100_percent">ערכי האחוזים אינם יכולים לעלות על 100 אחוזים</string>
+    <string name="savings_amount_exceeds_available_funds">סכום החיסכון עולה על הכספים הזמינים</string>
+    <string name="logging_you_in_as">מתחבר אותך בתור</string>
+    <string name="forgot_password">שכחת את הסיסמא</string>
+    <string name="current_balance">יתרה נוכחית:</string>
+    <string name="estimated_apr">אפריל משוער:</string>
+    <string name="finishing_up">מסיים</string>
+    <string name="creating_user_profile">יצירת פרופיל משתמש</string>
+    <string name="you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller">עדיין לא נוספו לך חשבונות עבור החודש הזה. לחץ על סימן הפלוס למעלה כדי להוסיף מפרסם!</string>
+    <string name="past_due">עבר מועד</string>
+    <string name="amount_remaining">כמות שנותרה:</string>
+    <string name="partial_payment_made">תשלום חלקי שבוצע:</string>
+    <string name="amount_paid">סכום ששולם:</string>
+    <string name="estimated_rate">שיעור משוער:</string>
+    <string name="escrow_amount">סכום נאמנות:</string>
+    <string name="estimated_balance">יתרה משוערת:</string>
+    <string name="view_details">הצג פרטים</string>
+    <string name="total_payments_remaining">סך כל התשלומים שנותרו:</string>
+    <string name="hide_details">הסתר פרטים</string>
+    <string name="total_amount_remaining">סך הסכום שנותר:</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted">ערכים באחוזים הם אחוז מההכנסה הפנויה שלך לאחר ניכוי החיסכון</string>
+    <string name="income">הַכנָסָה:</string>
+    <string name="disposable_income">הכנסה פנויה:</string>
+    <string name="savings_allocation">הקצאת חיסכון:</string>
+    <string name="spending_allocation">הקצאת הוצאות:</string>
+    <string name="edit_budget">ערוך תקציב</string>
+    <string name="weekly_savings_amount">סכום חיסכון שבועי:</string>
+    <string name="edit">לַעֲרוֹך</string>
+    <string name="estimated_interest_paid">ריבית משוערת ששולמה:</string>
+    <string name="partial_payment">תשלום חלקי</string>
+    <string name="spending_categories">קטגוריות הוצאה</string>
+    <string name="noDataAvailable">אין נתונים זמינים</string>
+    <string name="noBudgetDataWasFound">לא נמצאו נתוני תקציב</string>
+    <string name="remove">לְהַסִיר</string>
+    <string name="changePartialPayment">שנה תשלום חלקי</string>
+    <string name="would_you_like_to_change_your_partial_payment_or_remove_it">האם תרצה להסיר את התשלום החלקי שלך או לשנות את הסכום?</string>
+    <string name="change_partial_payment_amount">שנה סכום תשלום חלקי</string>
+    <string name="please_enter_the_new_partial_payment_amount">נא להזין את סכום התשלום החלקי החדש</string>
+    <string name="spent">מוּתַשׁ</string>
+    <string name="total_budget">תקציב כולל</string>
+    <string name="no_payments_reported">לא דווח על תשלומים</string>
+    <string name="select_a_date">בחר תאריך:</string>
+    <string name="no_transactions_were_found_for_the_selected_time_frame">לא נמצאו עסקאות עבור מסגרת הזמן שנבחרה</string>
+    <string name="expenses_icon">אייקון הוצאות</string>
+    <string name="bills_icon">אייקון שטרות</string>
+    <string name="budget_icon">סמל תקציב</string>
+    <string name="budget">תַקצִיב</string>
+    <string name="not_found_icon">סמל לא נמצא</string>
+    <string name="delete">לִמְחוֹק</string>
+    <string name="logo">סֵמֶל</string>
+    <string name="pay_next_bill_button">כפתור תשלום החשבון הבא</string>
+    <string name="arrow">חֵץ</string>
+    <string name="notifications_are_currently_turned_off_change_this_in_the_settings_menu_to_receive_notifications_when_your_bills_are_due">הודעות כבויות כרגע. שנה זאת בתפריט ההגדרות כדי לקבל הודעות כאשר החשבונות שלך עומדים לפירעון</string>
     <!-- Generated by Automatic String Resource Translation -->
     <!--          https://asrt.gluege.boerde.de             -->
 </resources>

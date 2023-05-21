@@ -15,19 +15,19 @@
     </style>
 
     <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@drawable/img</item>
+        <item name="android:background">@color/group</item>
     </style>
 
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
-        <item name="background">@drawable/img</item>
+        <item name="background">@color/group</item>
     </style>
 
     <style name="AppTheme1" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="background">@drawable/img</item>
+        <item name="background">@color/group</item>
     </style>
 
     <style name="AppTheme2" parent="Theme.AppCompat.DayNight.DarkActionBar">
-        <item name="background">@drawable/img</item>
+        <item name="background">@color/group</item>
     </style>
 
     <style name="progressBarStyle" parent="Widget.AppCompat.ProgressBar">
@@ -72,10 +72,25 @@
         <item name="android:textColor">@color/quantum_bluegrey500</item>
     </style>
 
-    <style name="TextButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="TextButton" parent="Widget.Material3.Button">
         <item name="android:textColor">@color/white</item>
-        <item name="backgroundTint">@color/fingerprint</item>
-        <item name="android:background">@drawable/border_styles</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:height">58dp</item>
+        <item name="strokeColor">@color/buttonStroke</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">30dp</item>
+        <item name="android:defaultHeight">58dp</item>
+        <item name="android:layout_height">58dp</item>
+        <item name="android:backgroundTint">@color/toolbar</item>
+    </style>
+
+    <style name="LoginButton" parent="Widget.Material3.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:defaultHeight">58dp</item>
+        <item name="android:layout_height">58dp</item>
+        <item name="android:backgroundTint">@color/toolbar</item>
     </style>
 
     <style name="DarkSwitch" parent="Theme.AppCompat.DayNight">

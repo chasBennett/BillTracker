@@ -1,6 +1,8 @@
 package com.example.billstracker;
 
+import static com.example.billstracker.Logon.paymentInfo;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,7 +12,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,9 +27,11 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
 
-import com.android.volley.VolleyLog;
+import com.facebook.login.LoginManager;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -41,9 +44,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -53,7 +54,6 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Objects;
 
 public class MyStats extends AppCompatActivity {
 
@@ -64,38 +64,34 @@ public class MyStats extends AppCompatActivity {
     LocalDate selectedDate;
     Spinner spinner, dtiFrequency;
     TextView hideMe, dtiRatio, dtiRating, nameHeader, nextPaymentDue, totalAmountPaid, totalBillersAdded, totalPaymentsMade, dtiExplanation, totalAmountPaidLabel, totalPaymentsMadeLabel,
-            totalBillersAddedLabel, navHome, navViewBillers, navPaymentHistory, displayUserName, displayEmail, ticketCounter, logout;
+            totalBillersAddedLabel, navHome, navViewBillers, navPaymentHistory, displayUserName, displayEmail, ticketCounter, logout, myAchievements, myStats;
     DateFormatter df = new DateFormatter();
     ScrollView scroll;
-    ImageView settingsButton, drawerToggle, help, closeIncome;
+    ImageView settingsButton, drawerToggle, help, closeIncome, payNext, addBiller;
     com.google.android.material.imageview.ShapeableImageView icon;
     PieChart pieChart, pieChart1;
     FixNumber fn = new FixNumber();
     com.google.android.gms.ads.AdView adview;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_stats);
 
         pb = findViewById(R.id.pb9);
-        help = findViewById(R.id.help3);
         icon = findViewById(R.id.statIcon);
         hideMe = findViewById(R.id.textView67);
         scroll = findViewById(R.id.statScroll);
         bubbles = findViewById(R.id.bubbles);
         spinner = findViewById(R.id.spinner5);
-        navHome = findViewById(R.id.navHome3);
         adview = findViewById(R.id.adView5);
-        logout = findViewById(R.id.logoutButton3);
-        hideNav = findViewById(R.id.hideNavDrawer3);
         pieChart = findViewById(R.id.pieChart);
         dtiRatio = findViewById(R.id.dtiRatio);
         dtiLayout = findViewById(R.id.dtiLayout);
         dtiRating = findViewById(R.id.dtiRating);
         pieChart1 = findViewById(R.id.pieChart1);
         statsView = findViewById(R.id.statsView);
-        navDrawer = findViewById(R.id.navDrawer3);
         dtiChart = findViewById(R.id.dtiChartLayout);
         submitPay = findViewById(R.id.btnSubmitPay);
         nameHeader = findViewById(R.id.textView30);
@@ -103,32 +99,22 @@ public class MyStats extends AppCompatActivity {
         statsLayout = findViewById(R.id.statsLayout);
         noIncomeBox = findViewById(R.id.noIncomeBox);
         enterIncome = findViewById(R.id.btnEnterIncome);
-        drawerToggle = findViewById(R.id.drawerToggle3);
         addIncomeBox = findViewById(R.id.addIncomeBox);
         dtiFrequency = findViewById(R.id.dtiPayFrequency);
         changeIncome = findViewById(R.id.btnChangeIncome);
-        displayEmail = findViewById(R.id.tvUserName4);
-        ticketCounter = findViewById(R.id.ticketCounter3);
-        navViewBillers = findViewById(R.id.navViewBillers3);
-        settingsButton = findViewById(R.id.settingsButton3);
         nextPaymentDue = findViewById(R.id.nextPaymentDue);
         pieChartLayout = findViewById(R.id.pieChartLayout);
         dtiExplanation = findViewById(R.id.textView65);
         addBillerLayout = findViewById(R.id.addBillerLayout);
-        btnAddNewBiller = findViewById(R.id.btnAddBiller);
+        btnAddNewBiller = findViewById(R.id.btnAddBiller1);
         dtiIncomeAmount = findViewById(R.id.dtiIncomeAmount);
         totalAmountPaid = findViewById(R.id.totalAmountPaid);
-        displayUserName = findViewById(R.id.tvName3);
         totalBillersAdded = findViewById(R.id.totalBillersAdded);
         totalPaymentsMade = findViewById(R.id.totalPaymentsMade);
-        navPaymentHistory = findViewById(R.id.navPaymentHistory3);
         nextPaymentDueLayout = findViewById(R.id.nextPaymentDueLayout);
         totalAmountPaidLabel = findViewById(R.id.textView33);
         totalPaymentsMadeLabel = findViewById(R.id.textView32);
         totalBillersAddedLabel = findViewById(R.id.textView31);
-
-        displayUserName.setText(thisUser.getName());
-        displayEmail.setText(thisUser.getUserName());
 
         MobileAds.initialize(this, initializationStatus -> {
         });
@@ -136,56 +122,162 @@ public class MyStats extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         adview.loadAd(adRequest);
 
-        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
-        if (thisUser.getAdmin()) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("tickets").get().addOnCompleteListener(task -> {
-                int counter = 0;
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d(VolleyLog.TAG, document.getId() + " => " + document.getData());
-                        SupportTicket ticket = document.toObject(SupportTicket.class);
-                        if (ticket.getAgentUid() != null) {
-                            if (ticket.getAgentUid().equals(uid) || ticket.getAgentUid().equals("Unassigned")) {
-                                counter = counter + ticket.getUnreadByAgent();
-                            }
-                        }
-                    }
-                    if (counter > 0) {
-                        ticketCounter.setVisibility(View.VISIBLE);
-                        ticketCounter.setText(String.valueOf(counter));
-                    }
-                    else {
-                        ticketCounter.setVisibility(View.GONE);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //TOOLBAR AND NAVDRAWER
+        //Toolbar
+        drawerToggle = findViewById(R.id.drawerToggle);
+        settingsButton = findViewById(R.id.settingsButton);
+        payNext = findViewById(R.id.payNext);
+        help = findViewById(R.id.helpMe);
+        logout = findViewById(R.id.logoutButton);
+        addBiller = findViewById(R.id.btnAddBiller);
+        ticketCounter = findViewById(R.id.ticketCounter);
+
+        //Navigation Drawer
+        navDrawer = findViewById(R.id.navDrawer);
+        hideNav = findViewById(R.id.hideNavDrawer);
+        navHome = findViewById(R.id.navHome);
+        navViewBillers = findViewById(R.id.navViewBillers);
+        navPaymentHistory = findViewById(R.id.navPaymentHistory);
+        myAchievements = findViewById(R.id.myAchievements);
+        displayUserName = findViewById(R.id.tvName);
+        displayEmail = findViewById(R.id.tvUserName2);
+        myStats = findViewById(R.id.myStats);
+
+        //Hide nav drawer on create
+        navDrawer.setVisibility(View.GONE);
+        myStats.setBackground(AppCompatResources.getDrawable(MyStats.this, R.drawable.border_selected));
+
+        TextViewCompat.setCompoundDrawableTintList(myStats, ColorStateList.valueOf(getResources().getColor(R.color.button, getTheme())));
+        TextViewCompat.setCompoundDrawableTintList(navHome, ColorStateList.valueOf(getResources().getColor(R.color.blackAndWhite, getTheme())));
+
+        //updates int value on support icon notification bubble
+        CountTickets countTickets = new CountTickets();
+        countTickets.countTickets(ticketCounter);
+
+        myAchievements.setOnClickListener(v -> {
+            Intent achievements = new Intent(MyStats.this, AwardCase.class);
+            startActivity(achievements);
+        });
+
+        help.setOnClickListener(view -> {
+            Intent support = new Intent(MyStats.this, Support.class);
+            support.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            pb.setVisibility(View.VISIBLE);
+            startActivity(support);
+        });
+
+        myStats.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            Intent stats = new Intent(MyStats.this, MyStats.class);
+            startActivity(stats);
+        });
+
+        addBiller.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            Intent addBiller1 = new Intent(MyStats.this, AddBiller.class);
+            startActivity(addBiller1);
+        });
+        settingsButton.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            Intent settings = new Intent(MyStats.this, Settings.class);
+            startActivity(settings);
+        });
+        drawerToggle.setOnClickListener(view -> {
+            if (navDrawer.getVisibility() == View.VISIBLE) {
+                navDrawer.setVisibility(View.GONE);
+            } else {
+                navDrawer.setVisibility(View.VISIBLE);
+                navDrawer.setFocusableInTouchMode(true);
+                navDrawer.setClickable(true);
+                hideNav.setOnClickListener(view1 -> navDrawer.setVisibility(View.GONE));
+            }
+        });
+
+        navHome.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            Intent home = new Intent(MyStats.this, MainActivity2.class);
+            startActivity(home);
+        });
+
+        navViewBillers.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            Intent billers = new Intent(MyStats.this, ViewBillers.class);
+            startActivity(billers);
+        });
+
+        navPaymentHistory.setOnClickListener(view -> {
+            Intent payments = new Intent(MyStats.this, PaymentHistory.class);
+            pb.setVisibility(View.VISIBLE);
+            startActivity(payments);
+        });
+
+        navDrawer.setOnTouchListener(new OnSwipeTouchListener(MyStats.this) {
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                navDrawer.setVisibility(View.GONE);
+            }
+        });
+
+        payNext.setOnClickListener(view -> {
+
+            DateFormatter dateFormatter = new DateFormatter();
+            pb.setVisibility(View.VISIBLE);
+            Payments next = new Payments();
+            next.setPaymentDate(dateFormatter.currentDateAsInt() + 60);
+            boolean found = false;
+                paymentInfo.getPayments().sort(Comparator.comparing(Payments::getPaymentDate));
+                for (Payments payment : paymentInfo.getPayments()) {
+                    if (!payment.isPaid() && payment.getPaymentDate() < next.getPaymentDate()) {
+                        next = payment;
+                        found = true;
                     }
                 }
-            });
-        }
-        else {
-            final boolean[] found = {false};
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("tickets").get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Log.d(VolleyLog.TAG, document.getId() + " => " + document.getData());
-                        SupportTicket ticket = document.toObject(SupportTicket.class);
-                        if (ticket.getAgentUid() != null) {
-                            if (ticket.getUserUid().equals(uid)) {
-                                if (ticket.getUnreadByUser() > 0) {
-                                    ticketCounter.setText(String.valueOf(ticket.getUnreadByUser()));
-                                    ticketCounter.setVisibility(View.VISIBLE);
-                                }
-                                found[0] = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found[0]) {
-                        ticketCounter.setVisibility(View.GONE);
-                    }
-                }
-            });
-        }
+
+            if (found) {
+                Intent pay = new Intent(MyStats.this, PayBill.class);
+                pay.putExtra("Due Date", dateFormatter.convertIntDateToString(next.getPaymentDate()));
+                pay.putExtra("Biller Name", next.getBillerName());
+                pay.putExtra("Amount Due", next.getPaymentAmount());
+                pay.putExtra("Is Paid", next.isPaid());
+                pay.putExtra("Payment Id", next.getPaymentId());
+                pay.putExtra("Current Date", dateFormatter.currentDateAsInt());
+                startActivity(pay);
+            } else {
+                pb.setVisibility(View.GONE);
+                androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(MyStats.this);
+                alert.setTitle(getString(R.string.noBillsDue));
+                alert.setMessage(getString(R.string.noUpcomingBills));
+                alert.setPositiveButton(getString(R.string.ok), (dialogInterface, i) -> {
+
+                });
+                androidx.appcompat.app.AlertDialog builder = alert.create();
+                builder.show();
+            }
+        });
+
+        logout.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            GoogleSignIn.getClient(MyStats.this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut();
+            LoginManager.getInstance().logOut();
+            SharedPreferences sp = MyStats.this.getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("Stay Signed In", false);
+            editor.putString("Username", "");
+            editor.putString("Password", "");
+            editor.apply();
+            Intent validate = new Intent(MyStats.this, Logon.class);
+            validate.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            validate.putExtra("Welcome", true);
+            startActivity(validate);
+        });
+
+        displayUserName.setText(thisUser.getName());
+        displayEmail.setText(thisUser.getUserName());
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         initialize();
 
     }
@@ -194,8 +286,8 @@ public class MyStats extends AppCompatActivity {
     public void initialize () {
 
         ArrayList <String> spinnerArray = new ArrayList<>();
-        for (Bills bill: thisUser.getBills()) {
-            for (Payments payment: bill.getPayments()) {
+
+            for (Payments payment: paymentInfo.getPayments()) {
                 String month = df.convertIntDateToLocalDate(payment.getPaymentDate()).getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
                 String year = String.valueOf(df.convertIntDateToLocalDate(payment.getPaymentDate()).getYear());
                 String date = month + " " + year;
@@ -203,7 +295,7 @@ public class MyStats extends AppCompatActivity {
                     spinnerArray.add(date);
                 }
             }
-        }
+
         selectedDate = LocalDate.now(ZoneId.systemDefault());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
@@ -251,7 +343,7 @@ public class MyStats extends AppCompatActivity {
             darkMode = true;
         }
 
-        String name = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName();
+        String name = thisUser.getName();
         if (name != null && name.contains(" ")) {
             int space = name.indexOf(' ');
             nameHeader.setText(String.format(Locale.getDefault(), "%s%s", name.substring(0, space), getString(R.string.sStats)));
@@ -265,73 +357,6 @@ public class MyStats extends AppCompatActivity {
 
         dtiIncomeAmount.setText(fn.addSymbol(String.valueOf(thisUser.getIncome())));
         dtiFrequency.setSelection(Integer.parseInt(thisUser.getPayFrequency()));
-
-        help.setOnClickListener(view -> {
-            Intent support = new Intent (MyStats.this, Support.class);
-            pb.setVisibility(View.VISIBLE);
-            startActivity(support);
-        });
-
-        logout.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            GoogleSignIn.getClient(MyStats.this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut();
-            SharedPreferences sp = MyStats.this.getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putBoolean("Stay Signed In", false);
-            editor.putString("Username", "");
-            editor.putString("Password", "");
-            editor.apply();
-            Intent validate = new Intent(MyStats.this, Logon.class);
-            validate.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            validate.putExtra("Welcome", true);
-            startActivity(validate);
-        });
-
-        settingsButton.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            Intent settings = new Intent(MyStats.this, Settings.class);
-            startActivity(settings);
-        });
-        drawerToggle.setOnClickListener(view -> {
-            if (navDrawer.getVisibility() == View.VISIBLE) {
-                navDrawer.setVisibility(View.GONE);
-            } else {
-                navDrawer.setVisibility(View.VISIBLE);
-                navDrawer.setFocusableInTouchMode(true);
-                navDrawer.setClickable(true);
-                hideNav.setOnClickListener(view1 -> navDrawer.setVisibility(View.GONE));
-            }
-        });
-
-        navHome.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            Intent home = new Intent(MyStats.this, MainActivity2.class);
-            home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(home);
-        });
-
-        navViewBillers.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            Intent billers = new Intent(MyStats.this, ViewBillers.class);
-            startActivity(billers);
-        });
-
-        navPaymentHistory.setOnClickListener(view -> {
-            Intent payments = new Intent(MyStats.this, PaymentHistory.class);
-            pb.setVisibility(View.VISIBLE);
-            startActivity(payments);
-        });
-
-        navDrawer.setOnTouchListener(new OnSwipeTouchListener(MyStats.this) {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public void onSwipeLeft() {
-                super.onSwipeLeft();
-                navDrawer.setVisibility(View.GONE);
-            }
-        });
-
-        navDrawer.setVisibility(View.GONE);
 
         enterIncome.setOnClickListener(view -> {
             enterIncome.setVisibility(View.GONE);
@@ -390,9 +415,9 @@ public class MyStats extends AppCompatActivity {
         InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(dtiIncomeAmount.getWindowToken(), 0);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+        db.collection("users").document(uid).set(thisUser);
         SaveUserData save = new SaveUserData();
-        save.saveUserData(MyStats.this, thisUser);
+        save.saveUserData(MyStats.this);
         recreate();
     }
 
@@ -422,9 +447,9 @@ public class MyStats extends AppCompatActivity {
         double auto = 0, creditCard = 0, entertainment = 0, insurance = 0, miscellaneous = 0, mortgage = 0, personalLoan = 0, utilities = 0, total = 0;
         int monthStart = df.calcDateValue(selectedDate.withDayOfMonth(1));
         int monthEnd = df.calcDateValue(selectedDate.withDayOfMonth(selectedDate.getMonth().length(true)));
-        for (Bills bill: thisUser.getBills()) {
-            for (Payments payment: bill.getPayments()) {
-            if (payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd) {
+        for (Bill bill: thisUser.getBills()) {
+            for (Payments payment: paymentInfo.getPayments()) {
+            if (payment.getBillerName().equals(bill.getBillerName()) && payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd) {
                 double value = Double.parseDouble(bill.getAmountDue());
                 total = total + value;
             switch (bill.getCategory()) {
@@ -543,13 +568,13 @@ public class MyStats extends AppCompatActivity {
             income = thisUser.getIncome();
         }
 
-        for (Bills bill: thisUser.getBills()) {
-            for (Payments payment: bill.getPayments()) {
+
+            for (Payments payment: paymentInfo.getPayments()) {
                 if (payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd) {
                     bills = bills + Double.parseDouble(payment.getPaymentAmount());
                 }
             }
-        }
+
 
         double disposable = (income - bills) / income * 100;
         double billPercentage = bills / income * 100;
@@ -612,16 +637,15 @@ public class MyStats extends AppCompatActivity {
         nextPaymentDueLayout.setVisibility(View.GONE);
 
         if (thisUser.getBills() != null && thisUser.getBills().size() > 0) {
-            for (Bills bill : thisUser.getBills()) {
+            paymentInfo.getPayments().sort(Comparator.comparing(Payments::getDatePaid).reversed());
+            for (Bill bill : thisUser.getBills()) {
                 billers1.add(bill.getBillerName());
                 latest = false;
                 singleBillerPaymentsMade = 0;
                 singleBillerTotalPayments = 0;
                 billerCounter = billerCounter + 1;
-                if (bill.getPayments() != null && bill.getPayments().size() > 0) {
-                    bill.getPayments().sort(Comparator.comparing(Payments::getDatePaid).reversed());
-                    for (Payments payment : bill.getPayments()) {
-                        if (payment.isPaid()) {
+                    for (Payments payment : paymentInfo.getPayments()) {
+                        if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid()) {
                             String paymentAmount = payment.getPaymentAmount();
                             if (!latest) {
                                 latestPayment = df.convertIntDateToString(payment.getDatePaid());
@@ -640,7 +664,6 @@ public class MyStats extends AppCompatActivity {
                         }
                     }
                     stats.add(new Stats(bill.getBillerName(), singleBillerTotalPayments, singleBillerPaymentsMade, latestPayment));
-                }
             }
         }
 
@@ -717,8 +740,8 @@ public class MyStats extends AppCompatActivity {
                         billerName.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
                     }
                 }
-                for (Bills bill2 : thisUser.getBills()) {
-                    for (Payments payment : bill2.getPayments()) {
+
+                    for (Payments payment : paymentInfo.getPayments()) {
                         if (!payment.isPaid() && payment.getBillerName().equals(bills)) {
                             if (df.convertIntDateToLocalDate(df.currentDateAsInt()).isEqual(df.convertIntDateToLocalDate(payment.getPaymentDate()))) {
                                 billerName.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.yellow, getTheme())));
@@ -727,7 +750,7 @@ public class MyStats extends AppCompatActivity {
                             }
                         }
                     }
-                }
+
                 if (spaceUsed < totalSpace) {
                     row.addView(bubble);
                     bubble.setOnClickListener(view -> {
@@ -743,11 +766,11 @@ public class MyStats extends AppCompatActivity {
                                     totalBillersAdded.setText(stat.getDateLastPaid());
                                 }
                                 nextPaymentDueLayout.setVisibility(View.VISIBLE);
-                                for (Bills bill : thisUser.getBills()) {
+                                for (Bill bill : thisUser.getBills()) {
                                     if (bill.getBillerName().equals(stat.getBillerName())) {
                                         int earliestDate = 1000000;
-                                        for (Payments payment : bill.getPayments()) {
-                                            if (!payment.isPaid() && payment.getPaymentDate() < earliestDate) {
+                                        for (Payments payment : paymentInfo.getPayments()) {
+                                            if (payment.getBillerName().equals(bill.getBillerName()) && !payment.isPaid() && payment.getPaymentDate() < earliestDate) {
                                                 earliestDate = payment.getPaymentDate();
 
                                             }
@@ -759,7 +782,7 @@ public class MyStats extends AppCompatActivity {
                                         }
                                     }
                                 }
-                                for (Bills bills2: thisUser.getBills()) {
+                                for (Bill bills2: thisUser.getBills()) {
                                     if (bills2.getBillerName().equals(bills)) {
                                         loadIcon.loadIcon(MyStats.this, icon, bills2.getCategory(), bills2.getIcon());
                                         if (darkMode) {
@@ -793,11 +816,11 @@ public class MyStats extends AppCompatActivity {
                                     totalBillersAdded.setText(stat.getDateLastPaid());
                                 }
                                 nextPaymentDueLayout.setVisibility(View.VISIBLE);
-                                for (Bills bill : thisUser.getBills()) {
+                                for (Bill bill : thisUser.getBills()) {
                                     if (bill.getBillerName().equals(stat.getBillerName())) {
                                         int earliestDate = 1000000;
-                                        for (Payments payment : bill.getPayments()) {
-                                            if (!payment.isPaid() && payment.getPaymentDate() < earliestDate) {
+                                        for (Payments payment : paymentInfo.getPayments()) {
+                                            if (payment.getBillerName().equals(bill.getBillerName()) && !payment.isPaid() && payment.getPaymentDate() < earliestDate) {
                                                 earliestDate = payment.getPaymentDate();
 
                                             }
@@ -809,7 +832,7 @@ public class MyStats extends AppCompatActivity {
                                         }
                                     }
                                 }
-                                for (Bills bills3: thisUser.getBills()) {
+                                for (Bill bills3: thisUser.getBills()) {
                                     if (bills.equals(bills3.getBillerName())) {
                                         loadIcon.loadIcon(MyStats.this, icon, bills3.getCategory(), bills3.getIcon());
                                         if (darkMode) {

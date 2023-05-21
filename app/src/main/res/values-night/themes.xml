@@ -17,6 +17,7 @@
         <item name="colorSecondaryVariant">@color/custom</item>
         <item name="alertDialogTheme">@style/MyDialogStyle</item>
         <item name="colorError">@color/white</item>
+        <item name="buttonStyle">@style/TextButton</item>
 
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >@color/black</item>

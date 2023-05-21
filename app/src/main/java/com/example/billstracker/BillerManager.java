@@ -1,238 +1,126 @@
 package com.example.billstracker;
 
+import static com.example.billstracker.Logon.paymentInfo;
+import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class BillerManager {
 
     DateFormatter df = new DateFormatter();
+    public void refreshPayments (LocalDate selectedDate) {
 
-    public ArrayList <Payments> generatePayments (ArrayList <Payments> pay, int dueDateValue, String frequency, String type, String amountDue) {
-
-        ArrayList <Payments> newPayments = new ArrayList<>();
-        int dueDateValue1 = dueDateValue;
-        int pays = 1;
-        switch (frequency) {
-            case "0":
-                pays = 60;
-                break;
-            case "1":
-            case "2":
-            case "3":
-                pays = 24;
-                break;
-            case "4":
-                pays = 12;
-                break;
-            case "5":
-                pays = 4;
-                break;
-        }
-
-        ArrayList <Integer> exclude = new ArrayList<>();
-        pay.sort(Comparator.comparing(Payments::getPaymentDate));
-        for (Payments payment : pay) {
-            if (payment.isPaid() || payment.getPaymentDate() == dueDateValue && !newPayments.contains(payment)) {
-                newPayments.add(payment);
-                exclude.add(payment.getPaymentDate());
-            }
-            if (type.equals("refresh")) {
-                if (!exclude.contains(payment.getPaymentDate())) {
-                    if (!newPayments.contains(payment)) {
-                        newPayments.add(payment);
-                    }
-                    exclude.add(payment.getPaymentDate());
-                }
+        ArrayList <Payments> remove = new ArrayList<>();
+        for (Payments clear: paymentInfo.getPayments()) {
+            if (!clear.isPaid() && !clear.isDateChanged()) {
+                remove.add(clear);
             }
         }
-
-        Payments clone = pay.get(0);
-        String billerName = clone.getBillerName();
-        Payments firstPayment;
-
-        if (!exclude.contains(dueDateValue1)) {
-            firstPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-            if (!newPayments.contains(firstPayment)) {
-                newPayments.add(firstPayment);
-                exclude.add(dueDateValue1);
+        paymentInfo.getPayments().removeAll(remove);
+        int startDate = df.calcDateValue(selectedDate.minusMonths(5));
+        int endDate = df.calcDateValue(selectedDate.plusMonths(5));
+        int iterateDate;
+        int paymentCounter;
+        if (thisUser != null) {
+            if (thisUser.getBills() != null) {
+                for (Bill bill : thisUser.getBills()) {
+                    paymentCounter = 0;
+                    iterateDate = bill.getDayDue();
+                    int frequency = Integer.parseInt(bill.getFrequency());
+                    int paymentsRemaining = Integer.parseInt(bill.getPaymentsRemaining());
+                    if (paymentInfo.getPayments() != null && paymentInfo.getPayments().size() > 0) {
+                        paymentInfo.getPayments().sort(Comparator.comparing(Payments::getPaymentDate));
+                        boolean found = false;
+                        for (Payments pays : paymentInfo.getPayments()) {
+                            if (pays.getBillerName().equals(bill.getBillerName()) && pays.isPaid()) {
+                                paymentCounter = paymentCounter + 1;
+                                pays.setPaymentNumber(paymentCounter);
+                                iterateDate = pays.getPaymentDate();
+                                found = true;
+                            }
+                        }
+                        if (found) {
+                            if (frequency == 0) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusDays(1));
+                            } else if (frequency == 1) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusWeeks(1));
+                            } else if (frequency == 2) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusWeeks(2));
+                            } else if (frequency == 3) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusMonths(1));
+                            } else if (frequency == 4) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusMonths(3));
+                            } else if (frequency == 5) {
+                                iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusYears(1));
+                            }
+                        }
+                    }
+                    while (iterateDate <= endDate && paymentsRemaining > 0) {
+                        paymentCounter = paymentCounter + 1;
+                        Payments payment = new Payments(bill.getAmountDue(), 0, iterateDate, false, false, paymentCounter, bill.getBillerName(), id(), 0);
+                        if (frequency == 0) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusDays(1));
+                        } else if (frequency == 1) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusWeeks(1));
+                        } else if (frequency == 2) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusWeeks(2));
+                        } else if (frequency == 3) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusMonths(1));
+                        } else if (frequency == 4) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusMonths(3));
+                        } else if (frequency == 5) {
+                            iterateDate = df.calcDateValue(df.convertIntDateToLocalDate(iterateDate).plusYears(1));
+                        }
+                        if (iterateDate >= startDate && iterateDate <= endDate) {
+                            boolean match = false;
+                            for (Payments pay: paymentInfo.getPayments()) {
+                                if (pay.getBillerName().equals(payment.getBillerName()) && pay.getPaymentNumber() == payment.getPaymentNumber()) {
+                                    match = true;
+                                    break;
+                                }
+                            }
+                            if (!match) {
+                                paymentInfo.getPayments().add(payment);
+                            }
+                        }
+                        paymentsRemaining = paymentsRemaining - 1;
+                    }
+                }
+            } else {
+                thisUser.setBills(new ArrayList<>());
             }
-        }
 
-        for (int i = 0; i < pays; ++i) {
-            switch (frequency) {
-                case "0": {
-                    dueDateValue1 = df.increaseIntDateByOneDay(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-                case "1": {
-                    dueDateValue1 = df.increaseIntDateByOneWeek(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-                case "2": {
-                    dueDateValue1 = df.increaseIntDateByOneWeek(dueDateValue1);
-                    dueDateValue1 = df.increaseIntDateByOneWeek(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-                case "3": {
-                    dueDateValue1 = df.increaseIntDateByOneMonth(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-                case "4": {
-                    dueDateValue1 = df.increaseIntDateByThreeMonths(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-                case "5": {
-                    dueDateValue1 = df.increaseIntDateByOneYear(dueDateValue1);
-                    Payments additionalPayment = new Payments(amountDue, dueDateValue1, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDateValue1) && !newPayments.contains(additionalPayment)) {
-                        newPayments.add(additionalPayment);
-                        exclude.add(dueDateValue1);
-                    }
-                    break;
-                }
-            }
         }
-        RemoveDuplicatePayments rdp = new RemoveDuplicatePayments();
-        rdp.removeDuplicatePayments(newPayments);
-        return newPayments;
     }
 
-    public ArrayList <Payments> refreshPayments (ArrayList <Payments> list, int dueDate, String frequency) {
+    public void savePayments () {
 
-        int pays = 1;
-        switch (frequency) {
-            case "0":
-                pays = 60;
-                break;
-            case "1":
-            case "2":
-            case "3":
-                pays = 24;
-                break;
-            case "4":
-                pays = 12;
-                break;
-            case "5":
-                pays = 4;
-                break;
-        }
-
-        int todayDate = df.currentDateAsInt();
-        ArrayList <Integer> exclude = new ArrayList<>();
-        list.sort(Comparator.comparing(Payments::getPaymentDate));
-        for (Payments payment : list) {
-            if (!exclude.contains(payment.getPaymentDate())) {
-                exclude.add(payment.getPaymentDate());
-                if (payment.getPaymentDate() > todayDate) {
-                    --pays;
-                }
-                if (payment.getPaymentDate() > dueDate) {
-                    dueDate = payment.getPaymentDate();
+        ArrayList <Payments> remove = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (paymentInfo.getPayments() != null) {
+            for (Payments payment : paymentInfo.getPayments()) {
+                if (!payment.isPaid() && !payment.isDateChanged()) {
+                    remove.add(payment);
                 }
             }
         }
-        int max = Collections.max(exclude);
-        int element = 0;
-        for (Payments payment: list) {
-            if (payment.getPaymentDate() == max) {
-                element = list.indexOf(payment);
-            }
+        else {
+            paymentInfo.setPayments(new ArrayList<>());
         }
-
-        Payments clone = list.get(element);
-        String billerName = clone.getBillerName();
-        String paymentAmount = clone.getPaymentAmount();
-
-        for (int i = 0; i < pays; ++i) {
-            switch (frequency) {
-                case "0": {
-                    dueDate = df.increaseIntDateByOneDay(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-                case "1": {
-                    dueDate = df.increaseIntDateByOneWeek(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-                case "2": {
-                    dueDate = df.increaseIntDateByOneWeek(dueDate);
-                    dueDate = df.increaseIntDateByOneWeek(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-                case "3": {
-                    dueDate = df.increaseIntDateByOneMonth(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-                case "4": {
-                    dueDate = df.increaseIntDateByThreeMonths(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-                case "5": {
-                    dueDate = df.increaseIntDateByOneYear(dueDate);
-                    Payments additionalPayment = new Payments(paymentAmount, dueDate, false, billerName, Integer.parseInt(id()), 0);
-                    if (!exclude.contains(dueDate)) {
-                        list.add(additionalPayment);
-                        exclude.add(dueDate);
-                    }
-                    break;
-                }
-            }
-        }
-        return list;
+        paymentInfo.getPayments().removeAll(remove);
+        db.collection("payments").document(uid).set(paymentInfo, SetOptions.merge());
+        refreshPayments(LocalDate.now(ZoneId.systemDefault()));
     }
 
-    String id() {
+    int id() {
         final String AB = "0123456789";
         SecureRandom rnd = new SecureRandom();
         int length = 9;
@@ -240,6 +128,6 @@ public class BillerManager {
         for (int i = 0; i < length; i++) {
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         }
-        return sb.toString();
+        return Integer.parseInt(String.valueOf(sb));
     }
 }

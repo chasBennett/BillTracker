@@ -1,23 +1,20 @@
 package com.example.billstracker;
 
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.VolleyLog;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.util.Objects;
 
 public class CountTickets {
 
     public void countTickets (TextView ticketCounter) {
 
-        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
         final int[] counter = new int[1];
 
         if (thisUser.getAdmin()) {
@@ -28,7 +25,7 @@ public class CountTickets {
                         Log.d(VolleyLog.TAG, document.getId() + " => " + document.getData());
                         SupportTicket ticket = document.toObject(SupportTicket.class);
                         if (ticket.getAgentUid() != null) {
-                            if (ticket.getAgentUid().equals(uid) || ticket.getAgentUid().equals("Unassigned")) {
+                            if (ticket.getAgentUid().equalsIgnoreCase(uid) || ticket.getAgentUid().equals("Unassigned")) {
                                 counter[0] = counter[0] + ticket.getUnreadByAgent();
                             }
                         }

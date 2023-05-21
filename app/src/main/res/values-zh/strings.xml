@@ -19,7 +19,6 @@
     <string name="nav_header_title">安卓工作室</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">导航标题</string>
-
     <string name="menu_home">家</string>
     <string name="menu_gallery">画廊</string>
     <string name="menu_slideshow">幻灯片</string>
@@ -32,16 +31,8 @@
     <string name="february">二月 %d</string>
     <string name="march">3 月 %d</string>
     <string name="april">四月 %d</string>
-    <string name="tac1">服务条款
-\n\n上次更新时间：2023 年 3 月 31 日（A 部分）\n\n
-A 节条款\n\n
-简介和概述\n\n
-感谢您选择 Bill Tracker 应用程序。 Bill Tracker 以及任何母公司、子公司、附属公司或相关公司在这些条款中统称为“Bill Tracker Group”或简称为“Bill Tracker”或“我们”。\n
-当您使用该应用程序时，您与我们签订了具有​​约束力的合同。协议的每个部分都以斜体注释开头，旨在帮助您浏览协议。注释不完全
-        不过，总结一下协议，您应该仔细完整地阅读每个部分。我们还用粗体标出了一些涉及重要合法权利的区域，您一定要仔细阅读这些部分。
-        A 部分中的这些规定普遍适用于该应用。\n
-如果您是代表您的公司或客户行事的个人，您代表他们接受这些条款，并且“您”一词将指代您、您的公司或您的客户。\n\n
-同意这些条款\n\n</string>
+    <string name="emailAddressUpdatedSuccessfully">电子邮件地址更新成功</string>
+    <string name="tac1">“服务条款上次更新时间：2023 年 3 月 31 日（A 部分）A 部分条款介绍和概述感谢您选择 Bill Tracker 应用程序。Bill Tracker 以及任何母公司、子公司、关联公司或相关公司均在这些文件中提及规定为“Bill Tracker Group”或简称为“Bill Tracker”或“我们”。当您使用该应用程序时，即表示您与我们签订了具有​​约束力的合同。协议的每一部分都以斜体注释开头，旨在帮助您浏览协议。不过，注释并未完全概括协议，您应该阅读每个部分都仔细且完整。我们还加粗了一些涉及重要法律权利的区域，请务必仔细阅读这些部分。A 部分中的这些规定普遍适用于应用程序。如果您是个人行为代表您的公司或客户，您代表他们接受这些规定，术语“您”将指代您、您的公司或您的客户。同意这些条款“</string>
     <string name="tac2">您需要同意这些条款才能使用我们的应用程序。 Bill Tracker 不会与第三方共享您的个人信息，除非您特别指示这样做以便在应用程序内提供额外服务。\n
 要访问和/或使用该应用程序，您承认并同意：\n\n
 遵守本协议（“协议”）的条款和条件，其中包括：\n\n
@@ -53,7 +44,7 @@ A 节中列出的条款的当前版本以及：\n\n
 您的个人信息\n\n
 我们希望在我们的隐私声明中公开我们如何使用个人信息以及您的权利。只有在您获得许可的情况下，您才应向我们提供他人的个人信息。\n
 您同意 Bill Tracker 可以使用和维护您的个人信息以提供应用范围内的服务。\n
-在我们允许您输入除您以外的其他人的个人信息（该术语根据适用法律定义）的范围内，您声明并保证您已遵守所有适用法律和
+在我们允许您输入除您之外的其他人的个人信息（该术语根据适用法律定义）的范围内，您声明并保证您已遵守所有适用法律和
         获得适当的授权或同意，允许我们收集和处理此类信息以经营我们的业务。您同意此类共享不构成加利福尼亚消费者定义的信息“销售”
         隐私法 (CCPA)。\n\n
 变化\n\n</string>
@@ -86,11 +77,11 @@ A 节中列出的条款的当前版本以及：\n\n
         仅在本协议或 Bill Tracker 的订购和激活条款（如适用）中规定的使用期限内使用适用软件的非排他性、不可转让、可撤销许可</string>
     <string name="tac5">当时有效的产品停产政策（不时更新），并且仅用于适用软件的 Bill Tracker 描述的目的。\n
 您承认并同意此类软件是许可的，而不是出售的。
-您可以为备份目的制作一份软件副本，前提是您在该副本上复制软件原始副本上的所有版权和其他所有权声明。您不会删除或以任何方式更改
+您可以为备份目的制作一份软件副本，前提是您在其上复制软件原始副本上的所有版权和其他所有权声明。您不会删除或以任何方式更改
         交付给您时出现在软件上的版权、商标和其他所有权声明或标记。\n\n
 第三方建议和产品\n\n
 您可能可以获得专业建议和第三方产品。本协议不涵盖任何此类建议和产品。\n
-我们可能会不时在应用程序中提供特定功能，让您有机会寻求专业建议，例如，与贷款专家交谈的能力。除非特别披露，Bill Tracker
+我们可能会不时在应用程序中提供特定功能，让您有机会寻求专业建议，例如与贷款专家交谈的能力。除非特别披露，Bill Tracker
         不从事提供法律、财务、会计、税务、医疗保健、保险、房地产或其他专业服务或建议的业务，您应该在做出重要决定之前咨询专业人士的建议
         这些领域的决定。\n
 该应用程序可能包含有关第三方服务或产品的信息或提供的信息，或者允许您访问第三方服务或产品或将您的帐户连接到第三方服务或产品。 Bill Tracker 不保证，也不负责，
@@ -128,7 +119,7 @@ Bill Tracker 可能会收集、导出或生成关于您使用应用程序或应�
 Bill Tracker 不纵容或支持任何非法、侵犯他人权利、损害或损害 Bill Tracker 声誉或可能导致 Bill Tracker 对第三方承担责任的活动。至少，你不能
         使用该应用程序：\n\n
 违反任何法律、法规、行政命令或条例，包括通过引起刑事、民事、行政或监管责任和/或罚款的行为；\n\n
-发布或分享非法或不当的内容，包括可能具有诽谤、淫秽、骚扰、冒犯、欺诈、令人反感或侵权的材料；\n\n
+发布或分享非法或不适当的内容，包括可能具有诽谤、淫秽、骚扰、冒犯、欺诈、令人反感或侵权的材料；\n\n
 传输任何病毒、特洛伊木马或其他破坏性或有害软件或数据；\n\n
 发送任何未经请求或未经授权的广告，例如垃圾邮件；\n\n
 冒充或歪曲您与 Bill Tracker 的关系；\n\n
@@ -211,12 +202,12 @@ Bill Tracker Parties 不对以下事项负责：\n\n
         251 Little Falls Drive, Wilmington, DE 19808。索赔通知应包括您希望 Bill Tracker 用来与您联系的邮寄地址和电子邮件地址。如果 Bill Tracker 选择寻求仲裁，它将
         通过挂号信将书面索赔通知发送到您存档的地址。索赔通知，无论是由您还是由 Bill Tracker 发送，都必须 (a) 描述索赔或争议的性质和依据； (b) 阐明
         具体数额的损害赔偿或其他寻求的救济。
-您和 Bill Tracker 一致认为，善意的非正式解决争端的努力通常可以产生迅速、低成本和互惠互利的结果。因此，您和 Bill Tracker 同意，在发送索赔通知后，但
-        在您或 Bill Tracker 开始仲裁或在小额索赔法庭向对方提出索赔之前，我们将通过电话或视频会议亲自会面，真诚地努力相互协商，并
+您和 Bill Tracker 一致认为，善意的非正式解决纠纷的努力通常会产生迅速、低成本和互惠互利的结果。因此，您和 Bill Tracker 同意，在发送索赔通知后，但
+        在您或 Bill Tracker 开始仲裁或在小额索赔法庭向对方提出索赔之前，我们将通过电话或视频会议亲自会面，真诚地努力相互协商，
         尝试以非正式方式解决本协议涵盖的任何索赔。如果您由律师代表，您的律师也可以参加会议，但您同意完全参加会议。同样，如果</string>
     <string name="tac17">Bill Tracker由律师代表，其律师也可以参加会议，但Bill Tracker同意公司代表全程参与会议。诉讼时效和任何
         当双方参与本款要求的非正式争议解决程序时，应缴纳申请费截止日期。
-如果我们在收到索赔通知后六十 (60) 天内未达成解决索赔的协议，您或 Bill Tracker 可以通过提交仲裁申请或通过以下方式启动仲裁程序：
+如果我们在收到索赔通知后六十 (60) 天内未达成解决索赔的协议，您或 Bill Tracker 可以通过提交仲裁要求或通过以下方式启动仲裁程序
         在小额索赔法庭提出索赔。您同意您不得开始任何仲裁或在小额索赔法庭提出索赔，除非您和 Bill Tracker 无法在我们提出后六十 (60) 天内解决索赔
         收到完整的索赔通知，并且您已做出真诚的努力，在此期间直接通过 Bill Tracker 解决您的索赔。如果索赔符合小额索赔法庭的条件，但一方开始
         仲裁程序，您和 Bill Tracker 同意，任何一方都可以选择在小额索赔法庭解决索赔，并且根据一方选择的书面通知，美国仲裁协会
@@ -240,8 +231,8 @@ Bill Tracker Parties 不对以下事项负责：\n\n
     <string name="tac20">除非您或 Bill Tracker 寻求在小额索赔法庭解决索赔，否则仲裁员应根据您或 Bill Tracker 提出的任何索赔的是非曲直确定所有责任问题，并可能作出宣告性或禁令性裁决
         仅在有利于寻求救济的一方的救济，并且仅在提供该方的个人索赔所保证的救济所必需的范围内。在您或 Bill Tracker 胜诉的范围内并寻求
         公共禁令救济（即具有禁止威胁未来对公众伤害的非法行为的主要目的和效果的禁令救济），这种救济的权利和程度必须是
-        在具有管辖权的民事法院而非仲裁中提起诉讼。双方同意，任何公共禁令救济问题的诉讼应在等待任何个人的案情结果之前中止
-        仲裁中的索赔。在具有管辖权的法院发布任何公共禁令救济之前，它应审查仲裁裁决的事实调查结果，任何禁令将在不尊重仲裁裁决的情况下发布</string>
+        在具有管辖权的民事法院而不是仲裁中提起诉讼。双方同意，任何公共禁令救济问题的诉讼应在等待任何个人的案情结果之前中止
+        仲裁中的索赔。在具有管辖权的法院发出任何公共禁令救济之前，它应审查仲裁裁决的事实调查结果，任何禁令将在不尊重仲裁裁决的情况下发出</string>
     <string name="tac21">仲裁人。
 所有备案、管理和仲裁员费用的支付将受 AAA 规则的约束。您需要支付 AAA 的初始申请费，但 Bill Tracker 将在申请结束时向您退还这笔申请费
         仲裁的费用超过在您居住的县或加利福尼亚州圣克拉拉县的联邦或州法院提出申诉的费用。如果仲裁员发现您的实质内容
@@ -307,9 +298,9 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="isCapitalLetter">大写字母</string>
     <string name="noLowercaseLetter">x 小写字母</string>
     <string name="isLowercaseLetter">小写字母</string>
-    <string name="noNumber">x 数</string>
+    <string name="noNumber">x 号</string>
     <string name="isNumber">数字</string>
-    <string name="passwordsDontMatch">x 密码不匹配</string>
+    <string name="passwords_dont_match">x 密码不匹配</string>
     <string name="passwordsMatch">密码匹配</string>
     <string name="billerAlreadyExists">同名的开票人已经存在</string>
     <string name="billerNameIsTooShort">开票人姓名太短</string>
@@ -319,7 +310,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="isUppercaseLetter">至少有一个大写字母</string>
     <string name="notOneLowercase">X 至少一个小写字母</string>
     <string name="isOneLowercase">至少一个小写字母</string>
-    <string name="notOneNumber">X 至少一个数字</string>
+    <string name="notOneNumber">X 至少一个数</string>
     <string name="isOneNumber">至少一个数字</string>
     <string name="invalidLogin">无效的用户名或密码</string>
     <string name="dueYesterday">昨天到期</string>
@@ -373,7 +364,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="not6">x 至少 6 个字符</string>
     <string name="noUpper">x 大写字母</string>
     <string name="noLower">x 小写字母</string>
-    <string name="notNumber">x 数</string>
+    <string name="notNumber">x 号</string>
     <string name="enterPassword">输入密码</string>
     <string name="reEnterPassword">重新输入您的密码</string>
     <string name="nextTermsAndConditions">下一页：条款和条件</string>
@@ -424,7 +415,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="calculateMyDti">计算我的 DTI</string>
     <string name="stats">统计数据</string>
     <string name="totalAmountPaid">支付总额：</string>
-    <string name="totalPaymentsMade">支付总额：</string>
+    <string name="totalPaymentsMade">付款总额：</string>
     <string name="nextPaymentDueOn">下次付款到期日：</string>
     <string name="viewStatsFor">查看统计信息</string>
     <string name="logout">登出</string>
@@ -496,7 +487,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="password1">密码</string>
     <string name="aa">给我们一点时间来设置……</string>
     <string name="bb">我们把那个标志放在哪里……</string>
-    <string name="cc">就是它！</string>
+    <string name="cc">就是这样！</string>
     <string name="dd">只需要多拿几样东西……</string>
     <string name="ee">我们开始了！让我们开始吧</string>
     <string name="hey_there_welcome_to_bill_tracker">嘿！欢迎使用账单追踪器</string>
@@ -523,7 +514,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="morning">早晨</string>
     <string name="afternoon">下午</string>
     <string name="evening">晚上</string>
-    <string name="add_a_new_biller">添加新的账单</string>
+    <string name="add_a_new_biller">添加新账单</string>
     <string name="undo">撤消</string>
     <string name="good">好的</string>
     <string name="noBillsDue">没有账单到期！</string>
@@ -608,7 +599,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="thisYear">今年</string>
     <string name="lastYear">去年</string>
     <string name="twoYearsAgo">两年前</string>
-    <string name="allBillers">所有账单</string>
+    <string name="allBillers">所有开票人</string>
     <string name="all">全部</string>
     <string name="emailAlreadyRegistered">您输入的电子邮件已经注册。</string>
     <string name="accountCreatedSuccessfullyMessage">您的帐户已成功创建，并已发送一封验证邮件。请单击电子邮件中的链接以验证您的电子邮件地址。请务必检查您的垃圾邮件文件夹。</string>
@@ -635,7 +626,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="trophyCase">我的奖杯盒</string>
     <string name="welcomeAboard">欢迎登机！</string>
     <string name="thatWasEasy">那很简单</string>
-    <string name="bestIconEver">最佳…偶像…曾经</string>
+    <string name="bestIconEver">最好的……偶像……曾经</string>
     <string name="gettingTheHangOfIt">掌握窍门！ 💪</string>
     <string name="journeyman">熟练工</string>
     <string name="hiImNew">嗨，我是新人🙋🏽</string>
@@ -722,7 +713,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="unassigned">未分配</string>
     <string name="notes">笔记：</string>
     <string name="self_assign">自我分配</string>
-    <string name="send_response">发送回应</string>
+    <string name="send_response">发送回复</string>
     <string name="mark_resolved">标记已解决</string>
     <string name="youve_made_50_payments">您已经支付了 50 笔款项！</string>
     <string name="you_paid_a_bill_at_least_14_days_early">您至少提前 14 天支付账单</string>
@@ -732,6 +723,118 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="plant">植物</string>
     <string name="ijustearnedthe">我刚刚赢得</string>
     <string name="badgeonbilltracker">Bill Tracker 徽章！</string>
+    <string name="googleSignInFailed">谷歌登录失败</string>
+    <string name="facebook_app_id">223148510311094</string>
+    <string name="fb_login_protocol_scheme">fb223148510311094</string>
+    <string name="facebook_client_token">a5a2a8a9c13289fbbeaccd95c4323a92</string>
+    <string name="billerNameCantBeBlank">开票人姓名不能为空</string>
+    <string name="save">节省</string>
+    <string name="loginWithFacebookError">使用 Facebook 错误登录</string>
+    <string name="my_achievements">我的成就</string>
+    <string name="payments_remaining">剩余付款：</string>
+    <string name="continuous">连续的</string>
+    <string name="set_payments_until_paid_off">设置付款直到付清？</string>
+    <string name="number_of_payments">付款次数：</string>
+    <string name="paid_in_full">付全款</string>
+    <string name="final_payment">最后付款！</string>
+    <string name="create_a_new_budget">创建新预算</string>
+    <string name="automotive">汽车</string>
+    <string name="groceries">杂货</string>
+    <string name="beauty">美丽</string>
+    <string name="clothing">衣服</string>
+    <string name="restaurants">餐馆</string>
+    <string name="health">健康</string>
+    <string name="other">其他</string>
+    <string name="transaction_titled">交易标题：</string>
+    <string name="has_been_removed">已被删除</string>
+    <string name="create_a_budget">创建预算</string>
+    <string name="pay_amount">支付金额：</string>
+    <string name="pay_frequency">支付频率：</string>
+    <string name="savings_amount">储蓄金额：</string>
+    <string name="weekly_bills_average">每周平均账单：</string>
+    <string name="weekly_disposable_income">每周可支配收入：</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income">百分比值是您可支配收入的百分比</string>
+    <string name="create_a_budget_for_me">为我制定预算：</string>
+    <string name="automotive_budget">汽车预算：</string>
+    <string name="beauty_budget">美容预算：</string>
+    <string name="clothing_budget">服装预算：</string>
+    <string name="entertainment_budget">娱乐预算：</string>
+    <string name="groceries_budget">杂货预算：</string>
+    <string name="health_budget">健康预算：</string>
+    <string name="restaurants_budget">餐厅预算：</string>
+    <string name="other_budget">其他预算：</string>
+    <string name="budget_start_date">预算开始日期：</string>
+    <string name="budget_end_date">预算结束日期：</string>
+    <string name="apply_budget">应用预算</string>
+    <string name="all_fields_must_be_filled_in">必须填写所有字段</string>
+    <string name="re_create_this_budget_for_me">为我重新创建此预算：</string>
+    <string name="current_budget">当前预算</string>
+    <string name="apply_changes">应用更改</string>
+    <string name="you_don_t_have_a_budget_set_for_the_current_date">您没有为当前日期设置预算</string>
+    <string name="transactions">交易</string>
+    <string name="budget_remaining">预算剩余：</string>
+    <string name="budget_not_set">未设定预算</string>
+    <string name="total_spent">总花费：</string>
+    <string name="spending">开支</string>
+    <string name="date">日期：</string>
+    <string name="cost">成本：</string>
+    <string name="description">描述：</string>
+    <string name="add_expense">添加费用</string>
+    <string name="your_budget_has_been_updated_successfully">您的预算已成功更新</string>
+    <string name="use_default_values">使用默认值：</string>
+    <string name="percent_values_cannot_exceed_100_percent">百分比值不能超过 100%</string>
+    <string name="savings_amount_exceeds_available_funds">储蓄金额超过可用资金</string>
+    <string name="logging_you_in_as">登录为</string>
+    <string name="forgot_password">忘记密码</string>
+    <string name="current_balance">当前余额：</string>
+    <string name="estimated_apr">估计年利率：</string>
+    <string name="finishing_up">整理起来</string>
+    <string name="creating_user_profile">创建用户配置文件</string>
+    <string name="you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller">您还没有添加本月的任何账单。单击上方的加号以添加账单！</string>
+    <string name="past_due">逾期</string>
+    <string name="amount_remaining">剩余金额：</string>
+    <string name="partial_payment_made">已支付部分款项：</string>
+    <string name="amount_paid">支付的金额：</string>
+    <string name="estimated_rate">预计利率：</string>
+    <string name="escrow_amount">托管金额：</string>
+    <string name="estimated_balance">估计余额：</string>
+    <string name="view_details">查看详情</string>
+    <string name="total_payments_remaining">剩余付款总额：</string>
+    <string name="hide_details">隐藏细节</string>
+    <string name="total_amount_remaining">剩余总金额：</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted">百分比值是扣除储蓄后可支配收入的百分比</string>
+    <string name="income">收入：</string>
+    <string name="disposable_income">可支配收入：</string>
+    <string name="savings_allocation">储蓄分配：</string>
+    <string name="spending_allocation">支出分配：</string>
+    <string name="edit_budget">编辑预算</string>
+    <string name="weekly_savings_amount">每周储蓄金额：</string>
+    <string name="edit">编辑</string>
+    <string name="estimated_interest_paid">预计支付的利息：</string>
+    <string name="partial_payment">部分付款</string>
+    <string name="spending_categories">消费类别</string>
+    <string name="noDataAvailable">无可用数据</string>
+    <string name="noBudgetDataWasFound">未找到预算数据</string>
+    <string name="remove">消除</string>
+    <string name="changePartialPayment">更改部分付款</string>
+    <string name="would_you_like_to_change_your_partial_payment_or_remove_it">您想取消您的部分付款或更改金额吗？</string>
+    <string name="change_partial_payment_amount">更改部分付款金额</string>
+    <string name="please_enter_the_new_partial_payment_amount">请输入新的部分付款金额</string>
+    <string name="spent">花费</string>
+    <string name="total_budget">总预算</string>
+    <string name="no_payments_reported">没有付款报告</string>
+    <string name="select_a_date">选择日期：</string>
+    <string name="no_transactions_were_found_for_the_selected_time_frame">在选定的时间范围内未找到任何交易</string>
+    <string name="expenses_icon">费用图标</string>
+    <string name="bills_icon">账单图标</string>
+    <string name="budget_icon">预算图标</string>
+    <string name="budget">预算</string>
+    <string name="not_found_icon">找不到图标</string>
+    <string name="delete">删除</string>
+    <string name="logo">标识</string>
+    <string name="pay_next_bill_button">支付下一个账单按钮</string>
+    <string name="arrow">箭</string>
+    <string name="notifications_are_currently_turned_off_change_this_in_the_settings_menu_to_receive_notifications_when_your_bills_are_due">通知当前已关闭。在设置菜单中更改此项以在账单到期时接收通知</string>
     <!-- Generated by Automatic String Resource Translation -->
     <!--          https://asrt.gluege.boerde.de             -->
 </resources>

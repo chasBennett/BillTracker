@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:animateLayoutChanges="true"
-    android:background="@color/whiteAndBlack"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/toolbar"
     tools:context=".Support">
 
     <ImageView
@@ -14,22 +14,19 @@
         android:layout_height="35dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/back_button"
         android:padding="5dp"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-        app:tint="@color/blackAndWhite"
-        android:contentDescription="@string/back_button" />
+        app:tint="@color/blackAndWhite" />
 
     <LinearLayout
         android:id="@+id/linearLayout9"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="10dp"
         android:background="@drawable/border_chat"
         android:clipToOutline="true"
         android:orientation="vertical"
@@ -129,26 +126,26 @@
             style="@style/Widget.AppCompat.AutoCompleteTextView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:maxLength="500"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
             android:layout_weight=".85"
             android:background="@color/whiteAndGray"
             android:gravity="start|center_vertical"
             android:hint="@string/typeYourMessageHere"
+            android:importantForAutofill="no"
             android:inputType="textMultiLine"
-            android:textSize="16sp"
-            android:importantForAutofill="no" />
+            android:maxLength="500"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/submitMessage"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight=".15"
+            android:contentDescription="@string/submit"
             android:padding="15dp"
             app:srcCompat="@drawable/send_message"
-            app:tint="#D1D3D3"
-            android:contentDescription="@string/submit" />
+            app:tint="#D1D3D3" />
     </LinearLayout>
 
     <LinearLayout
@@ -222,6 +219,7 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/pb13"
         android:layout_width="match_parent"

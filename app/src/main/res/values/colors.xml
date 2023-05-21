@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
+
     <color name="blue">#095B87</color>
-    <color name="icColor">#084C81</color>
-    <color name="mipMapColor">#084C81</color>
     <color name="lightblue">#AEB1B1</color>
     <color name="lightGrey">#2B2A2A</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="toolbar">#084C81</color>
+    <color name="toolbar">#0473BC</color>
+    <color name="darkBlue">#03426C</color>
+    <color name="stroke">#9EB0BD</color>
     <color name="accent">#0C5F8C</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="button">#0C5F8C</color>
+    <color name="button">#0473BC</color>
     <color name="offset">#FAF9F9</color>
     <color name="blackAndWhite">#141415</color>
     <color name="whiteAndBlack">#F7F7F8</color>
     <color name="blueAndBlack">#0C5F8C</color>
     <color name="neutralGray">#4C4B4B</color>
-    <color name="tiles">#F1F0F0</color>
+    <color name="tiles">#F3F1F1</color>
     <color name="custom">#92F4E9</color>
     <color name="whiteAndGray">#F1EFEF</color>
     <color name="chatWindow">#ECEAEA</color>
-    <color name="darkbutton">#28A396</color>
     <color name="circle">#FBFBFC</color>
     <color name="tray">#F4F4F4</color>
     <color name="tabs">#D3D2D2</color>
-    <color name="tabssemitransparent">#CC939292</color>
-    <color name="new_icon">#FF000000</color>
-    <color name="icon">#FFFFFF</color>
-    <color name="stroke">#FFFFFF</color>
+    <color name="tabsSemiTransparent">#CCC4C3C3</color>
+    <color name="group">#F3F1F1</color>
     <color name="fingerprint">#084C81</color>
     <color name="payBill">#448747</color>
+    <color name="transparentGreen">#4D92BC8B</color>
     <color name="green">#21BF29</color>
     <color name="blueGrey">#34887F</color>
-    <color name="grey">#555454</color>
+    <color name="grey">#8C8B8B</color>
     <color name="darkGrey">#292828</color>
-    <color name="lightgreen">#77CC77</color>
+    <color name="background">#DFDDDD</color>
     <color name="buttonStroke">#CECDCD</color>
     <color name="yellow">#E4C93F</color>
     <color name="red">#8C3434</color>
+    <color name="transparentRed">#0DEF3838</color>
+    <color name="lightRed">#8C0505</color>
+    <color name="header">#0473BC</color>
 
     <array name="pieChart">
         <item>#AEDA88</item>

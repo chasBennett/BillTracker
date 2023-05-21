@@ -1,6 +1,7 @@
 package com.example.billstracker;
 
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +32,6 @@ public class AwardCase extends AppCompatActivity {
     ImageView closeTrophyView;
     LinearLayout trophyPopup;
     ImageView share;
-    ImageView close;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.welcomeAboard) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -99,7 +99,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.thatWasEasy) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -121,7 +121,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.bestIconEver) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -143,7 +143,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.gettingTheHangOfIt) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -165,7 +165,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.journeyman) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -175,7 +175,7 @@ public class AwardCase extends AppCompatActivity {
                 trophy6.setOnClickListener(v -> {
 
                     trophyPopup.setVisibility(View.VISIBLE);
-                    title.setText(getString(R.string.hiImNew));
+                    title.setText(getString(R.string.welcomeToBillTracker));
                     description.setText(getString(R.string.firstTimeLoggingIn));
                     trophyView.setImageDrawable(AppCompatResources.getDrawable(AwardCase.this, R.drawable.medal2));
                     closeTrophyView.setOnClickListener(v16 -> trophyPopup.setVisibility(View.GONE));
@@ -187,8 +187,8 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
-                        shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.hiImNew) + "\" " + getString(R.string.badgeonbilltracker));
+                        db.collection("users").document(uid).set(thisUser);
+                        shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.welcomeToBillTracker) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
             }
@@ -209,7 +209,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.gettingThoseRepsIn) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -231,7 +231,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.earlierThanEarly) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });
@@ -253,7 +253,7 @@ public class AwardCase extends AppCompatActivity {
                             }
                         }
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                        db.collection("users").document(uid).set(thisUser);
                         shareImage.shareImage(AwardCase.this, trophyPopup, getString(R.string.ijustearnedthe) + " \"" + getString(R.string.unstoppable) + "\" " + getString(R.string.badgeonbilltracker));
                     });
                 });

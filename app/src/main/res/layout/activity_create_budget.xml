@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/toolbar"
+    tools:context=".CreateBudget">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/border_styles"
+        android:backgroundTint="@color/offset"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout23"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/backCreateBudget"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:padding="7dp"
+                app:tint="@color/blackAndWhite"
+                app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+                android:contentDescription="@string/back_button" />
+
+            <TextView
+                android:id="@+id/textView41"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/create_a_budget"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/divider27"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView87"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pay_amount" />
+
+                <EditText
+                    android:id="@+id/etPayAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="numberDecimal"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView90"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".5"
+                    android:text="@string/pay_frequency" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".5"
+                    android:background="@drawable/edit_text"
+                    android:orientation="vertical">
+
+                    <Spinner
+                        android:id="@+id/payFrequencySpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/savingsError2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="end"
+                android:text="@string/savings_amount_exceeds_available_funds"
+                android:textColor="@color/red"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView871"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/savings_amount" />
+
+                <TextView
+                    android:id="@+id/savingsAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etSavingsPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView93"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".67"
+                    android:text="@string/weekly_bills_average" />
+
+                <TextView
+                    android:id="@+id/billsAverage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/grey" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/estRate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".67"
+                    android:text="@string/weekly_disposable_income" />
+
+                <TextView
+                    android:id="@+id/weeklyDisposableIncome"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/grey" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider29"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/textView99"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted"
+                android:textStyle="italic" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView86"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/use_default_values" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/createForMe"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:paddingEnd="10dp"
+                    tools:ignore="RtlSymmetry" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/categoriesError2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="@string/percent_values_cannot_exceed_100_percent"
+                android:textColor="@color/red"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView872"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/automotive_budget" />
+
+                <TextView
+                    android:id="@+id/automotiveAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etAutomotivePercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView870"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/beauty_budget" />
+
+                <TextView
+                    android:id="@+id/beautyAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etBeautyPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView873"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/clothing_budget" />
+
+                <TextView
+                    android:id="@+id/clothingAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etClothingPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView874"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/entertainment_budget" />
+
+                <TextView
+                    android:id="@+id/entertainmentAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etEntertainmentPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView875"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/groceries_budget" />
+
+                <TextView
+                    android:id="@+id/groceriesAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etGroceriesPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView876"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/health_budget" />
+
+                <TextView
+                    android:id="@+id/healthAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etHealthPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView877"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/restaurants_budget" />
+
+                <TextView
+                    android:id="@+id/restaurantsAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etRestaurantsPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView878"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".55"
+                    android:text="@string/other_budget" />
+
+                <TextView
+                    android:id="@+id/otherAmount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text=""
+                    android:textColor="@color/grey" />
+
+                <EditText
+                    android:id="@+id/etOtherPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:background="@drawable/edit_text"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="LabelFor"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView879"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/budget_start_date" />
+
+                <TextView
+                    android:id="@+id/budgetStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text"
+                    app:drawableTint="@color/grey"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text=""
+                    android:textSize="14sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView881"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/budget_end_date" />
+
+                <TextView
+                    android:id="@+id/budgetEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text"
+                    app:drawableTint="@color/grey"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text=""
+                    android:textSize="14sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/submitBudget"
+                style="@style/TextButton"
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"
+                android:text="@string/apply_budget" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

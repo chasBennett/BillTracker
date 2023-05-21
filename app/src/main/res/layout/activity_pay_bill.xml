@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/payBill"
-    android:animateLayoutChanges="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".PayBill">
 
     <ScrollView
         android:id="@+id/scrollView9"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,6 +21,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/border_styles"
+            android:backgroundTint="@color/offset"
             android:orientation="vertical">
 
             <LinearLayout
@@ -35,19 +38,10 @@
                     android:layout_height="35dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:padding="5dp"
+                    android:contentDescription="@string/back_button"
                     app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-                    app:tint="@color/blackAndWhite"
-                    android:contentDescription="@string/back_button" />
+                    app:tint="@color/blackAndWhite" />
 
-                <TextView
-                    android:id="@+id/textView39"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="22dp"
-                    android:text="@string/back"
-                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -161,6 +155,51 @@
                 android:background="?android:attr/listDivider" />
 
             <LinearLayout
+                android:id="@+id/partialPaymentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/partialPaymentLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/partial_payment_made"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                    <TextView
+                        android:id="@+id/displayPartialPayment"
+                        android:layout_width="0dp"
+                        android:layout_height="67dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="16sp"
+                        app:drawableEndCompat="@drawable/ic_baseline_edit_note_24" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider32"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="?android:attr/listDivider"
+                    tools:ignore="InefficientWeight" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
@@ -171,6 +210,7 @@
                     android:id="@+id/amountDueLabel"
                     android:layout_width="00dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight=".4"
                     android:gravity="center"
                     android:text="@string/amountDue"
@@ -233,6 +273,50 @@
                 android:background="?android:attr/listDivider" />
 
             <LinearLayout
+                android:id="@+id/paymentsRemainingLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/paymentsRemainingLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/payments_remaining"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                    <TextView
+                        android:id="@+id/displayPaymentsRemaining"
+                        android:layout_width="0dp"
+                        android:layout_height="67dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="?android:attr/listDivider"
+                    tools:ignore="InefficientWeight" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="15dp"
@@ -243,42 +327,47 @@
                     android:id="@+id/editBillerButton"
                     style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="50dp"
                     android:layout_margin="15dp"
                     android:layout_weight="1"
-                    android:text="@string/editBiller"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:text="@string/editBiller" />
 
                 <Button
                     android:id="@+id/viewPayments"
                     style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="50dp"
                     android:layout_margin="15dp"
                     android:layout_weight="1"
-                    android:text="@string/history"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:text="@string/history" />
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/payButton"
-                style="@style/TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="30dp"
-                android:layout_weight="1"
-                android:minWidth="200dp"
-                android:text="@string/markAsPaid"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="15dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/payButton"
+                    style="@style/TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/markAsPaid" />
+
+                <Button
+                    android:id="@+id/btnPartialPayment"
+                    style="@style/TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:text="@string/partial_payment" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

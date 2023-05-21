@@ -78,13 +78,6 @@ public class DateFormatter {
         return calcDateValue(LocalDate.now(ZoneId.systemDefault()));
     }
 
-    public String createCurrentDateString() {
-
-        LocalDate localDate = LocalDate.now(ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(Locale.getDefault());
-        return formatter.format(localDate);
-    }
-
     public String createCurrentDateStringWithTime() {
 
         LocalDateTime loginTime = LocalDateTime.now(ZoneId.systemDefault());
@@ -92,33 +85,4 @@ public class DateFormatter {
         return formatter.format(loginTime);
     }
 
-    public int increaseIntDateByOneMonth(int date) {
-
-        return calcDateValue(convertIntDateToLocalDate(date).plusMonths(1));
-
-    }
-
-    public int increaseIntDateByThreeMonths(int date) {
-
-        return calcDateValue(convertIntDateToLocalDate(date).plusMonths(3));
-
-    }
-
-    public int increaseIntDateByOneDay(int date) {
-
-        return calcDateValue(convertIntDateToLocalDate(date).plusDays(1));
-
-    }
-
-    public int increaseIntDateByOneWeek(int date) {
-
-        return calcDateValue(convertIntDateToLocalDate(date).plusWeeks(1));
-
-    }
-
-    public int increaseIntDateByOneYear(int date) {
-
-        return calcDateValue(convertIntDateToLocalDate(date).plusYears(1));
-
-    }
 }

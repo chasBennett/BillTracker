@@ -2,7 +2,10 @@ package com.example.billstracker;
 
 import static com.example.billstracker.Logon.billList;
 import static com.example.billstracker.Logon.checkTrophies;
+import static com.example.billstracker.Logon.expenseInfo;
+import static com.example.billstracker.Logon.paymentInfo;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 import static com.example.billstracker.R.layout.main_activity;
 
 import android.animation.ObjectAnimator;
@@ -26,61 +29,95 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.facebook.login.LoginManager;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import me.thanel.swipeactionview.SwipeActionView;
 import me.thanel.swipeactionview.SwipeGestureListener;
 
 public class MainActivity2 extends AppCompatActivity {
 
-    static String name, userName, channelId;
+    static String channelId;
+    String name, userName;
     int month, year, day, counter, todayDateValue, sunday;
     ArrayList<Payments> dueThisMonth = new ArrayList<>();
     Context mContext;
     long delay;
     boolean even;
-    LocalDate selectedDate;
+    public static LocalDate selectedDate;
     LinearLayout noResults;
     LinearLayout navDrawer;
     LinearLayout hideNav;
     LinearLayout billsList1;
     LinearLayout hideForNavDrawer;
+    LinearLayout billsTab, expensesTab, budgetTab;
     LinearLayout pb;
-    LinearLayout paymentConfirm, trophyRow;
-    LinearLayout trophyContainer;
-    ImageView drawerToggle, settingsButton, help;
-    TextView displayUserName, displayEmail, navHome, navViewBillers, navPaymentHistory, selectedMonth, backMonth, forwardMonth, admin, payNext, myStats, ticketCounter, contactUs,
-            popupMessage;
+    LinearLayout paymentConfirm;
+    LinearLayout trophyContainer, todayList, laterThisWeekList, laterThisMonthList, earlierThisMonthList;
+    ImageView drawerToggle, settingsButton, help, addBiller, payNext;
+    TextView displayUserName, displayEmail, navHome, navViewBillers, navPaymentHistory, selectedMonth, backMonth, forwardMonth, admin, myStats, ticketCounter, popupMessage, myAchievements;
     ScrollView scroll;
-    TextView fab;
     SharedPreferences sp;
     DateFormatter dateFormatter = new DateFormatter();
-    ArrayList <Payments> today = new ArrayList<>();
+    CalculateBalance cb = new CalculateBalance();
+    ArrayList<Payments> today = new ArrayList<>();
     boolean previousMonth;
     FixNumber fn = new FixNumber();
     LinearLayout billsList;
     ArrayList<Payments> earlier = new ArrayList<>(), laterThisWeek = new ArrayList<>(), later = new ArrayList<>();
     double earlyTotal = 0, todayTotal = 0, laterThisWeekTotal = 0, laterTotal = 0;
+    LineChart lineChart;
+    double max;
+    BillerManager bm = new BillerManager();
+
+    public static boolean isVisible(final View view) {
+
+        if (view == null) {
+            return false;
+        }
+        if (!view.isShown()) {
+            return false;
+        }
+        final Rect actualPosition = new Rect();
+        view.getGlobalVisibleRect(actualPosition);
+        final Rect screen = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
+        return actualPosition.intersects(screen.left, screen.top, screen.right, screen.bottom);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,98 +128,126 @@ public class MainActivity2 extends AppCompatActivity {
         if (thisUser == null) {
             save.loadUserData(MainActivity2.this);
         }
-        for (Bills bills: thisUser.getBills()) {
-            for (Payments payments: bills.getPayments()) {
-                if (!payments.isPaid() && payments.getPaymentDate() < dateFormatter.currentDateAsInt() + 14) {
-                    scheduleNotifications(payments);
-                }
+        if (paymentInfo == null) {
+            paymentInfo = new PaymentInfo(new ArrayList<>());
+        }
+        Set<Payments> pay = new LinkedHashSet<>(paymentInfo.getPayments());
+        paymentInfo.getPayments().clear();
+        paymentInfo.getPayments().addAll(pay);
+        for (Payments payments : paymentInfo.getPayments()) {
+            if (!payments.isPaid() && payments.getPaymentDate() < dateFormatter.currentDateAsInt() + 14) {
+                scheduleNotifications(payments);
             }
         }
+        bm.refreshPayments(LocalDate.now(ZoneId.systemDefault()));
         initialize();
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void initialize () {
+    public void initialize() {
 
         mContext = MainActivity2.this;
+        SaveUserData save = new SaveUserData();
+        if (paymentInfo.getPayments() == null) {
+            paymentInfo.setPayments(new ArrayList<>());
+        }
+        if (thisUser == null) {
+            save.loadUserData(MainActivity2.this);
+        }
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(thisUser.getUserName(), thisUser.getPassword());
+        }
         userName = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
         name = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName();
-        drawerToggle = findViewById(R.id.drawerToggle);
-        navDrawer = findViewById(R.id.navDrawer);
-        pb = findViewById(R.id.progressBar9);
+        uid = FirebaseAuth.getInstance().getUid();
+        pb = findViewById(R.id.progressBar);
         even = false;
-        hideNav = findViewById(R.id.hideNavDrawer);
-        settingsButton = findViewById(R.id.settingsButton);
-        contactUs = findViewById(R.id.contactUs);
-        trophyRow = findViewById(R.id.trophyRow);
-        navHome = findViewById(R.id.navHome);
-        navViewBillers = findViewById(R.id.navViewBillers);
-        navPaymentHistory = findViewById(R.id.navPaymentHistory);
         selectedMonth = findViewById(R.id.selectedMonth);
         backMonth = findViewById(R.id.backMonth);
+        lineChart = findViewById(R.id.lineChart);
         trophyContainer = findViewById(R.id.trophyContainer);
         forwardMonth = findViewById(R.id.forgotPasswordHeader);
-        billsList1 = findViewById(R.id.billsList1);
-        displayUserName = findViewById(R.id.tvName);
+        todayList = findViewById(R.id.todayList);
+        laterThisWeekList = findViewById(R.id.laterThisWeekList);
+        laterThisMonthList = findViewById(R.id.laterThisMonthList);
+        earlierThisMonthList = findViewById(R.id.earlierThisMonthList);
         delay = 2000;
-        displayEmail = findViewById(R.id.tvUserName2);
+        billsList1 = findViewById(R.id.billsList1);
         noResults = findViewById(R.id.noResults);
-        fab = findViewById(R.id.floatingActionButton);
         sp = getSharedPreferences("shared preferences", MODE_PRIVATE);
         admin = findViewById(R.id.admin);
         hideForNavDrawer = findViewById(R.id.hideForNavDrawer);
         scroll = findViewById(R.id.scroll);
-        payNext = findViewById(R.id.payNext);
         paymentConfirm = findViewById(R.id.paymentConfirm);
-        myStats = findViewById(R.id.myStats);
         popupMessage = findViewById(R.id.popupMessage);
-        help = findViewById(R.id.helpMe);
         previousMonth = false;
 
         if (selectedDate == null) {
             selectedDate = dateFormatter.convertIntDateToLocalDate(dateFormatter.currentDateAsInt());
         }
-        if (thisUser != null) {
-            SaveUserData save = new SaveUserData();
-            thisUser = save.loadUserData(MainActivity2.this);
-        }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //TOOLBAR, NAVDRAWER, and NAVTRAY
+
+        //NAVTRAY
+        billsTab = findViewById(R.id.billsTab);
+        budgetTab = findViewById(R.id.budgetTab);
+        expensesTab = findViewById(R.id.expensesTab);
+
+        billsTab.setBackgroundColor(getResources().getColor(R.color.fingerprint, getTheme()));
+        billsTab.setOnClickListener(v -> {
+
+        });
+        expensesTab.setOnClickListener(v -> {
+            Intent spending = new Intent(MainActivity2.this, Spending.class);
+            startActivity(spending);
+        });
+        budgetTab.setOnClickListener(v -> {
+            if (thisUser.getBudgets().size() > 0) {
+                Intent budget = new Intent(MainActivity2.this, Budget.class);
+                startActivity(budget);
+            } else {
+                Intent createBudget = new Intent(MainActivity2.this, CreateBudget.class);
+                startActivity(createBudget);
+            }
+        });
+        //Toolbar
+        drawerToggle = findViewById(R.id.drawerToggle);
+        settingsButton = findViewById(R.id.settingsButton);
+        payNext = findViewById(R.id.payNext);
+        help = findViewById(R.id.helpMe);
+        addBiller = findViewById(R.id.btnAddBiller);
         ticketCounter = findViewById(R.id.ticketCounter);
+
+        //Navigation Drawer
+        navDrawer = findViewById(R.id.navDrawer);
+        hideNav = findViewById(R.id.hideNavDrawer);
+        navHome = findViewById(R.id.navHome);
+        navViewBillers = findViewById(R.id.navViewBillers);
+        navPaymentHistory = findViewById(R.id.navPaymentHistory);
+        myAchievements = findViewById(R.id.myAchievements);
+        displayUserName = findViewById(R.id.tvName);
+        displayEmail = findViewById(R.id.tvUserName2);
+        myStats = findViewById(R.id.myStats);
+
+        //Hide nav drawer on create
+        navDrawer.setVisibility(View.GONE);
+        navHome.setBackground(AppCompatResources.getDrawable(MainActivity2.this, R.drawable.border_selected));
+
+        //updates int value on support icon notification bubble
         CountTickets countTickets = new CountTickets();
         countTickets.countTickets(ticketCounter);
 
-        CheckTrophies check = new CheckTrophies();
-        check.checkTrophies(MainActivity2.this, trophyContainer);
-        checkTrophies = false;
-
-        ArrayList <Integer> trophies = new ArrayList<>(Arrays.asList(R.drawable.trophy, R.drawable.trophy2, R.drawable.trophy3, R.drawable.trophy4, R.drawable.medal2,
-                R.drawable.medal3, R.drawable.medal4, R.drawable.early_bird_removebg_preview, R.drawable.medal));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(120, 120);
-
-        for (Trophy trophy: thisUser.getTrophies()) {
-
-            ImageView image = new ImageView(MainActivity2.this);
-            image.setImageDrawable(AppCompatResources.getDrawable(MainActivity2.this, trophies.get(trophy.getType() - 1)));
-            image.setLayoutParams(lp);
-            trophyRow.addView(image);
-        }
+        myAchievements.setOnClickListener(v -> {
+            Intent achievements = new Intent(MainActivity2.this, AwardCase.class);
+            startActivity(achievements);
+        });
 
         help.setOnClickListener(view -> {
-            Intent support = new Intent (MainActivity2.this, Support.class);
+            Intent support = new Intent(MainActivity2.this, Support.class);
             support.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             pb.setVisibility(View.VISIBLE);
             startActivity(support);
-        });
-
-        contactUs.setOnClickListener(view -> {
-            Intent support = new Intent (MainActivity2.this, Support.class);
-            support.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            pb.setVisibility(View.VISIBLE);
-            startActivity(support);
-        });
-        trophyRow.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity2.this, AwardCase.class);
-            startActivity(intent);
         });
 
         myStats.setOnClickListener(view -> {
@@ -191,18 +256,7 @@ public class MainActivity2 extends AppCompatActivity {
             startActivity(stats);
         });
 
-        if (thisUser.getAdmin()) {
-            admin.setEnabled(true);
-            admin.setOnClickListener(view -> {
-                Intent admin = new Intent(MainActivity2.this, Administrator.class);
-                startActivity(admin);
-            });
-        }
-        else {
-            admin.setEnabled(false);
-        }
-
-        fab.setOnClickListener(view -> {
+        addBiller.setOnClickListener(view -> {
             pb.setVisibility(View.VISIBLE);
             Intent addBiller = new Intent(mContext, AddBiller.class);
             startActivity(addBiller);
@@ -249,47 +303,18 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        backMonth.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            selectedDate = selectedDate.minusMonths(1);
-            setCurrentMonth(selectedMonth);
-            previousMonth = true;
-            listBills(billsList1);
-            pb.setVisibility(View.GONE);
-        });
-
-        forwardMonth.setOnClickListener(view -> {
-            pb.setVisibility(View.VISIBLE);
-            selectedDate = selectedDate.plusMonths(1);
-            setCurrentMonth(selectedMonth);
-            listBills(billsList1);
-            pb.setVisibility(View.GONE);
-        });
-
-        navDrawer.setVisibility(View.GONE);
-
-        createNotificationChannel();
-        getValues();
-        getCurrentMonth();
-        counter = 0;
-
-        refreshUser();
-        dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-        listBills(billsList1);
-
         payNext.setOnClickListener(view -> {
 
             pb.setVisibility(View.VISIBLE);
             Payments next = new Payments();
             next.setPaymentDate(dateFormatter.currentDateAsInt() + 60);
             boolean found = false;
-            for (Bills bills: thisUser.getBills()) {
-                bills.getPayments().sort(Comparator.comparing(Payments::getPaymentDate));
-                for (Payments payment: bills.getPayments()) {
-                    if (!payment.isPaid() && payment.getPaymentDate() < next.getPaymentDate()) {
-                        next = payment;
-                        found = true;
-                    }
+
+            paymentInfo.getPayments().sort(Comparator.comparing(Payments::getPaymentDate));
+            for (Payments payment : paymentInfo.getPayments()) {
+                if (!payment.isPaid() && payment.getPaymentDate() < next.getPaymentDate()) {
+                    next = payment;
+                    found = true;
                 }
             }
 
@@ -302,8 +327,7 @@ public class MainActivity2 extends AppCompatActivity {
                 pay.putExtra("Payment Id", next.getPaymentId());
                 pay.putExtra("Current Date", dateFormatter.currentDateAsInt());
                 startActivity(pay);
-            }
-            else {
+            } else {
                 pb.setVisibility(View.GONE);
                 androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(mContext);
                 alert.setTitle(getString(R.string.noBillsDue));
@@ -315,38 +339,513 @@ public class MainActivity2 extends AppCompatActivity {
                 builder.show();
             }
         });
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        selectedMonth.setOnClickListener(v -> {
+            MonthYearPickerDialog pd = new MonthYearPickerDialog();
+            pd.show(getSupportFragmentManager(), "MonthYearPickerDialog");
+            pd.setListener((view, year, month, dayOfMonth) -> {
+                pb.setVisibility(View.VISIBLE);
+                selectedDate = selectedDate.withMonth(month).withYear(year);
+                bm.refreshPayments(selectedDate);
+                setCurrentMonth(selectedMonth);
+                previousMonth = true;
+                listBills();
+                setupLineChart();
+                pb.setVisibility(View.GONE);
+            });
+        });
+
+
+        if (thisUser.getAdmin()) {
+            admin.setEnabled(true);
+            admin.setOnClickListener(view -> {
+                Intent admin = new Intent(MainActivity2.this, Administrator.class);
+                startActivity(admin);
+            });
+        } else {
+            admin.setEnabled(false);
+        }
+
+        CheckTrophies check = new CheckTrophies();
+        check.checkTrophies(MainActivity2.this, trophyContainer);
+        checkTrophies = false;
+
+        backMonth.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            selectedDate = selectedDate.minusMonths(1);
+            bm.refreshPayments(selectedDate);
+            setCurrentMonth(selectedMonth);
+            previousMonth = true;
+            listBills();
+            setupLineChart();
+            pb.setVisibility(View.GONE);
+        });
+
+        forwardMonth.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            selectedDate = selectedDate.plusMonths(1);
+            bm.refreshPayments(selectedDate);
+            setCurrentMonth(selectedMonth);
+            listBills();
+            setupLineChart();
+            pb.setVisibility(View.GONE);
+        });
+
+        createNotificationChannel();
+        getValues();
+        getCurrentMonth();
+        counter = 0;
+
+        refreshUser();
+        dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
+        listBills();
+        setupLineChart();
     }
 
-    public static boolean isVisible(final View view) {
+    private void setupLineChart() {
 
-        if (view == null) {
-            return false;
+        lineChart.invalidate();
+
+        max = 0;
+
+        ArrayList<ILineDataSet> iLineDataSets = new ArrayList<>();
+        LineDataSet lineDataSet = new LineDataSet(lineChartDataSet(), getString(R.string.bills));
+        iLineDataSets.add(lineDataSet);
+        lineDataSet.setColor(getResources().getColor(R.color.button, getTheme()));
+        lineDataSet.setDrawCircles(false);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setDrawValues(false);
+
+        if (thisUser.getBudgets() != null && !thisUser.getBudgets().isEmpty()) {
+            LineDataSet lineDataSet1 = new LineDataSet(spendingData(), getString(R.string.spending));
+            iLineDataSets.add(lineDataSet1);
+            lineDataSet1.setLineWidth(2);
+            lineDataSet1.setColor(getResources().getColor(R.color.payBill, getTheme()));
+            lineDataSet1.setDrawCircles(false);
+            lineDataSet1.setDrawValues(false);
+
         }
-        if (!view.isShown()) {
-            return false;
+
+        if (thisUser.getBudgets() != null && !thisUser.getBudgets().isEmpty()) {
+            LineDataSet lineDataSet2 = new LineDataSet(BudgetData(), getString(R.string.budget));
+            iLineDataSets.add(lineDataSet2);
+            lineDataSet2.setLineWidth(2);
+            lineDataSet2.setColor(getResources().getColor(R.color.green, getTheme()));
+            lineDataSet2.setDrawCircles(false);
+            lineDataSet2.setDrawValues(false);
+
         }
-        final Rect actualPosition = new Rect();
-        view.getGlobalVisibleRect(actualPosition);
-        final Rect screen = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
-        return actualPosition.intersects(screen.left, screen.top, screen.right, screen.bottom);
+
+        Legend legend = lineChart.getLegend();
+        legend.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawAxisLine(false);
+        leftAxis.setAxisMinimum(0);
+        if (max != 0) {
+            leftAxis.setAxisMaximum((float) max);
+        }
+        leftAxis.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setDrawAxisLine(false);
+        rightAxis.setAxisMinimum(0);
+        if (max != 0) {
+            rightAxis.setAxisMaximum((float) max);
+        }
+        rightAxis.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+
+        Description description = new Description();
+        description.setEnabled(false);
+        lineChart.setDescription(description);
+
+        LineData lineData = new LineData(iLineDataSets);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setDrawGridLines(false);
+
+        lineChart.setDrawBorders(false);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setDrawMarkers(false);
+        lineChart.setNoDataText(getString(R.string.noDataAvailable));
+
+        LocalDate startDate = selectedDate.minusMonths(3).withDayOfMonth(1);
+        ArrayList<String> months = new ArrayList<>();
+        int counter = 1;
+        while (counter < 8) {
+            months.add(startDate.getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+            startDate = startDate.plusMonths(1).withDayOfMonth(1);
+            ++counter;
+        }
+
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(months));
+        xAxis.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+
+    }
+
+    private ArrayList<Entry> spendingData() {
+
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        double month1 = 0;
+        double month2 = 0;
+        double month3 = 0;
+        double month4 = 0;
+        double month5 = 0;
+        double month6 = 0;
+        double month7 = 0;
+
+        for (Expenses spend : expenseInfo.getExpenses()) {
+            if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(3)
+                    .withDayOfMonth(selectedDate.minusMonths(3).lengthOfMonth()))) {
+                month1 = month1 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(2)
+                    .withDayOfMonth(selectedDate.minusMonths(2).lengthOfMonth()))) {
+                month2 = month2 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(1)
+                    .withDayOfMonth(selectedDate.minusMonths(1).lengthOfMonth()))) {
+                month3 = month3 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()))) {
+                month4 = month4 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(1)
+                    .withDayOfMonth(selectedDate.plusMonths(1).lengthOfMonth()))) {
+                month5 = month5 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(2)
+                    .withDayOfMonth(selectedDate.plusMonths(2).lengthOfMonth()))) {
+                month6 = month6 + spend.getAmount();
+            } else if (spend.getDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(1)) && spend.getDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(3)
+                    .withDayOfMonth(selectedDate.plusMonths(3).lengthOfMonth()))) {
+                month7 = month7 + spend.getAmount();
+            }
+        }
+
+        ArrayList<Double> monthsList = new ArrayList<>(Arrays.asList(month1, month2, month3, month4, month5, month6, month7));
+        if (Collections.max(monthsList) > max) {
+            max = Collections.max(monthsList);
+            max = max + (max * .4);
+        }
+
+        dataSet.add(new Entry(0, (float) month1));
+        dataSet.add(new Entry(1, (float) month2));
+        dataSet.add(new Entry(2, (float) month3));
+        dataSet.add(new Entry(3, (float) month4));
+        dataSet.add(new Entry(4, (float) month5));
+        dataSet.add(new Entry(5, (float) month6));
+        dataSet.add(new Entry(6, (float) month7));
+        return dataSet;
+
+    }
+
+    private ArrayList<Entry> BudgetData() {
+
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        double month1 = 0;
+        double month2 = 0;
+        double month3 = 0;
+        double month4 = 0;
+        double month5 = 0;
+        double month6 = 0;
+        double month7 = 0;
+
+        int totalDays;
+        double pay;
+        double savings;
+
+        for (Budgets budget : thisUser.getBudgets()) {
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(selectedDate.minusMonths(3).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(selectedDate.minusMonths(3).lengthOfMonth()))) {
+                totalDays = selectedDate.minusMonths(3).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(selectedDate.minusMonths(3).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = (disposable * (budget.getAutomotivePercentage() / 100.0)) + (disposable * (budget.getBeautyPercentage() / 100.0)) + (disposable * (budget.getClothingPercentage() / 100.0)) +
+                        (disposable * (budget.getEntertainmentPercentage() / 100.0)) + (disposable * (budget.getGroceriesPercentage() / 100.0)) + (disposable * (budget.getHealthPercentage() / 100.0)) +
+                        (disposable * (budget.getOtherPercentage() / 100.0)) + (disposable * (budget.getRestaurantsPercentage() / 100.0));
+                if (month > month1) {
+                    month1 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(selectedDate.minusMonths(2).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(selectedDate.minusMonths(2).lengthOfMonth()))) {
+                totalDays = selectedDate.minusMonths(2).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(selectedDate.minusMonths(2).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month2) {
+                    month2 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(selectedDate.minusMonths(1).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(selectedDate.minusMonths(1).lengthOfMonth()))) {
+                totalDays = selectedDate.minusMonths(1).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(selectedDate.minusMonths(1).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month3) {
+                    month3 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()))) {
+                totalDays = selectedDate.lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month4) {
+                    month4 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(selectedDate.plusMonths(1).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(selectedDate.plusMonths(1).lengthOfMonth()))) {
+                totalDays = selectedDate.plusMonths(1).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(selectedDate.plusMonths(1).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month5) {
+                    month5 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(selectedDate.plusMonths(2).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(selectedDate.plusMonths(2).lengthOfMonth()))) {
+                totalDays = selectedDate.plusMonths(2).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(selectedDate.plusMonths(2).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month6) {
+                    month6 = month;
+                }
+            }
+            if (budget.getStartDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(selectedDate.plusMonths(3).lengthOfMonth())) &&
+                    budget.getEndDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(selectedDate.plusMonths(3).lengthOfMonth()))) {
+                totalDays = selectedDate.plusMonths(3).lengthOfMonth();
+                double bills = 0;
+                for (Payments payment: paymentInfo.getPayments()) {
+                    if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(1)) &&
+                            payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(selectedDate.plusMonths(3).lengthOfMonth()))) {
+                        bills = bills + Double.parseDouble(fn.makeDouble(String.valueOf(payment.getPaymentAmount())));
+                    }
+                }
+                if (budget.getPayFrequency() == 0) {
+                    pay = budget.getPayAmount() * (totalDays / 7.0);
+                }
+                else if (budget.getPayFrequency() == 1) {
+                    pay = budget.getPayAmount() * (totalDays / 14.0);
+                }
+                else {
+                    pay = budget.getPayAmount();
+                }
+                savings = (budget.getSavingsPercentage() / 100.0) * pay;
+                double disposable = pay - savings - bills;
+                double month = disposable * (budget.getAutomotivePercentage() / 100.0) + disposable * (budget.getBeautyPercentage() / 100.0) + disposable * (budget.getClothingPercentage() / 100.0) + disposable * (budget.getEntertainmentPercentage() / 100.0) +
+                        disposable * (budget.getGroceriesPercentage() / 100.0) + disposable * (budget.getHealthPercentage() / 100.0) + disposable * (budget.getOtherPercentage() / 100.0) + disposable * (budget.getRestaurantsPercentage() / 100.0);
+                if (month > month7) {
+                    month7 = month;
+                }
+            }
+        }
+
+        ArrayList<Double> monthsList = new ArrayList<>(Arrays.asList(month1, month2, month3, month4, month5, month6, month7));
+        if (Collections.max(monthsList) > max) {
+            max = Collections.max(monthsList);
+            max = max + (max * .4);
+        }
+
+        dataSet.add(new Entry(0, (float) month1));
+        dataSet.add(new Entry(1, (float) month2));
+        dataSet.add(new Entry(2, (float) month3));
+        dataSet.add(new Entry(3, (float) month4));
+        dataSet.add(new Entry(4, (float) month5));
+        dataSet.add(new Entry(5, (float) month6));
+        dataSet.add(new Entry(6, (float) month7));
+        return dataSet;
+
+    }
+
+
+    private ArrayList<Entry> lineChartDataSet() {
+        ArrayList<Entry> dataSet = new ArrayList<>();
+        double month1 = 0;
+        double month2 = 0;
+        double month3 = 0;
+        double month4 = 0;
+        double month5 = 0;
+        double month6 = 0;
+        double month7 = 0;
+
+        for (Payments payment : paymentInfo.getPayments()) {
+            if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(3).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(3)
+                    .withDayOfMonth(selectedDate.minusMonths(3).lengthOfMonth()))) {
+                month1 = month1 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(2).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(2)
+                    .withDayOfMonth(selectedDate.minusMonths(2).lengthOfMonth()))) {
+                month2 = month2 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.minusMonths(1).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.minusMonths(1)
+                    .withDayOfMonth(selectedDate.minusMonths(1).lengthOfMonth()))) {
+                month3 = month3 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()))) {
+                month4 = month4 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(1).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(1)
+                    .withDayOfMonth(selectedDate.plusMonths(1).lengthOfMonth()))) {
+                month5 = month5 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(2).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(2)
+                    .withDayOfMonth(selectedDate.plusMonths(2).lengthOfMonth()))) {
+                month6 = month6 + Double.parseDouble(payment.getPaymentAmount());
+            } else if (payment.getPaymentDate() >= dateFormatter.calcDateValue(selectedDate.plusMonths(3).withDayOfMonth(1)) && payment.getPaymentDate() <= dateFormatter.calcDateValue(selectedDate.plusMonths(3)
+                    .withDayOfMonth(selectedDate.plusMonths(3).lengthOfMonth()))) {
+                month7 = month7 + Double.parseDouble(payment.getPaymentAmount());
+            }
+        }
+        ArrayList<Double> monthsList = new ArrayList<>(Arrays.asList(month1, month2, month3, month4, month5, month6, month7));
+        if (Collections.max(monthsList) > max) {
+            max = Collections.max(monthsList);
+            max = max + (max * .4);
+        }
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawAxisLine(false);
+        leftAxis.setAxisMinimum(0);
+        if (max != 0) {
+            leftAxis.setAxisMaximum((float) max);
+        }
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setDrawAxisLine(false);
+        rightAxis.setAxisMinimum(0);
+        if (max != 0) {
+            rightAxis.setAxisMaximum((float) max);
+        }
+
+        dataSet.add(new Entry(0, (float) month1));
+        dataSet.add(new Entry(1, (float) month2));
+        dataSet.add(new Entry(2, (float) month3));
+        dataSet.add(new Entry(3, (float) month4));
+        dataSet.add(new Entry(4, (float) month5));
+        dataSet.add(new Entry(5, (float) month6));
+        dataSet.add(new Entry(6, (float) month7));
+        return dataSet;
     }
 
     public void getValues() {
 
-        String setName = sp.getString("name", "");
-        String setUsername = sp.getString("email", "");
-        displayUserName.setText(setName);
-        displayEmail.setText(setUsername);
-        String firstName;
-        if (name.contains(" ")) {
-            firstName = name.substring(0, name.indexOf(' '));
+        displayUserName.setText(thisUser.getName());
+        displayEmail.setText(thisUser.getUserName());
+        if (thisUser.getName().contains(" ")) {
+            if (thisUser.getName().length() > 2 && thisUser.getName().indexOf(' ') != 0) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s", getString(R.string.good), dateFormatter.currentPhaseOfDay(MainActivity2.this), thisUser.getName().substring(0, 1).toUpperCase(), thisUser.getName().substring(1, thisUser.getName().indexOf(' '))));
+            } else {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.good), dateFormatter.currentPhaseOfDay(MainActivity2.this), thisUser.getName().toUpperCase()));
+            }
         } else {
-            firstName = name;
+            if (thisUser.getName().length() > 1) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s", getString(R.string.good), dateFormatter.currentPhaseOfDay(MainActivity2.this), thisUser.getName().substring(0, 1).toUpperCase(), thisUser.getName().substring(1)));
+            } else {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.good), dateFormatter.currentPhaseOfDay(MainActivity2.this), thisUser.getName().toUpperCase()));
+            }
         }
-        firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
-        admin.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.good), dateFormatter.currentPhaseOfDay(MainActivity2.this), firstName));
 
     }
+
     public void getCurrentMonth() {
 
         if (selectedDate != null) {
@@ -371,10 +870,16 @@ public class MainActivity2 extends AppCompatActivity {
         selectedMonth.setText(dtf.format(selectedDate));
     }
 
-    public void listBills(LinearLayout billsList1) {
+    public void listBills() {
 
-        billsList1.removeAllViews();
-        billsList1.invalidate();
+        todayList.removeAllViews();
+        todayList.invalidate();
+        laterThisWeekList.removeAllViews();
+        laterThisWeekList.invalidate();
+        laterThisMonthList.removeAllViews();
+        laterThisMonthList.invalidate();
+        earlierThisMonthList.removeAllViews();
+        earlierThisMonthList.invalidate();
         billList = thisUser.getBills();
         billsList = findViewById(R.id.billsList1);
         dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
@@ -387,6 +892,7 @@ public class MainActivity2 extends AppCompatActivity {
         admin.animate().translationX(0).setDuration(500);
 
         if (dueThisMonth.size() > 0) {
+            noResults.setVisibility(View.GONE);
             for (Payments due : dueThisMonth) {
                 counter = counter + 1;
                 if (due.isPaid()) {
@@ -394,13 +900,28 @@ public class MainActivity2 extends AppCompatActivity {
                     earlyTotal = earlyTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
                 } else if (due.getPaymentDate() == todayDateValue || !due.isPaid() && due.getPaymentDate() < todayDateValue) {
                     today.add(due);
-                    todayTotal = todayTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    if (due.getPartialPayment() > 0) {
+                        todayTotal = todayTotal + Double.parseDouble(fn.makeDouble(String.valueOf(Double.parseDouble(due.getPaymentAmount()) - due.getPartialPayment())));
+                    }
+                    else {
+                        todayTotal = todayTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    }
                 } else if (due.getPaymentDate() <= sunday + 7) {
                     laterThisWeek.add(due);
-                    laterThisWeekTotal = laterThisWeekTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    if (due.getPartialPayment() > 0) {
+                        laterThisWeekTotal = laterThisWeekTotal + Double.parseDouble(fn.makeDouble(String.valueOf(Double.parseDouble(due.getPaymentAmount()) - due.getPartialPayment())));
+                    }
+                    else {
+                        laterThisWeekTotal = laterThisWeekTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    }
                 } else {
                     later.add(due);
-                    laterTotal = laterTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    if (due.getPartialPayment() > 0) {
+                        laterTotal = laterTotal + Double.parseDouble(fn.makeDouble(String.valueOf(Double.parseDouble(due.getPaymentAmount()) - due.getPartialPayment())));
+                    }
+                    else {
+                        laterTotal = laterTotal + Double.parseDouble(fn.makeDouble(due.getPaymentAmount()));
+                    }
                 }
             }
             earlier.sort(Comparator.comparingInt(Payments::getDatePaid));
@@ -410,18 +931,16 @@ public class MainActivity2 extends AppCompatActivity {
 
             generateBillBoxes();
 
-            TextView divider = new TextView(mContext);
-            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
-            divider.setLayoutParams(layout);
-            divider.setHeight(200);
-            billsList.addView(divider);
             ConstraintLayout header = findViewById(R.id.linearLayout3);
             header.animate().translationX(0).setDuration(500);
             billsList.animate().translationY(0).setDuration(500);
 
         } else {
             noResults.setVisibility(View.VISIBLE);
-            billsList1.addView(noResults);
+            todayList.setVisibility(View.GONE);
+            laterThisWeekList.setVisibility(View.GONE);
+            laterThisMonthList.setVisibility(View.GONE);
+            earlierThisMonthList.setVisibility(View.GONE);
         }
         previousMonth = false;
         dueThisMonth.clear();
@@ -435,287 +954,97 @@ public class MainActivity2 extends AppCompatActivity {
         laterTotal = 0;
     }
 
-    public void generateBillBoxes () {
+    public void generateBillBoxes() {
 
         boolean earlyHeader = false, laterThisWeekHeader = false, todayHeader = false, laterHeader = false;
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(0, 10, 0, 10);
+        todayList.setVisibility(View.VISIBLE);
+        laterThisWeekList.setVisibility(View.VISIBLE);
+        laterThisMonthList.setVisibility(View.VISIBLE);
+        earlierThisMonthList.setVisibility(View.VISIBLE);
 
         for (Payments td : today) {
 
-            View billBox;
-            ImageView check;
-            com.google.android.material.imageview.ShapeableImageView billIconLater;
-            TextView tvDueDate, tvBillerName, tvAmountDue;
-            View billBox1;
-            ImageView check1;
-            com.google.android.material.imageview.ShapeableImageView billIconToday;
-            TextView tvDueDate1, tvBillerName1, tvAmountDue1;
-            View header = View.inflate(MainActivity2.this, R.layout.bill_box_header, null);
-            TextView timeFrame2 = header.findViewById(R.id.timeFrame), totalDue2 = header.findViewById(R.id.totalDue);
-
-            if (!previousMonth) {
-                billBox = View.inflate(MainActivity2.this, R.layout.bill_box_later, null);
-                check = billBox.findViewById(R.id.checkMark); billIconLater = billBox.findViewById(R.id.billIconLater);
-                tvDueDate = billBox.findViewById(R.id.tvDueDate); tvBillerName = billBox.findViewById(R.id.tvBillerName); tvAmountDue = billBox.findViewById(R.id.amountDue);
-                billBox1 = View.inflate(MainActivity2.this, R.layout.bill_box_today, null);
-                check1 = billBox1.findViewById(R.id.checkMark);
-                billIconToday = (billBox1.findViewById(R.id.billIconToday));
-                tvDueDate1 = billBox1.findViewById(R.id.tvDueDate);
-                tvBillerName1 = billBox1.findViewById(R.id.tvBillerName);
-                tvAmountDue1 = billBox1.findViewById(R.id.amountDue);
-            }
-            else {
-                billBox = View.inflate(MainActivity2.this, R.layout.bill_box_later2, null);
-                check = billBox.findViewById(R.id.checkMark1); billIconLater = billBox.findViewById(R.id.billIconLater1);
-                tvDueDate = billBox.findViewById(R.id.tvDueDate1); tvBillerName = billBox.findViewById(R.id.tvBillerName1); tvAmountDue = billBox.findViewById(R.id.amountDue1);
-                billBox1 = View.inflate(MainActivity2.this, R.layout.bill_box_today2, null);
-                check1 = billBox1.findViewById(R.id.checkMark1);
-                billIconToday = (billBox1.findViewById(R.id.billIconToday1));
-                tvDueDate1 = billBox1.findViewById(R.id.tvDueDate1);
-                tvBillerName1 = billBox1.findViewById(R.id.tvBillerName1);
-                tvAmountDue1 = billBox1.findViewById(R.id.amountDue1);
-            }
-
+            todayList.setClipToOutline(true);
             if (!todayHeader) {
-                buildHeader(billsList, timeFrame2, totalDue2, todayTotal, getString(R.string.today));
+                View header = buildHeader(todayTotal, getString(R.string.today));
                 todayHeader = true;
-                billsList.addView(header);
+                todayList.addView(header);
             }
-
-            int daysLate = todayDateValue - td.getPaymentDate();
-            if (!td.isPaid() && daysLate > 0) {
-
-                billBox.setBackgroundResource(R.drawable.border_styles_red);
-                if (daysLate == 1) {
-                    tvDueDate.setText(R.string.dueYesterday);
-                } else {
-                    tvDueDate.setText(String.format(Locale.getDefault(), "%s %d %s", getString(R.string.due), daysLate, getString(R.string.daysAgo)));
-                }
-                check.setVisibility(View.VISIBLE);
-                billBoxValues(tvBillerName, td, tvAmountDue, billsList, billBox, billIconLater);
-                billBox.setElevation(15);
-                billBox.setLayoutParams(lp);
-                swipeViewListener(billBox, td, "bill_box_later");
-                billBox.setOnClickListener(view -> {
-                    pb.setVisibility(View.VISIBLE);
-                    startPay(tvDueDate, tvBillerName, tvAmountDue, td, todayDateValue);
-                });
-
-            }
-            else {
-                billBox1.setBackgroundResource(R.drawable.border_styles_yellow);
-                tvDueDate1.setText(R.string.dueToday);
-                check1.setVisibility(View.VISIBLE);
-                billBoxValues(tvBillerName1, td, tvAmountDue1, billsList, billBox1, billIconToday);
-                billBox1.setLayoutParams(lp);
-                billBox1.setElevation(15);
-                swipeViewListener(billBox1, td, "bill_box_today");
-                billBox1.setOnClickListener(view -> {
-                    pb.setVisibility(View.VISIBLE);
-                    startPay(tvDueDate1, tvBillerName1, tvAmountDue1, td, todayDateValue);
-                });
-            }
+            billBoxValues("Today", td);
         }
         for (Payments late : laterThisWeek) {
 
-            View billBox2;
-            TextView tvDueDate2, tvBillerName2, tvAmountDue2;
-            ImageView check2;
-            com.google.android.material.imageview.ShapeableImageView billIcon;
-            if (!previousMonth) {
-                billBox2 = View.inflate(MainActivity2.this, R.layout.bill_box, null);
-                tvDueDate2 = billBox2.findViewById(R.id.tvDueDate); tvBillerName2 = billBox2.findViewById(R.id.tvBillerName); tvAmountDue2 = billBox2.findViewById(R.id.amountDue);
-                check2 = billBox2.findViewById(R.id.checkMark); billIcon = billBox2.findViewById(R.id.billIcon);
-            }
-            else {
-                billBox2 = View.inflate(MainActivity2.this, R.layout.bill_box2, null);
-                tvDueDate2 = billBox2.findViewById(R.id.tvDueDate1); tvBillerName2 = billBox2.findViewById(R.id.tvBillerName1); tvAmountDue2 = billBox2.findViewById(R.id.amountDue1);
-                check2 = billBox2.findViewById(R.id.checkMark1); billIcon = billBox2.findViewById(R.id.billIcon1);
-            }
-
-            View header10 = View.inflate(MainActivity2.this, R.layout.bill_box_header, null);
-            TextView timeFrame11 = header10.findViewById(R.id.timeFrame), totalDue11 = header10.findViewById(R.id.totalDue);
-
-            swipeViewListener(billBox2, late, "bill_box");
-
+            laterThisWeekList.setClipToOutline(true);
             if (!laterThisWeekHeader) {
-                buildHeader(billsList, timeFrame11, totalDue11, laterThisWeekTotal, getString(R.string.laterThisWeek));
+                View header = buildHeader(laterThisWeekTotal, getString(R.string.laterThisWeek));
                 laterThisWeekHeader = true;
-                billsList.addView(header10);
+                laterThisWeekList.addView(header);
             }
-            billBox2.setBackgroundResource(R.drawable.border_styles_white);
-            if (late.getPaymentDate() - todayDateValue == 1) {
-                tvDueDate2.setText(R.string.dueTomorrow);
-            } else if (late.getPaymentDate() - sunday >= 1 && late.getPaymentDate() - sunday <= 7) {
-                LocalDate local = dateFormatter.convertIntDateToLocalDate(late.getPaymentDate());
-                tvDueDate2.setText(String.format("%s %s", getString(R.string.due), local.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())));
-            } else {
-                tvDueDate2.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.due), dateFormatter.convertIntDateToString(late.getPaymentDate())));
-            }
-            check2.setVisibility(View.INVISIBLE);
-            billBoxValues(tvBillerName2, late, tvAmountDue2, billsList, billBox2, billIcon);
-            billBox2.setLayoutParams(lp);
-            billBox2.setElevation(15);
-            billBox2.setOnClickListener(view -> {
-                pb.setVisibility(View.VISIBLE);
-                startPay(tvDueDate2, tvBillerName2, tvAmountDue2, late, todayDateValue);
-            });
+            billBoxValues("LaterThisWeek", late);
         }
         for (Payments late : later) {
 
-            View billBox3;
-            TextView tvDueDate3, tvBillerName3, tvAmountDue3;
-            ImageView check3;
-            com.google.android.material.imageview.ShapeableImageView billIcon;
-            if (!previousMonth) {
-                billBox3 = View.inflate(MainActivity2.this, R.layout.bill_box, null);
-                tvDueDate3 = billBox3.findViewById(R.id.tvDueDate); tvBillerName3 = billBox3.findViewById(R.id.tvBillerName); tvAmountDue3 = billBox3.findViewById(R.id.amountDue);
-                check3 = billBox3.findViewById(R.id.checkMark); billIcon = billBox3.findViewById(R.id.billIcon);
-            }
-            else {
-                billBox3 = View.inflate(MainActivity2.this, R.layout.bill_box2, null);
-                tvDueDate3 = billBox3.findViewById(R.id.tvDueDate1); tvBillerName3 = billBox3.findViewById(R.id.tvBillerName1); tvAmountDue3 = billBox3.findViewById(R.id.amountDue1);
-                check3 = billBox3.findViewById(R.id.checkMark1); billIcon = billBox3.findViewById(R.id.billIcon1);
-            }
-            View header4 = View.inflate(MainActivity2.this, R.layout.bill_box_header, null);
-            TextView timeFrame3 = header4.findViewById(R.id.timeFrame), totalDue3 = header4.findViewById(R.id.totalDue);
-
-            swipeViewListener(billBox3, late, "bill_box");
-
+            laterThisMonthList.setClipToOutline(true);
             if (!laterHeader) {
-                buildHeader(billsList, timeFrame3, totalDue3, laterTotal, getString(R.string.laterThisMonth));
+                View header = buildHeader(laterTotal, getString(R.string.laterThisMonth));
                 laterHeader = true;
-                billsList.addView(header4);
+                laterThisMonthList.addView(header);
             }
-            billBox3.setBackgroundResource(R.drawable.border_styles_white);
-            if (late.getPaymentDate() - todayDateValue == 1) {
-                tvDueDate3.setText(R.string.dueTomorrow);
-            } else if (late.getPaymentDate() - todayDateValue > 1 && late.getPaymentDate() - todayDateValue < 8) {
-                String days = String.valueOf(late.getPaymentDate() - todayDateValue);
-                tvDueDate3.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.dueIn), days, getString(R.string.days)));
-            } else {
-                tvDueDate3.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.due), dateFormatter.convertIntDateToString(late.getPaymentDate())));
-            }
-
-            check3.setVisibility(View.INVISIBLE);
-            billBoxValues(tvBillerName3, late, tvAmountDue3, billsList, billBox3, billIcon);
-            billBox3.setLayoutParams(lp);
-            billBox3.setElevation(15);
-            billBox3.setOnClickListener(view -> {
-                pb.setVisibility(View.VISIBLE);
-                startPay(tvDueDate3, tvBillerName3, tvAmountDue3, late, todayDateValue);
-            });
+            billBoxValues("LaterThisMonth", late);
         }
 
         for (Payments early : earlier) {
 
-            View billBox4;
-            TextView tvDueDate4, tvBillerName4, tvAmountDue4;
-            com.google.android.material.imageview.ShapeableImageView billIcon;
-            if (!previousMonth) {
-                billBox4 = View.inflate(MainActivity2.this, R.layout.bill_box, null);
-                tvDueDate4 = billBox4.findViewById(R.id.tvDueDate); tvBillerName4 = billBox4.findViewById(R.id.tvBillerName); tvAmountDue4 = billBox4.findViewById(R.id.amountDue);
-                billIcon = billBox4.findViewById(R.id.billIcon);
-            }
-            else {
-                billBox4 = View.inflate(MainActivity2.this, R.layout.bill_box2, null);
-                tvDueDate4 = billBox4.findViewById(R.id.tvDueDate1); tvBillerName4 = billBox4.findViewById(R.id.tvBillerName1); tvAmountDue4 = billBox4.findViewById(R.id.amountDue1);
-                billIcon = billBox4.findViewById(R.id.billIcon1);
-            }
-
-            View header2 = View.inflate(MainActivity2.this, R.layout.bill_box_header, null);
-            TextView timeFrame1 = header2.findViewById(R.id.timeFrame), totalDue1 = header2.findViewById(R.id.totalDue);
-
-            swipeViewListener(billBox4, early, "bill_box");
-
+            earlierThisMonthList.setClipToOutline(true);
             if (earlier.size() > 0 && !earlyHeader) {
-                buildHeader(billsList, timeFrame1, totalDue1, earlyTotal, getString(R.string.earlierThisMonth));
+                View header = buildHeader(earlyTotal, getString(R.string.earlierThisMonth));
                 earlyHeader = true;
-                billsList.addView(header2);
+                earlierThisMonthList.addView(header);
             }
-            billBox4.setBackgroundResource(R.drawable.border_styles_green);
-            tvDueDate4.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.paid), dateFormatter.convertIntDateToString(early.getDatePaid())));
-            billBoxValues(tvBillerName4, early, tvAmountDue4, billsList, billBox4, billIcon);
-            billBox4.setLayoutParams(lp);
-            billBox4.setElevation(10);
-            billBox4.setOnClickListener(view -> {
-                pb.setVisibility(View.VISIBLE);
-                startPay(tvDueDate4, tvBillerName4, tvAmountDue4, early, todayDateValue);
-            });
+            billBoxValues("EarlierThisMonth", early);
+        }
+        if (!todayHeader) {
+            todayList.setVisibility(View.GONE);
+        }
+        if (!laterThisWeekHeader) {
+            laterThisWeekList.setVisibility(View.GONE);
+        }
+        if (!laterHeader) {
+            laterThisMonthList.setVisibility(View.GONE);
+        }
+        if (!earlyHeader) {
+            earlierThisMonthList.setVisibility(View.GONE);
         }
     }
 
-    private void swipeViewListener (View view, Payments payment, String type) {
+    public void swipeViewListener(View view, Payments payment) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         view.setClipToOutline(true);
         boolean paid = false;
+        String billerName = payment.getBillerName();
         SwipeActionView swipeView;
         TextView paidBox;
-        if (type.equals("bill_box")) {
-            if (!previousMonth) {
-                swipeView = view.findViewById(R.id.paidSwipeView);
-                paidBox = view.findViewById(R.id.markAsPaidBox);
-            }
-            else {
-                swipeView = view.findViewById(R.id.paidSwipeView1);
-                paidBox = view.findViewById(R.id.markAsPaidBox1);
-            }
-            if (payment.isPaid()) {
-                paid = true;
-                paidBox.setText(R.string.unmarkAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
-            }
-            else {
-                paidBox.setText(R.string.markAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.payBill, getTheme()));
-            }
+        if (!previousMonth) {
+            swipeView = view.findViewById(R.id.paidSwipeView);
+        } else {
+            swipeView = view.findViewById(R.id.paidSwipeView1);
         }
-        else if (type.equals("bill_box_later")) {
-            if (!previousMonth) {
-                swipeView = view.findViewById(R.id.billBox42);
-                paidBox = view.findViewById(R.id.markAsPaidBoxLater);
-            }
-            else {
-                swipeView = view.findViewById(R.id.billBox421);
-                paidBox = view.findViewById(R.id.markAsPaidBoxLater1);
-            }
-            if (payment.isPaid()) {
-                paid = true;
-                paidBox.setText(R.string.unmarkAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
-            }
-            else {
-                paidBox.setText(R.string.markAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.payBill, getTheme()));
-            }
-        }
-        else {
-            if (!previousMonth) {
-                swipeView = view.findViewById(R.id.billBox41);
-                paidBox = view.findViewById(R.id.markAsPaidBoxToday);
-            }
-            else {
-                swipeView = view.findViewById(R.id.billBox411);
-                paidBox = view.findViewById(R.id.markAsPaidBoxToday1);
-            }
-            if (payment.isPaid()) {
-                paid = true;
-                paidBox.setText(R.string.unmarkAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
-            }
-            else {
-                paidBox.setText(R.string.markAsPaid);
-                paidBox.setBackgroundColor(getResources().getColor(R.color.payBill, getTheme()));
-            }
+        paidBox = view.findViewById(R.id.markAsPaidBox);
+        if (payment.isPaid()) {
+            paid = true;
+            paidBox.setText(R.string.unmarkAsPaid);
+            paidBox.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
+        } else {
+            paidBox.setText(R.string.markAsPaid);
+            paidBox.setBackgroundColor(getResources().getColor(R.color.payBill, getTheme()));
         }
 
         boolean finalPaid = paid;
         swipeView.setSwipeGestureListener(new SwipeGestureListener() {
             @Override
             public boolean onSwipedLeft(@NonNull SwipeActionView swipeActionView) {
-                for (Bills bill : billList) {
+                for (Bill bill : billList) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         Intent history = new Intent(MainActivity2.this, PaymentHistory.class);
                         history.putExtra("User Id", thisUser.getid());
@@ -729,108 +1058,105 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public boolean onSwipedRight(@NonNull SwipeActionView swipeActionView) {
                 if (!finalPaid) {
-                    for (Bills bill: thisUser.getBills()) {
-                        for (Payments payments: bill.getPayments()) {
-                            if (payments.getPaymentId() == payment.getPaymentId()) {
-                                payments.setPaid(true);
-                                payments.setDatePaid(dateFormatter.currentDateAsInt());
-                                bill.setDateLastPaid(dateFormatter.currentDateAsInt());
-                                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                                nm.cancel(payment.getPaymentId());
-                                nm.cancel(payment.getPaymentId() + 1);
-                                nm.cancel(payment.getPaymentId() + 11);
-                            }
-                        }
-                    }
-                    dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-                    listBills(billsList1);
-                    popupMessage.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.paymentFor), payment.getBillerName(), getString(R.string.markedAsPaid)));
-                    paymentConfirm.setVisibility(View.VISIBLE);
-                    paymentConfirm.postDelayed(() -> {
-                        paymentConfirm.setVisibility(View.GONE);
-                        db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                        if (thisUser != null) {
-                            SaveUserData save = new SaveUserData();
-                            save.saveUserData(MainActivity2.this, thisUser);
-                        }
-                    }, 5000);
-                    paymentConfirm.setOnClickListener(view12 -> {
-                        for (Bills bill: thisUser.getBills()) {
-                            for (Payments payments: bill.getPayments()) {
-                                if (payments.getPaymentId() == payment.getPaymentId()) {
-                                    payments.setPaid(false);
-                                    payments.setDatePaid(0);
-                                    int highest = 0;
-                                    for (Payments pay: bill.getPayments()) {
-                                        if (pay.isPaid() && pay.getDatePaid() > highest) {
-                                            highest = pay.getDatePaid();
-                                        }
-                                    }
-                                    bill.setDateLastPaid(highest);
-                                    db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                                    if (thisUser != null) {
-                                        SaveUserData save = new SaveUserData();
-                                        save.saveUserData(MainActivity2.this, thisUser);
-                                    }
-                                }
-                            }
-                        }
-                        dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-                        listBills(billsList1);
-                        paymentConfirm.setVisibility(View.GONE);
-                    });
-                }
-                else {
-                    int datePaid = payment.getDatePaid();
-                    for (Bills bill: thisUser.getBills()) {
-                        for (Payments payments: bill.getPayments()) {
-                            if (payments.getPaymentId() == payment.getPaymentId()) {
-                                payments.setPaid(false);
-                                payments.setDatePaid(0);
-                                int highest = 0;
-                                for (Payments pay: bill.getPayments()) {
-                                    if (pay.isPaid() && pay.getDatePaid() > highest) {
-                                        highest = pay.getDatePaid();
-                                    }
-                                }
-                                bill.setDateLastPaid(highest);
-                            }
-                        }
-                    }
-                    dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-                    listBills(billsList1);
-                    popupMessage.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.paymentFor), payment.getBillerName(), getString(R.string.unmarkedAsPaid)));
-                    paymentConfirm.setVisibility(View.VISIBLE);
-                    paymentConfirm.postDelayed(() -> {
-                        paymentConfirm.setVisibility(View.GONE);
-                        db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                        if (thisUser != null) {
-                            SaveUserData save = new SaveUserData();
-                            save.saveUserData(MainActivity2.this, thisUser);
-                        }
-                    }, 5000);
-                    paymentConfirm.setOnClickListener(view1 -> {
-                        for (Bills bill: thisUser.getBills()) {
-                            for (Payments payments: bill.getPayments()) {
-                                if (payments.getPaymentId() == payment.getPaymentId()) {
-                                    payments.setPaid(true);
-                                    payments.setDatePaid(datePaid);
-                                    bill.setDateLastPaid(datePaid);
-                                    FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+
+                    payment.setPaid(true);
+                    payment.setDatePaid(dateFormatter.currentDateAsInt());
+                            for (Bill bill : thisUser.getBills()) {
+                                if (bill.getBillerName().equals(payment.getBillerName())) {
+                                    bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) - 1));
+                                    bill.setDateLastPaid(dateFormatter.currentDateAsInt());
                                     NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                     nm.cancel(payment.getPaymentId());
                                     nm.cancel(payment.getPaymentId() + 1);
                                     nm.cancel(payment.getPaymentId() + 11);
-                                    db1.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                                    if (thisUser != null) {
-                                        SaveUserData save = new SaveUserData();
-                                        save.saveUserData(MainActivity2.this, thisUser);
-                                    }
                                 }
                             }
-                        }
+                    db.collection("payments").document(uid).set(paymentInfo, SetOptions.merge());
+                    bm.savePayments();
+                    if (thisUser != null) {
+                        SaveUserData save = new SaveUserData();
+                        save.saveUserData(MainActivity2.this);
+                    }
+                    dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
+                    listBills();
+                    popupMessage.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.paymentFor), payment.getBillerName(), getString(R.string.markedAsPaid)));
+                    paymentConfirm.setVisibility(View.VISIBLE);
+                    paymentConfirm.postDelayed(() -> {
+                        paymentConfirm.setVisibility(View.GONE);
+                    }, 5000);
+                    paymentConfirm.setOnClickListener(view12 -> {
+
+                        payment.setPaid(false);
+                        payment.setDatePaid(0);
+                                for (Bill bill : thisUser.getBills()) {
+                                    if (bill.getBillerName().equals(billerName)) {
+                                        bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) + 1));
+                                        scheduleNotifications(payment);
+                                        int highest = 0;
+                                        for (Payments pay : paymentInfo.getPayments()) {
+                                            if (pay.getBillerName().equals(billerName) && pay.isPaid() && pay.getDatePaid() > highest) {
+                                                highest = pay.getDatePaid();
+                                            }
+                                        }
+                                        bill.setDateLastPaid(highest);
+                                    }
+                                }
                         dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-                        listBills(billsList1);
+                        listBills();
+                        paymentConfirm.setVisibility(View.GONE);
+                    });
+
+                } else {
+                    int datePaid = payment.getDatePaid();
+                    payment.setPaid(false);
+                    payment.setDatePaid(0);
+                            for (Bill bill : thisUser.getBills()) {
+                                if (bill.getBillerName().equals(payment.getBillerName())) {
+                                    bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) + 1));
+                                    scheduleNotifications(payment);
+                                    int highest = 0;
+                                    for (Payments pay : paymentInfo.getPayments()) {
+                                        if (pay.getBillerName().equals(payment.getBillerName()) && pay.isPaid() && pay.getDatePaid() > highest) {
+                                            highest = pay.getDatePaid();
+                                        }
+                                    }
+                                    bill.setDateLastPaid(highest);
+                                }
+                            }
+                    db.collection("payments").document(uid).set(paymentInfo, SetOptions.merge());
+                    bm.savePayments();
+                    if (thisUser != null) {
+                        SaveUserData save = new SaveUserData();
+                        save.saveUserData(MainActivity2.this);
+                    }
+                    dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
+                    listBills();
+                    popupMessage.setText(String.format(Locale.getDefault(), "%s %s %s", getString(R.string.paymentFor), payment.getBillerName(), getString(R.string.unmarkedAsPaid)));
+                    paymentConfirm.setVisibility(View.VISIBLE);
+                    paymentConfirm.postDelayed(() -> {
+                        paymentConfirm.setVisibility(View.GONE);
+                    }, 5000);
+                    paymentConfirm.setOnClickListener(view1 -> {
+                        payment.setPaid(true);
+                        payment.setDatePaid(datePaid);
+                                for (Bill bill : thisUser.getBills()) {
+                                    if (bill.getBillerName().equals(billerName)) {
+                                        bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) - 1));
+                                        bill.setDateLastPaid(datePaid);
+                                        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                        nm.cancel(payment.getPaymentId());
+                                        nm.cancel(payment.getPaymentId() + 1);
+                                        nm.cancel(payment.getPaymentId() + 11);
+                                        db.collection("payments").document(uid).set(paymentInfo, SetOptions.merge());
+                                        bm.savePayments();
+                                        if (thisUser != null) {
+                                            SaveUserData save = new SaveUserData();
+                                            save.saveUserData(MainActivity2.this);
+                                        }
+                                    }
+                                }
+                        dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
+                        listBills();
                         paymentConfirm.setVisibility(View.GONE);
                     });
                 }
@@ -849,35 +1175,242 @@ public class MainActivity2 extends AppCompatActivity {
         });
     }
 
-    private void buildHeader(LinearLayout billsList, TextView timeFrame2, TextView totalDue2, double todayTotal, String timePeriod) {
+    private View buildHeader(double todayTotal, String timePeriod) {
 
-        TextView divider = new TextView(mContext);
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
-        divider.setLayoutParams(layout);
-        divider.setHeight(40);
-        billsList.addView(divider);
-        timeFrame2.setText(timePeriod);
-        timeFrame2.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
-        totalDue2.setText(fn.addSymbol(String.valueOf(todayTotal)));
-        totalDue2.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+        View header = View.inflate(MainActivity2.this, R.layout.bill_box_header, null);
+        TextView timeFrame = header.findViewById(R.id.timeFrame), totalDue = header.findViewById(R.id.totalDue);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 100, 0, 100);
+        timeFrame.setText(timePeriod);
+        timeFrame.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+        totalDue.setText(fn.addSymbol(String.valueOf(todayTotal)));
+        totalDue.setTextColor(getResources().getColor(R.color.blackAndWhite, getTheme()));
+        header.setLayoutParams(lp);
+        return header;
     }
 
-    private void billBoxValues(TextView billerName, Payments payment, TextView amountDue, LinearLayout billsList, View billBox, com.google.android.material.imageview.ShapeableImageView icon) {
+    private void billBoxValues(String type, Payments payment) {
 
-        for (Bills bill: thisUser.getBills()) {
+        View billBox;
+        ShapeableImageView icon;
+        ImageView arrow;
+        Bill bil = new Bill();
+        TextView billerName, amountDue, dueDate, finalPayment, viewDetailsLabel, payMade, totalPaid, payRemain, amountRemain, estRate, escAmount, estBalance, partPaymentMade, estInterestPaid;
+        LinearLayout status, billBoxSelect, viewDetails, detailedView, payRemainLayout, amountRemainLayout, estRateLayout, escAmountLayout, estBalanceLayout, partPaymentLayout, estInterestPaidLayout;
+
+        if (!previousMonth) {
+            billBox = View.inflate(MainActivity2.this, R.layout.bill_box, null);
+        } else {
+            billBox = View.inflate(MainActivity2.this, R.layout.bill_box2, null);
+        }
+        icon = billBox.findViewById(R.id.billIcon);
+        billerName = billBox.findViewById(R.id.tvBillerName);
+        amountDue = billBox.findViewById(R.id.amountDue);
+        dueDate = billBox.findViewById(R.id.tvDueDate);
+        status = billBox.findViewById(R.id.status);
+        billBoxSelect = billBox.findViewById(R.id.billBoxSelect);
+        estRateLayout = billBox.findViewById(R.id.estRateLayout);
+        escAmountLayout = billBox.findViewById(R.id.escAmountLayout);
+        estBalanceLayout = billBox.findViewById(R.id.estBalanceLayout);
+        estInterestPaidLayout = billBox.findViewById(R.id.estInterestPaidLayout);
+        payMade = billBox.findViewById(R.id.payMade);
+        totalPaid = billBox.findViewById(R.id.totalPaid);
+        payRemain = billBox.findViewById(R.id.payRemain);
+        amountRemain = billBox.findViewById(R.id.amountRemain);
+        payRemainLayout = billBox.findViewById(R.id.payRemainLayout);
+        amountRemainLayout = billBox.findViewById(R.id.amountRemainLayout);
+        partPaymentLayout = billBox.findViewById(R.id.partPaymentLayout);
+        partPaymentMade = billBox.findViewById(R.id.partPaymentMade);
+        estRate = billBox.findViewById(R.id.estRate);
+        escAmount = billBox.findViewById(R.id.escAmount);
+        estBalance = billBox.findViewById(R.id.estBalance);
+        estInterestPaid = billBox.findViewById(R.id.estInterestPaid);
+        viewDetails = billBox.findViewById(R.id.btnViewDetails);
+        detailedView = billBox.findViewById(R.id.detailedView);
+        arrow = billBox.findViewById(R.id.arrowViewDetails);
+        viewDetailsLabel = billBox.findViewById(R.id.viewDetailsLabel);
+        final boolean[] showing = {false};
+        finalPayment = billBox.findViewById(R.id.finalPayment);
+        int finalPay = 0;
+        double partPayment = 0;
+        int paymentsMadeCounter = 0;
+        double totalPaidCounter = 0.0;
+        int paymentRemaining = 0;
+        double amountRemaining = 0.0;
+        double interestPaid = 0;
+        double rate = 0;
+        double escrow = 0;
+        double balance = 0;
+
+        for (Bill bill : thisUser.getBills()) {
             if (bill.getBillerName().equals(payment.getBillerName())) {
+                bil = bill;
+                if (!bill.getPaymentsRemaining().equals("1000")) {
+                    for (Payments pay : paymentInfo.getPayments()) {
+                        if (pay.getBillerName().equals(bill.getBillerName()) && pay.getPaymentDate() > finalPay && !pay.isPaid()) {
+                            finalPay = pay.getPaymentDate();
+                        }
+                    }
+                }
                 LoadIcon loadIcon = new LoadIcon();
                 loadIcon.loadIcon(MainActivity2.this, icon, bill.getCategory(), bill.getIcon());
                 break;
             }
         }
+
+        if (bil.getPaymentsRemaining() != null) {
+            if (Integer.parseInt(bil.getPaymentsRemaining()) < 400) {
+                paymentRemaining = Integer.parseInt(bil.getPaymentsRemaining());
+                amountRemaining = Double.parseDouble(bil.getAmountDue()) * paymentRemaining;
+                if (bil.getBalance() > 0) {
+                    balance = cb.calculateNewBalance(bil, paymentInfo.getPayments());
+                    rate = cb.calculateRate(bil);
+                    interestPaid = cb.interestPaid(bil, paymentInfo.getPayments());
+                }
+                if (bil.getEscrow() > 0) {
+                    escrow = bil.getEscrow();
+                }
+            }
+        }
+        for (Payments pay : paymentInfo.getPayments()) {
+            if (pay.isPaid() && pay.getBillerName().equals(bil.getBillerName())) {
+                paymentsMadeCounter = paymentsMadeCounter + 1;
+                totalPaidCounter = totalPaidCounter + Double.parseDouble(pay.getPaymentAmount());
+            }
+            else if (pay.getPartialPayment() > 0 && pay.getBillerName().equals(bil.getBillerName())) {
+                partPayment = pay.getPartialPayment();
+                totalPaidCounter = totalPaidCounter + partPayment;
+            }
+        }
+
+        int finalPaymentsMadeCounter = paymentsMadeCounter;
+        double finalTotalPaidCounter = totalPaidCounter;
+        int finalPaymentRemaining = paymentRemaining;
+        double finalAmountRemaining = amountRemaining;
+        double finalRate = rate;
+        double finalEscrow = escrow;
+        double finalBalance = balance;
+        double finalInterestPaid = interestPaid;
+        double finalPartPayment = partPayment;
+        viewDetails.setOnClickListener(v -> {
+            if (!showing[0]) {
+                showing[0] = true;
+                arrow.animate().rotation(-180);
+                detailedView.setVisibility(View.VISIBLE);
+                viewDetailsLabel.setText(getString(R.string.hide_details));
+                payMade.setText(String.valueOf(finalPaymentsMadeCounter));
+                totalPaid.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalTotalPaidCounter))));
+                if (finalPaymentRemaining > 0) {
+                    payRemainLayout.setVisibility(View.VISIBLE);
+                    payRemain.setText(String.valueOf(finalPaymentRemaining));
+                }
+                if (finalAmountRemaining > 0) {
+                    amountRemainLayout.setVisibility(View.VISIBLE);
+                    amountRemain.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalAmountRemaining))));
+                }
+                if (finalRate > 0) {
+                    estRateLayout.setVisibility(View.VISIBLE);
+                    estRate.setText(String.format(Locale.getDefault(), "%s%%", fn.makeDouble(String.valueOf(finalRate))));
+                }
+                if (finalEscrow > 0) {
+                    escAmountLayout.setVisibility(View.VISIBLE);
+                    escAmount.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalEscrow))));
+                }
+                if (finalBalance > 0) {
+                    estBalanceLayout.setVisibility(View.VISIBLE);
+                    estBalance.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalBalance))));
+                }
+                if (finalPartPayment > 0) {
+                    partPaymentLayout.setVisibility(View.VISIBLE);
+                    partPaymentMade.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalPartPayment))));
+                }
+                if (finalInterestPaid > 0) {
+                    estInterestPaidLayout.setVisibility(View.VISIBLE);
+                    estInterestPaid.setText(fn.addSymbol(fn.makeDouble(String.valueOf(finalInterestPaid))));
+                }
+            }
+            else {
+                showing[0] = false;
+                arrow.animate().rotation(0);
+                detailedView.setVisibility(View.GONE);
+                viewDetailsLabel.setText(getString(R.string.view_details));
+            }
+        });
+
+        int paidPayments = 0;
+        for (Payments pay: paymentInfo.getPayments()) {
+            if (pay.isPaid() && pay.getBillerName().equals(payment.getBillerName())) {
+                paidPayments = paidPayments + 1;
+            }
+        }
+        for (Bill bill: thisUser.getBills()) {
+            if (bill.getBillerName().equals(payment.getBillerName()) && (payment.getPaymentNumber() - paidPayments) == Integer.parseInt(bill.getPaymentsRemaining())) {
+                finalPayment.setVisibility(View.VISIBLE);
+            }
+        }
         billerName.setText(payment.getBillerName());
-        amountDue.setText(fn.addSymbol(payment.getPaymentAmount()));
-        billBox.setDuplicateParentStateEnabled(true);
-        billsList.addView(billBox);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3);
         TextView divider = new TextView(mContext);
-        divider.setHeight(10);
-        billsList.addView(divider);
+        divider.setLayoutParams(lp);
+        divider.setBackgroundColor(getResources().getColor(R.color.buttonStroke, getTheme()));
+        amountDue.setText(fn.addSymbol(String.valueOf(Double.parseDouble(payment.getPaymentAmount()) - payment.getPartialPayment())));
+        LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        billBox.setLayoutParams(lp1);
+        View onTime = View.inflate(MainActivity2.this, R.layout.on_time, null);
+        switch (type) {
+            case "Today":
+                int daysLate = todayDateValue - payment.getPaymentDate();
+                if (!payment.isPaid() && daysLate > 0) {
+
+                    status.removeAllViews();
+                    View late = View.inflate(MainActivity2.this, R.layout.late, null);
+                    status.addView(late);
+
+                    if (daysLate == 1) {
+                        dueDate.setText(R.string.dueYesterday);
+                    } else {
+                        dueDate.setText(String.format(Locale.getDefault(), "%s %d %s", getString(R.string.due), daysLate, getString(R.string.daysAgo)));
+                    }
+                    billBox.setElevation(15);
+                } else {
+                    dueDate.setText(R.string.dueToday);
+                    billBox.setElevation(15);
+                }
+                todayList.addView(divider);
+                todayList.addView(billBox);
+                break;
+            case "LaterThisWeek":
+                if (payment.getPaymentDate() - todayDateValue == 1) {
+                    dueDate.setText(R.string.dueTomorrow);
+                } else if (payment.getPaymentDate() - sunday >= 1 && payment.getPaymentDate() - sunday <= 7) {
+                    LocalDate local = dateFormatter.convertIntDateToLocalDate(payment.getPaymentDate());
+                    dueDate.setText(String.format("%s %s", getString(R.string.due), local.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())));
+                } else {
+                    dueDate.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.due), dateFormatter.convertIntDateToString(payment.getPaymentDate())));
+                }
+                laterThisWeekList.addView(divider);
+                laterThisWeekList.addView(billBox);
+                break;
+            case "LaterThisMonth":
+                dueDate.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.due), dateFormatter.convertIntDateToString(payment.getPaymentDate())));
+                laterThisMonthList.addView(divider);
+                laterThisMonthList.addView(billBox);
+                break;
+            default:
+                dueDate.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.paid), dateFormatter.convertIntDateToString(payment.getDatePaid())));
+                status.removeAllViews();
+                status.addView(onTime);
+                earlierThisMonthList.addView(divider);
+                earlierThisMonthList.addView(billBox);
+                break;
+        }
+        swipeViewListener(billBox, payment);
+        billBoxSelect.setOnClickListener(view -> {
+            pb.setVisibility(View.VISIBLE);
+            if (billerName.getText() != null) {
+                startPay(dueDate, billerName, amountDue, payment, todayDateValue);
+            }
+        });
         billBox.animate().translationX(0).setDuration(500);
     }
 
@@ -899,33 +1432,32 @@ public class MainActivity2 extends AppCompatActivity {
         TextView tvTotal = findViewById(R.id.tvTotal), tvRemaining = findViewById(R.id.tvRemaining);
         int todaysDate = dateFormatter.currentDateAsInt();
         double total = 0, remaining = 0;
-        LocalDate todayLocalDate = dateFormatter.convertIntDateToLocalDate(dateFormatter.currentDateAsInt());
-        int currentMonthEnd = dateFormatter.calcDateValue(todayLocalDate.withDayOfMonth(todayLocalDate.getMonth().length(todayLocalDate.isLeapYear())));
+        LocalDate todayLocalDate = dateFormatter.convertIntDateToLocalDate(todaysDate);
+        int currentMonthEnd = dateFormatter.calcDateValue(todayLocalDate.withDayOfMonth(todayLocalDate.getMonth().length(todayLocalDate.isLeapYear())).withYear(todayLocalDate.getYear()));
         int counter = 0, monthStart = dateFormatter.calcDateValue(selectedDate.withDayOfMonth(1)),
                 monthEnd = dateFormatter.calcDateValue(selectedDate.withDayOfMonth(selectedDate.getMonth().length(selectedDate.isLeapYear())));
-        ArrayList<Bills> bills = thisUser.getBills();
-        for (Bills bill : bills) {
-            ArrayList<Payments> payments = bill.getPayments();
-            if (bill.getPayments() == null) {
-                payments = new ArrayList<>();
-                bill.setPayments(payments);
-            }
-            payments.sort(new PaymentsComparator());
+        ArrayList<Payments> payments = paymentInfo.getPayments();
+        payments.sort(Comparator.comparing(Payments::getPaymentDate));
 
-            if (payments.size() > 0) {
-                for (Payments payment : payments) {
-                    if (payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd && !payment.isPaid() && todaysDate < monthEnd || payment.getDatePaid() >= monthStart &&
-                            payment.getDatePaid() <= monthEnd || payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd && !dueThisMonth.contains(payment) && todaysDate < monthEnd ||
-                            !payment.isPaid() && payment.getPaymentDate() < currentMonthEnd && selectedDate.getMonth().equals(dateFormatter.convertIntDateToLocalDate(todaysDate).getMonth())) {
-                        if (!dueThisMonth.contains(payment)) {
-                            dueThisMonth.add(payment);
+        if (payments.size() > 0) {
+            for (Payments payment : payments) {
+                if (payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd && !payment.isPaid() && todaysDate < monthEnd || payment.getDatePaid() >= monthStart &&
+                        payment.getDatePaid() <= monthEnd || payment.getPaymentDate() >= monthStart && payment.getPaymentDate() <= monthEnd && !dueThisMonth.contains(payment) && todaysDate < monthEnd ||
+                        !payment.isPaid() && payment.getPaymentDate() < currentMonthEnd && selectedDate.getMonth().equals(dateFormatter.convertIntDateToLocalDate(todaysDate).getMonth()) &&
+                                selectedDate.getYear() == (dateFormatter.convertIntDateToLocalDate(todaysDate).getYear())) {
+                    if (!dueThisMonth.contains(payment)) {
+                        dueThisMonth.add(payment);
+                    }
+                    ++counter;
+                    if (!payment.isPaid()) {
+                        if (payment.getPartialPayment() > 0) {
+                            remaining = remaining + Double.parseDouble(fn.makeDouble(String.valueOf(Double.parseDouble(payment.getPaymentAmount()) - payment.getPartialPayment())));
                         }
-                        ++counter;
-                        if (!payment.isPaid()) {
+                        else {
                             remaining = remaining + Double.parseDouble(fn.makeDouble(payment.getPaymentAmount().replaceAll(",", ".").replaceAll(" ", "").replaceAll("\\s", "")));
                         }
-                        total = total + Double.parseDouble(fn.makeDouble(payment.getPaymentAmount().replaceAll(",", ".").replaceAll(" ", "").replaceAll("\\s", "")));
                     }
+                    total = total + Double.parseDouble(fn.makeDouble(payment.getPaymentAmount().replaceAll(",", ".").replaceAll(" ", "").replaceAll("\\s", "")));
                 }
             }
         }
@@ -963,7 +1495,7 @@ public class MainActivity2 extends AppCompatActivity {
         notificationManager.createNotificationChannel(channel);
     }
 
-    public void scheduleNotifications (Payments payment) {
+    public void scheduleNotifications(Payments payment) {
 
         DateFormatter df = new DateFormatter();
 
@@ -1022,6 +1554,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         Context mContext = this;
         GoogleSignIn.getClient(MainActivity2.this, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut();
+        LoginManager.getInstance().logOut();
         SharedPreferences sp = mContext.getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("Stay Signed In", false);
@@ -1039,20 +1572,38 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        selectedDate = LocalDate.now(ZoneId.systemDefault());
+        setCurrentMonth(selectedMonth);
         navDrawer.setVisibility(View.GONE);
         hideForNavDrawer.setVisibility(View.VISIBLE);
-        LinearLayout pb = findViewById(R.id.progressBar9);
         pb.setVisibility(View.GONE);
-        SaveUserData save = new SaveUserData();
-        if (thisUser == null) {
-            save.loadUserData(MainActivity2.this);
-        }
         getValues();
         getCurrentMonth();
         counter = 0;
-        refreshUser();
         dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
-        listBills(billsList1);
+        listBills();
+        setupLineChart();
+        CountTickets countTickets = new CountTickets();
+        countTickets.countTickets(ticketCounter);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        selectedDate = LocalDate.now(ZoneId.systemDefault());
+        setCurrentMonth(selectedMonth);
+        navDrawer.setVisibility(View.GONE);
+        hideForNavDrawer.setVisibility(View.VISIBLE);
+        pb.setVisibility(View.GONE);
+        getValues();
+        getCurrentMonth();
+        counter = 0;
+        dueThisMonth = whatsDueThisMonth(dueThisMonth, selectedDate);
+        listBills();
+        setupLineChart();
+        CountTickets countTickets = new CountTickets();
+        countTickets.countTickets(ticketCounter);
     }
 
 }

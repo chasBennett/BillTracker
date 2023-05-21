@@ -1,37 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="blue">#3B3D3E</color>
-    <color name="toolbar">#191A1B</color>
+    <color name="blue">#195CE3</color>
+    <color name="toolbar">#2C2C2C</color>
     <color name="lightblue">#424343</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="whiteAndGray">#838383</color>
     <color name="chatWindow">#B2B3B3</color>
     <color name="whiteAndBlack">#141415</color>
+    <color name="darkBlue">#353C42</color>
     <color name="button">#34887F</color>
     <color name="white">#FFFFFFFF</color>
     <color name="accent">#151515</color>
     <color name="custom">#92F4E9</color>
-    <color name="tiles">#302F2F</color>
-    <color name="blueAndBlack">#FF000000</color>
+    <color name="tiles">#191919</color>
     <color name="blackAndWhite">#F7F7F8</color>
     <color name="circle">#7C7C7C</color>
-    <color name="icon">#28A396</color>
-    <color name="icColor">#CFCFCF</color>
+    <color name="stroke">#595858</color>
     <color name="tray">#252525</color>
+    <color name="group">#191919</color>
     <color name="tabs">#3E3E3E</color>
-    <color name="offset">#CC302F2F</color>
-    <color name="tabssemitransparent">#CC7C7C7C</color>
-    <color name="new_icon">#92F4E9</color>
-    <color name="darkbutton">#28A396</color>
+    <color name="offset">#302F2F</color>
+    <color name="background">#171717</color>
+    <color name="tabsSemiTransparent">#CC7C7C7C</color>
     <color name="green">#21BF29</color>
     <color name="blueGrey">#34887F</color>
     <color name="fingerprint">#34887F</color>
-    <color name="stroke">#34887F</color>
     <color name="buttonStroke">#3E3E3E</color>
     <color name="grey">#838383</color>
     <color name="yellow">#C8AE24</color>

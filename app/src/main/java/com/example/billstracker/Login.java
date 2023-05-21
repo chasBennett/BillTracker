@@ -23,11 +23,13 @@ public class Login implements Serializable {
     private String termsAcceptedOn;
     private String currency;
     private ArrayList <Trophy> trophies;
+    private ArrayList <Expenses> expenses;
+    private ArrayList <Budgets> budgets;
 
 
     public Login(String userName, String password, String name, boolean admin,
                  String lastLogin, String dateRegistered, String id, ArrayList<Bills> bills, int totalLogins, String ticketNumber, double income, String payFrequency,
-                 boolean termsAccepted, String termsAcceptedOn, String currency, ArrayList <Trophy> trophies) {
+                 boolean termsAccepted, String termsAcceptedOn, String currency, ArrayList <Trophy> trophies, ArrayList <Expenses> expenses, ArrayList <Budgets> budgets) {
 
         setUserName(userName);
         setPassword(password);
@@ -45,6 +47,8 @@ public class Login implements Serializable {
         setTermsAcceptedOn(termsAcceptedOn);
         setCurrency(currency);
         setTrophies(trophies);
+        setExpenses(expenses);
+        setBudgets(budgets);
     }
 
     public Login() {
@@ -177,6 +181,22 @@ public class Login implements Serializable {
 
     public void setTrophies(ArrayList<Trophy> trophies) {
         this.trophies = trophies;
+    }
+
+    public ArrayList<Expenses> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(ArrayList<Expenses> expenses) {
+        this.expenses = expenses;
+    }
+
+    public ArrayList<Budgets> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(ArrayList<Budgets> budgets) {
+        this.budgets = budgets;
     }
 }
 

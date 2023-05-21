@@ -51,12 +51,6 @@
         <item name="android:indeterminateTintMode">@color/custom</item>
     </style>
 
-    <style name="TextButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/white</item>
-        <item name="backgroundTint">@color/blueGrey</item>
-        <item name="android:background">@drawable/border_styles</item>
-    </style>
-
     <style name="ShareButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/white</item>
         <item name="backgroundTint">@color/blue</item>

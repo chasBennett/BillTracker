@@ -2,7 +2,9 @@ package com.example.billstracker;
 
 import static android.content.ContentValues.TAG;
 import static com.example.billstracker.Logon.billers;
+import static com.example.billstracker.Logon.paymentInfo;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -38,9 +40,10 @@ import androidx.core.widget.TextViewCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.io.IOException;
-import java.security.SecureRandom;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -53,12 +56,12 @@ import java.util.Set;
 
 public class EditBiller extends AppCompatActivity {
 
-    LinearLayout backEditBillerLayout, pb;
-    TextView billerNameHeader, editDueDate, billerNameError, websiteError, amountDueError, useDefault;
-    EditText editWebsite, editAmountDue;
+    LinearLayout backEditBillerLayout, pb, numberOfPaymentsLayout, currentBalanceLayout, escrowLayout;
+    TextView billerNameHeader, editDueDate, billerNameError, websiteError, amountDueError, useDefault, estimatedRate;
+    EditText editWebsite, editAmountDue, addNumberOfPayments, currentBalance, addEscrow;
     AutoCompleteTextView editBillerName;
     Spinner editFrequency, sCategory;
-    SwitchCompat editRecurring;
+    SwitchCompat editRecurring, continuousSwitch;
     com.google.android.material.imageview.ShapeableImageView editBillerIcon;
     Button submitBiller;
     Bundle extras;
@@ -73,7 +76,7 @@ public class EditBiller extends AppCompatActivity {
     DateFormatter df = new DateFormatter();
     boolean custom;
     LoadIcon loadIcon = new LoadIcon();
-    Bills bil;
+    Bill bil;
     FixNumber fn = new FixNumber();
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
 
@@ -98,21 +101,29 @@ public class EditBiller extends AppCompatActivity {
         extras = getIntent().getExtras();
         mContext = this;
         sCategory = findViewById(R.id.category1);
+        addEscrow = findViewById(R.id.addEscrow1);
         useDefault = findViewById(R.id.useDefaultIcon);
         editWebsite = findViewById(R.id.editWebsite);
+        escrowLayout = findViewById(R.id.escrowLayout1);
         editDueDate = findViewById(R.id.editDueDate);
         submitBiller = findViewById(R.id.btnSubmitEdit);
         photoChooser = findViewById(R.id.editBillerPhotoChooser);
         websiteError = findViewById(R.id.websiteError1);
+        estimatedRate = findViewById(R.id.estimatedRate1);
         editAmountDue = findViewById(R.id.editAmountDue);
         editFrequency = findViewById(R.id.editFrequency);
         editRecurring = findViewById(R.id.editRecurring);
         editBillerName = findViewById(R.id.editBillerName);
+        currentBalance = findViewById(R.id.etcurrentBalance1);
         amountDueError = findViewById(R.id.amountDueError1);
         editBillerIcon = findViewById(R.id.editBillerIcon1);
         billerNameError = findViewById(R.id.billerNameError1);
         billerNameHeader = findViewById(R.id.billerNameHeader);
+        continuousSwitch = findViewById(R.id.continuousSwitch1);
+        addNumberOfPayments = findViewById(R.id.addNumberOfPayments1);
         backEditBillerLayout = findViewById(R.id.backEditBillerLayout);
+        numberOfPaymentsLayout = findViewById(R.id.numberOfPaymentsLayout1);
+        currentBalanceLayout = findViewById(R.id.currentBalanceLayout1);
 
         dueDateChanged = false;
         recurringChanged = false;
@@ -126,10 +137,63 @@ public class EditBiller extends AppCompatActivity {
         frequency = extras.getString("frequency");
         recurring = extras.getBoolean("recurring");
 
+        for (Bill bills: thisUser.getBills()) {
+            if (bills.getBillerName().equals(billerName)) {
+                bil = bills;
+                if (recurring) {
+                    continuousSwitch.setVisibility(View.VISIBLE);
+                }
+
+                if (Integer.parseInt(bills.getPaymentsRemaining()) < 400) {
+                    continuousSwitch.setChecked(true);
+                    numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                    addNumberOfPayments.setText(bills.getPaymentsRemaining());
+                }
+                if (bills.getEscrow() > 0) {
+                    addEscrow.setText(fn.addSymbol(String.valueOf(bills.getEscrow())));
+                }
+                else {
+                    addEscrow.setText(fn.addSymbol("0"));
+                }
+                if (bills.getBalance() > 0) {
+                    currentBalance.setText(fn.addSymbol(String.valueOf(bills.getBalance())));
+                }
+                else {
+                    currentBalance.setText(fn.addSymbol("0"));
+                }
+                break;
+            }
+        }
+
         editBillerName.setText(billerName);
         editWebsite.setText(website);
-        editDueDate.setText(df.convertIntDateToString(dueDate));
-        editAmountDue.setText(String.format(Locale.getDefault(), "%s%s", thisUser.getCurrency(), amountDue));
+        editAmountDue.setText(fn.addSymbol(fn.makeDouble(amountDue)));
+
+        editRecurring.setChecked(recurring);
+        editRecurring.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (editRecurring.isChecked()) {
+                continuousSwitch.setVisibility(View.VISIBLE);
+            }
+            else {
+                addNumberOfPayments.setText("");
+                continuousSwitch.setChecked(false);
+                continuousSwitch.setVisibility(View.GONE);
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+
+            }
+        });
+
+        continuousSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (continuousSwitch.isChecked()) {
+                numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                if (!bil.getPaymentsRemaining().equals("1000")) {
+                    addNumberOfPayments.setText(bil.getPaymentsRemaining());
+                }
+            }
+            else {
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+            }
+        });
 
         ArrayList <String> knownBillers = new ArrayList<>();
         for (Biller bills: billers) {
@@ -141,17 +205,23 @@ public class EditBiller extends AppCompatActivity {
         ArrayAdapter <String> knownBillersAdapter = new ArrayAdapter<>(EditBiller.this, android.R.layout.simple_list_item_1, knownBillers);
         editBillerName.setAdapter(knownBillersAdapter);
 
-        for (Bills bills: thisUser.getBills()) {
-            if (bills.getBillerName().equals(billerName)) {
-                bil = bills;
+        int earliest = 10000;
+        for (Payments pay: paymentInfo.getPayments()) {
+            if (!pay.isPaid() && pay.getPaymentDate() < earliest && pay.getBillerName().equals(bil.getBillerName())) {
+                earliest = pay.getPaymentDate();
             }
+        }
+        if (earliest == 10000) {
+            editDueDate.setText(df.convertIntDateToString(dueDate));
+        }
+        else {
+            editDueDate.setText(df.convertIntDateToString(earliest));
         }
         if (darkMode) {
             editBillerIcon.setBackground(AppCompatResources.getDrawable(EditBiller.this, R.drawable.circle));
             editBillerIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.tiles, getTheme())));
         }
         loadIcon.loadIcon(EditBiller.this, editBillerIcon, bil.getCategory(), bil.getIcon());
-        editBillerIcon.setContentPadding(40,40,40,40);
         if (bil.getIcon().contains("custom")) {
             custom = true;
             useDefault.setVisibility(View.VISIBLE);
@@ -163,8 +233,6 @@ public class EditBiller extends AppCompatActivity {
             pb.setVisibility(View.VISIBLE);
             onBackPressed();
         });
-
-        editRecurring.setChecked(recurring);
 
         String[] spinnerArray = new String[]{getString(R.string.daily), getString(R.string.weekly), getString(R.string.biweekly), getString(R.string.monthly),
                 getString(R.string.quarterly), getString(R.string.yearly)};
@@ -189,16 +257,60 @@ public class EditBiller extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!found[0] && !custom) {
-                    userSelection[0] = adapter1.getPosition(sCategory.getSelectedItem().toString());
+                    userSelection[0] = sCategory.getSelectedItemPosition();
                     loadIcon.loadDefault(EditBiller.this, icons.get(adapter1.getPosition(sCategory.getSelectedItem().toString())), editBillerIcon);
-                    editBillerIcon.setContentPadding(100,100,100,100);
                     custom = false;
                 }
+                if (sCategory.getSelectedItemPosition() == 0 || sCategory.getSelectedItemPosition() == 5 || sCategory.getSelectedItemPosition() == 6) {
+                    numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                    editRecurring.setChecked(true);
+                    continuousSwitch.setVisibility(View.VISIBLE);
+                    continuousSwitch.setChecked(true);
+                    currentBalanceLayout.setVisibility(View.VISIBLE);
+                    if (sCategory.getSelectedItemPosition() == 5) {
+                        escrowLayout.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        escrowLayout.setVisibility(View.GONE);
+                    }
+
+                }
+                else {
+                    numberOfPaymentsLayout.setVisibility(View.GONE);
+                    continuousSwitch.setVisibility(View.GONE);
+                    currentBalanceLayout.setVisibility(View.GONE);
+                    escrowLayout.setVisibility(View.GONE);
+                }
+                calculateRate();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        editRecurring.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (editRecurring.isChecked()) {
+                continuousSwitch.setVisibility(View.VISIBLE);
+            }
+            else {
+                addNumberOfPayments.setText("");
+                continuousSwitch.setChecked(false);
+                continuousSwitch.setVisibility(View.GONE);
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+            }
+        });
+
+        continuousSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (continuousSwitch.isChecked()) {
+                numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                currentBalanceLayout.setVisibility(View.VISIBLE);
+            }
+            else {
+                addNumberOfPayments.setText("");
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+                currentBalanceLayout.setVisibility(View.GONE);
             }
         });
 
@@ -235,7 +347,7 @@ public class EditBiller extends AppCompatActivity {
         editRecurring.setOnClickListener(view -> recurringChanged = true);
 
         ArrayList <String> billerNames = new ArrayList<>();
-        for (Bills bills: thisUser.getBills()) {
+        for (Bill bills: thisUser.getBills()) {
             billerNames.add(bills.getBillerName().toLowerCase(Locale.getDefault()).trim());
         }
 
@@ -253,7 +365,6 @@ public class EditBiller extends AppCompatActivity {
                     if (editBillerName.getText().toString().trim().toLowerCase().contains(biller.getBillerName().trim().toLowerCase())) {
                         found[0] = true;
                         loadIcon.loadImageFromDatabase(EditBiller.this, editBillerIcon, biller.getIcon());
-                        editBillerIcon.setContentPadding(100,100,100,100);
                         custom = true;
                         editWebsite.setText(biller.getWebsite());
                         int selection = adapter1.getPosition(biller.getType());
@@ -282,7 +393,7 @@ public class EditBiller extends AppCompatActivity {
                 editBillerName.removeTextChangedListener(this);
                 String name = editBillerName.getText().toString().toLowerCase(Locale.getDefault()).trim();
                 for (String bill: billerNames) {
-                    if (bill.equals(name)) {
+                    if (bill.equals(name) && !bill.equalsIgnoreCase(billerName)) {
                         editBillerName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0);
                         nameLength[0] = false;
                         submitBiller.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.lightblue)));
@@ -296,7 +407,7 @@ public class EditBiller extends AppCompatActivity {
                         if (name.contains(biller.getBillerName().toLowerCase())) {
                             found[0] = true;
                             loadIcon.loadImageFromDatabase(EditBiller.this, editBillerIcon, biller.getIcon());
-                            editBillerIcon.setContentPadding(100,100,100,100);
+                            //editBillerIcon.setContentPadding(100,100,100,100);
                             custom = true;
                             editWebsite.setText(biller.getWebsite());
                             int selection = adapter1.getPosition(biller.getType());
@@ -322,8 +433,8 @@ public class EditBiller extends AppCompatActivity {
                     nameLength[0] = false;
                 }
                 else {
-                    for (Bills bill: thisUser.getBills()) {
-                        if (bill.getBillerName().equals(editBillerName.getText().toString())) {
+                    for (Bill bill: thisUser.getBills()) {
+                        if (bill.getBillerName().equals(editBillerName.getText().toString()) && !bill.getBillerName().equalsIgnoreCase(billerName)) {
                             editBillerName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0);
                             nameLength[0] = false;
                             submitBiller.setEnabled(false);
@@ -352,6 +463,23 @@ public class EditBiller extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        addNumberOfPayments.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                calculateRate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -445,8 +573,35 @@ public class EditBiller extends AppCompatActivity {
             }
         });
 
-        editAmountDue.setText(fn.addSymbol(bil.getAmountDue()));
+        if (bil.getAmountDue() != null && !bil.getAmountDue().equals("")) {
+            editAmountDue.setText(fn.addSymbol(bil.getAmountDue()));
+        }
+        else {
+            editAmountDue.setText(fn.addSymbol("0"));
+        }
         editAmountDue.addTextChangedListener( new MoneyInput(editAmountDue));
+        currentBalance.addTextChangedListener(new MoneyInput(currentBalance));
+        addEscrow.addTextChangedListener(new MoneyInput(currentBalance));
+
+        calculateRate();
+
+        currentBalance.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                calculateRate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
 
         editAmountDue.addTextChangedListener(new TextWatcher() {
             @Override
@@ -482,6 +637,7 @@ public class EditBiller extends AppCompatActivity {
                         }
                     }
                 }
+                calculateRate();
             }
 
             @Override
@@ -505,15 +661,24 @@ public class EditBiller extends AppCompatActivity {
             String amount = fn.makeDouble(editAmountDue.getText().toString());
             String frequency = String.valueOf(editFrequency.getSelectedItemPosition());
             String category = String.valueOf(sCategory.getSelectedItemPosition());
+            double escrow = 0;
+            String numberOfPayments = "1000";
             boolean recurring = editRecurring.isChecked();
-            int paymentId1 = notificationId();
+            if (recurring && continuousSwitch.isChecked()) {
+                if (!addNumberOfPayments.getText().toString().equals("")) {
+                    numberOfPayments = addNumberOfPayments.getText().toString();
+                }
+            }
+            if (addEscrow.getText().length() > 1 && Double.parseDouble(fn.makeDouble(addEscrow.getText().toString())) > 0) {
+                escrow = Double.parseDouble(fn.makeDouble(addEscrow.getText().toString()));
+            }
 
             String icon1 = "";
             BillerImage billerImage = new BillerImage();
             if (custom) {
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        icon1 = billerImage.storeImage(EditBiller.this, editBillerIcon.getDrawable(), billerName, custom);
+                        icon1 = billerImage.storeImage(editBillerIcon.getDrawable(), billerName, custom);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -527,59 +692,74 @@ public class EditBiller extends AppCompatActivity {
             }
 
             int dueDateValue = df.convertDateStringToInt(editDueDate.getText().toString());
-            int datePaid = 0;
-            ArrayList<Payments> newPayments = new ArrayList<>();
-            bil.setIcon(icon1);
-            Bills newBiller = bil;
-
-            if (dueDateChanged || frequencyChanged || recurringChanged) {
-                if (recurring) {
-                    if (newBiller.getPayments() == null) {
-                        newBiller.setPayments(new ArrayList<>());
-                    }
-                        for (Payments payment : newBiller.getPayments()) {
-                            if (payment.isPaid()) {
-                                payment.setBillerName(billerName);
-                                newPayments.add(payment);
-                            }
-                        }
-                        if (newPayments.isEmpty()) {
-                            Payments firstPayment = new Payments(amount, dueDateValue, false, billerName, paymentId1, datePaid);
-                            newPayments.add(firstPayment);
-                        }
-                        BillerManager bm = new BillerManager();
-                    ArrayList <Payments> generate = bm.generatePayments(newPayments, dueDateValue, frequency, "edit", amount);
-                    newPayments.addAll(generate);
-                    newBiller.getPayments().clear();
-                    newPayments = removeDuplicates(newPayments);
-                    newBiller.setPayments(newPayments);
-                } else {
-                    Payments payment = new Payments(amount, dueDateValue, false, billerName, paymentId1, datePaid);
-                    newBiller.getPayments().clear();
-                    newBiller.getPayments().add(payment);
-                }
-            }
+            Bill newBiller = bil;
+            
+            newBiller.setIcon(icon1);
             newBiller.setBillerName(billerName);
             newBiller.setAmountDue(amount);
             newBiller.setDayDue(dueDateValue);
             newBiller.setWebsite(website);
+            newBiller.setEscrow(escrow);
             newBiller.setFrequency(frequency);
             newBiller.setCategory(category);
             newBiller.setRecurring(recurring);
             newBiller.setIcon(icon1);
+            newBiller.setBalance(Double.parseDouble(fn.makeDouble(currentBalance.getText().toString())));
+            newBiller.setPaymentsRemaining(numberOfPayments);
             thisUser.getBills().remove(bil);
             thisUser.getBills().add(newBiller);
             if (thisUser != null) {
                 SaveUserData save = new SaveUserData();
-                save.saveUserData(EditBiller.this, thisUser);
+                save.saveUserData(EditBiller.this);
             }
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
+            db.collection("users").document(uid).update("bills", thisUser.getBills());
+            db.collection("payments").document(uid).set(paymentInfo, SetOptions.merge());
 
             Intent launchMain = new Intent(mContext, ViewBillers.class);
             launchMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(launchMain);
         });
+    }
+
+    public void calculateRate() {
+
+        if (editAmountDue.getText().length() > 1 && addNumberOfPayments.getText().length() > 0) {
+            double amountDue1 = Double.parseDouble(fn.makeDouble(editAmountDue.getText().toString()));
+            if (addEscrow.getText().length() > 1) {
+                amountDue1 = amountDue1 - Double.parseDouble(fn.makeDouble(addEscrow.getText().toString()));
+            }
+            double totalPaid = amountDue1 * Double.parseDouble(fn.makeDouble(addNumberOfPayments.getText().toString()));
+            double totalInterest = totalPaid - Double.parseDouble(fn.makeDouble(currentBalance.getText().toString()));
+            double numYears;
+            double numberOfPayments = Double.parseDouble(addNumberOfPayments.getText().toString());
+            double balance = Double.parseDouble(fn.makeDouble(currentBalance.getText().toString()));
+            int freq = editFrequency.getSelectedItemPosition();
+            if (freq == 0) {
+                numYears = numberOfPayments / (365);
+            }
+            else if (freq == 1) {
+                numYears = numberOfPayments / 52.1428571429;
+            }
+            else if (freq == 2) {
+                numYears = numberOfPayments / 26.0714285714;
+            }
+            else if (freq == 3) {
+                numYears = numberOfPayments / (365.0 / 30.4166666667);
+            }
+            else if (freq == 4) {
+                numYears = numberOfPayments / (365.0 / 91.2500000001);
+            }
+            else {
+                numYears = numberOfPayments;
+            }
+            DecimalFormat df = new DecimalFormat("###,###,##0.00");
+            double rate = (totalInterest / (balance * numYears)) * 100;
+            estimatedRate.setText(String.format("%s %s%%", getString(R.string.estimated_rate), df.format(rate)));
+        }
+        else {
+            estimatedRate.setText("");
+        }
     }
 
     public void loadImage (Uri uri) {
@@ -588,39 +768,11 @@ public class EditBiller extends AppCompatActivity {
             useDefault.setVisibility(View.VISIBLE);
             editBillerIcon.setImageTintList(null);
             loadIcon.loadImageFromDatabase(EditBiller.this, editBillerIcon, String.valueOf(uri));
-            editBillerIcon.setContentPadding(100,100,100,100);
+            //editBillerIcon.setContentPadding(100,100,100,100);
             Log.d("PhotoPicker", "Selected URI: " + uri);
         } else {
             Log.d("PhotoPicker", "No media selected");
         }
-    }
-
-    public ArrayList <Payments> removeDuplicates (ArrayList <Payments> payments) {
-
-        ArrayList<Payments> noRepeat = new ArrayList<>();
-
-        for (Payments payment: payments) {
-            boolean found = false;
-            for (Payments e: noRepeat) {
-                if (e.getPaymentId() == payment.getPaymentId()) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) noRepeat.add(payment);
-        }
-        return noRepeat;
-    }
-
-    int notificationId() {
-        final String AB = "0123456789";
-        SecureRandom rnd = new SecureRandom();
-        int length = 7;
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        }
-        return Integer.parseInt(String.valueOf(sb));
     }
 
     public void loadBillers () {

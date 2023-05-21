@@ -1,13 +1,13 @@
 package com.example.billstracker;
 
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,21 +19,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class Settings extends AppCompatActivity {
 
-    static String name;
-    static String username;
     Context mContext = this;
-    LinearLayout pb;
+    LinearLayout pb, back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        ImageView back = findViewById(R.id.backSettings);
+        back = findViewById(R.id.backSettingsLayout);
         pb = findViewById(R.id.pb1);
         back.setOnClickListener(view -> {
             pb.setVisibility(View.VISIBLE);
@@ -45,13 +42,7 @@ public class Settings extends AppCompatActivity {
         LinearLayout delete = findViewById(R.id.llDeleteAccount);
         LinearLayout about = findViewById(R.id.llAbout);
         LinearLayout logout = findViewById(R.id.llLogout);
-        edit.setOnClickListener(view -> {
-            try {
-                profileEdit(view);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        edit.setOnClickListener(this::profileEdit);
         delete.setOnClickListener(this::deleteUser);
         about.setOnClickListener(view -> {
             Intent getAbout = new Intent(mContext, About.class);
@@ -88,25 +79,16 @@ public class Settings extends AppCompatActivity {
 
     public void personalize() {
 
-        String setName = MainActivity2.name;
-        String setUsername = MainActivity2.userName;
         TextView uName = findViewById(R.id.replaceWithUsername);
-        uName.setText(setName);
-        name = setName;
-        username = setUsername;
+        uName.setText(thisUser.getName());
 
     }
 
-    public void profileEdit(View view) throws IOException {
+    public void profileEdit(View view){
         pb.setVisibility(View.VISIBLE);
-        SharedPreferences sp = getSharedPreferences("shared preferences", MODE_PRIVATE);
-        String setName = sp.getString("KEY_NAME", "");
-        String setUsername = sp.getString("KEY_USERNAME", "");
-        name = setName;
-        username = setUsername;
         Intent edit = new Intent(mContext, EditProfile.class);
-        edit.putExtra("Name", name);
-        edit.putExtra("Username", username);
+        edit.putExtra("Name", thisUser.getName());
+        edit.putExtra("Username", thisUser.getUserName());
         startActivity(edit);
         pb.setVisibility(View.GONE);
     }
@@ -131,7 +113,7 @@ public class Settings extends AppCompatActivity {
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     Objects.requireNonNull(auth.getCurrentUser()).delete();
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("users").document(thisUser.getUserName()).delete();
+                    db.collection("users").document(uid).delete();
                     thisUser = null;
                     Toast.makeText(mContext, getString(R.string.profileDeletedSuccessfully), Toast.LENGTH_LONG).show();
                     Intent validate = new Intent(mContext, Logon.class);

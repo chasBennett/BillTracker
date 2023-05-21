@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "408067372841",
+    "project_id": "bills-tracker-95f44",
+    "storage_bucket": "bills-tracker-95f44.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:408067372841:android:47eb5b06be7a35d04c2938",
+        "android_client_info": {
+          "package_name": "com.billstracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "408067372841-m9tbkp8og6n1akkei4i7fve8990eet54.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.billstracker",
+            "certificate_hash": "421eeab9e825b8cc0c0a0487bec45b5402946f6d"
+          }
+        },
+        {
+          "client_id": "408067372841-er0fn4a124juunpr90mub0hm3q99ma8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLlrbGvL1q47xQ2t932ywux58StIDgu0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "408067372841-7a29l5ibnp5nl7ab9b989b86soou79qb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7376638390241452~2472177486"
+    }
+  ],
+  "configuration_version": "1"
+}

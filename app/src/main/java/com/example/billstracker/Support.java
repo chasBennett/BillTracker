@@ -2,6 +2,7 @@ package com.example.billstracker;
 
 import static com.android.volley.VolleyLog.TAG;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import androidx.core.widget.NestedScrollView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,7 +70,6 @@ public class Support extends AppCompatActivity {
         if (thisUser.getAdmin()) {
             admin = true;
             adminUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
-            admin = true;
             exitAdmin.setOnClickListener(view -> onBackPressed());
             backToAdminTickets.setOnClickListener(view -> recreate());
         }
@@ -96,7 +97,7 @@ public class Support extends AppCompatActivity {
             ArrayList <String> currentMessages = customerTicket.getNotes();
             String writerUid;
             if (admin) {
-                name = "Agent: " + Objects.requireNonNull(auth.getCurrentUser().getDisplayName());
+                name = getString(R.string.agent) + " " + thisUser.getName();
                 writerUid = adminUid;
             }
             else {
@@ -137,7 +138,7 @@ public class Support extends AppCompatActivity {
                     Toast.makeText(Support.this, (CharSequence) task.getException(), Toast.LENGTH_SHORT).show();
                 }
             });
-            db.collection("users").document(thisUser.getUserName()).set(thisUser);
+            db.collection("users").document(uid).set(thisUser, SetOptions.merge());
             pb.setVisibility(View.GONE);
         });
 
@@ -155,6 +156,7 @@ public class Support extends AppCompatActivity {
                         if (ticket.getAgentUid() != null) {
                             if (ticket.getAgentUid().trim().equals(adminUid.trim()) || ticket.getAgentUid().equals("Unassigned")) {
                                 userTickets.add(ticket);
+                                ticket.setUnreadByAgent(0);
                             }
                         }
                     }
@@ -175,6 +177,7 @@ public class Support extends AppCompatActivity {
                             if (ticket.getId() != null) {
                                 if (ticket.getId().equals(userUid)) {
                                     customerTicket = ticket;
+                                    ticket.setUnreadByUser(0);
                                     break;
                                 }
                             }

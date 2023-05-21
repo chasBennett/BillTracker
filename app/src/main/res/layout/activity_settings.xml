@@ -31,20 +31,11 @@
                 android:id="@+id/backSettings"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
+                android:contentDescription="@string/back_button"
                 android:gravity="start"
-                android:padding="5dp"
                 app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/back_button" />
+                app:tint="@color/blackAndWhite" />
 
-            <TextView
-                android:id="@+id/textView41"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/back"
-                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
@@ -67,7 +58,6 @@
             android:layout_height="100dp"
             android:layout_gravity="fill_horizontal"
             android:layout_marginTop="40dp"
-            android:background="@drawable/border_styles_login"
             android:baselineAligned="false"
             android:clickable="true"
             android:elevation="10dp"
@@ -81,13 +71,13 @@
                 android:layout_height="80dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".2"
+                android:contentDescription="@string/icon"
                 android:duplicateParentState="true"
                 android:foregroundTint="@color/blue"
                 android:padding="15dp"
                 app:srcCompat="@drawable/newprofileiconblack"
                 app:tint="@color/blackAndWhite"
-                tools:ignore="ImageContrastCheck"
-                android:contentDescription="@string/icon" />
+                tools:ignore="ImageContrastCheck" />
 
             <LinearLayout
                 android:id="@+id/subProfile"
@@ -128,19 +118,24 @@
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_weight=".2"
+                android:contentDescription="@string/select"
                 android:duplicateParentState="true"
                 app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/select" />
+                app:tint="@color/blackAndWhite" />
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/llAbout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="15dp"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
             android:foreground="?android:attr/selectableItemBackground"
@@ -194,20 +189,25 @@
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_weight=".2"
+                android:contentDescription="@string/select"
                 android:duplicateParentState="true"
                 android:foregroundTint="?android:attr/textColor"
                 app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/select" />
+                app:tint="@color/blackAndWhite" />
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/divider20"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/llDeleteAccount"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="15dp"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
             android:focusable="true"
@@ -259,13 +259,19 @@
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_weight=".2"
+                android:contentDescription="@string/select"
                 android:duplicateParentState="true"
                 android:foregroundTint="?android:attr/textColor"
                 app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/select" />
+                app:tint="@color/blackAndWhite" />
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/divider21"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/llLogout"
@@ -273,7 +279,6 @@
             android:layout_height="100dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
             android:foreground="?android:attr/selectableItemBackground"
@@ -327,11 +332,11 @@
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_weight=".2"
+                android:contentDescription="@string/select"
                 android:duplicateParentState="true"
                 android:foregroundTint="?android:attr/textColor"
                 app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/select" />
+                app:tint="@color/blackAndWhite" />
 
         </LinearLayout>
 

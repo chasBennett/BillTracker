@@ -21,7 +21,6 @@
         app:layout_constraintTop_toTopOf="@+id/guideline20">
 
         <LinearLayout
-            android:id="@+id/backSettingsLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="15dp"
@@ -49,7 +48,6 @@
             android:layout_gravity="fill_horizontal"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@drawable/border_styles_login"
             android:baselineAligned="false"
             android:clickable="true"
             android:elevation="10dp"
@@ -69,7 +67,7 @@
                 android:padding="10dp"
                 app:srcCompat="@drawable/newprofileiconblack"
                 app:tint="@color/blackAndWhite"
-                tools:ignore="ImageContrastCheck" />
+                tools:ignore="ImageContrastCheck,NestedWeights" />
 
             <LinearLayout
                 android:id="@+id/subProfile"
@@ -117,16 +115,20 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider23"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <LinearLayout
             android:id="@+id/llAbout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             android:layout_weight="1"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
-            android:foreground="?android:attr/selectableItemBackground"
             android:hapticFeedbackEnabled="true"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -138,7 +140,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".8"
                 android:duplicateParentState="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:id="@+id/textAbout"
@@ -186,17 +189,21 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider24"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <LinearLayout
             android:id="@+id/llDeleteAccount"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             android:layout_weight="1"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
             android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
             android:hapticFeedbackEnabled="true"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -208,7 +215,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".8"
                 android:duplicateParentState="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:id="@+id/labelDeleteAccount"
@@ -253,6 +261,12 @@
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider25"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <LinearLayout
             android:id="@+id/llLogout"
             android:layout_width="match_parent"
@@ -260,10 +274,8 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
             android:layout_weight="1"
-            android:background="@drawable/border_styles_login"
             android:clickable="true"
             android:elevation="10dp"
-            android:foreground="?android:attr/selectableItemBackground"
             android:hapticFeedbackEnabled="true"
             android:orientation="horizontal"
             android:weightSum="1">
@@ -275,7 +287,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".8"
                 android:duplicateParentState="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:id="@+id/textLogout"
@@ -350,6 +363,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/backSettingsLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -367,14 +381,6 @@
             app:srcCompat="@drawable/ic_baseline_arrow_back_24"
             app:tint="@color/blackAndWhite" />
 
-        <TextView
-            android:id="@+id/textView41"
-            android:layout_width="75dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="5dp"
-            android:text="@string/back"
-            android:textSize="14sp" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.Guideline

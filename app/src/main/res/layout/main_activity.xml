@@ -3,7 +3,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainScreen"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="visible"
@@ -22,91 +22,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <LinearLayout
-        android:id="@+id/toolbar"
+
+    <include
+        layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:background="@color/offset"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/drawerToggle"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:gravity="start"
-            android:padding="15dp"
-            app:srcCompat="@drawable/ic_baseline_menu_24"
-            app:tint="@color/blackAndWhite"
-            android:contentDescription="@string/drawer_toggle" />
-
-        <TextView
-            android:id="@+id/textView48"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="65dp"
-            android:layout_height="65dp">
-
-            <ImageView
-                android:id="@+id/helpMe"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:padding="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/mail_5888"
-                app:tint="@color/blackAndWhite"
-                android:contentDescription="@string/help_icon" />
-
-            <TextView
-                android:id="@+id/ticketCounter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:paddingStart="7dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="7dp"
-                android:paddingBottom="2dp"
-                android:text="@string/two"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                app:backgroundTint="@color/button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/settingsButton"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:gravity="end"
-            android:padding="20dp"
-            android:visibility="visible"
-            app:srcCompat="@drawable/settings_3110"
-            app:tint="@color/blackAndWhite"
-            android:contentDescription="@string/settings_icon" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider12"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/scroll"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/scroll"
@@ -115,32 +39,38 @@
         android:duplicateParentState="true"
         android:nestedScrollingEnabled="true"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/include9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <LinearLayout
+            android:id="@+id/hideForNavDrawer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:nestedScrollingEnabled="true"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:ignore="UselessParent">
 
             <LinearLayout
-                android:id="@+id/hideForNavDrawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/toolbar"
                 android:orientation="vertical"
-                android:visibility="visible"
-                tools:ignore="UselessParent">
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
 
                 <LinearLayout
                     android:id="@+id/onScrollContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:elevation="10dp"
                     android:orientation="vertical"
+                    android:paddingBottom="15dp"
                     app:layout_constraintBottom_toTopOf="@+id/scroll"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -157,20 +87,13 @@
                         android:textColor="@color/blackAndWhite"
                         android:textSize="22sp"
                         android:textStyle="bold"
-                        android:translationX="550dp"
+                        android:translationX="600dp"
                         android:visibility="visible" />
-
-                    <LinearLayout
-                        android:id="@+id/trophyRow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_margin="20dp"
-                        android:orientation="horizontal" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/linearLayout3"
                         android:layout_width="match_parent"
-                        android:layout_height="170dp"
+                        android:layout_height="350dp"
                         android:nestedScrollingEnabled="true"
                         android:orientation="vertical"
                         android:translationX="-000dp"
@@ -179,17 +102,30 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/lineChart"
+                            android:layout_width="0dp"
+                            android:layout_height="171dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
 
                         <TextView
                             android:id="@+id/backMonth"
                             android:layout_width="120dp"
                             android:layout_height="50dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="66dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
                             app:drawableStartCompat="@drawable/ic_baseline_chevron_left_24"
                             app:drawableTint="@color/blackAndWhite"
+                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/lineChart"
                             tools:layout_conversion_absoluteHeight="50dp"
                             tools:layout_conversion_absoluteWidth="103dp" />
 
@@ -197,44 +133,43 @@
                             android:id="@+id/selectedMonth"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="80dp"
                             android:gravity="center"
                             android:text="@string/august"
                             android:textColor="@color/blackAndWhite"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
                             app:layout_constraintEnd_toStartOf="@+id/forgotPasswordHeader"
-                            app:layout_constraintHorizontal_bias="0.491"
+                            app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toEndOf="@+id/backMonth"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:layout_conversion_absoluteHeight="19dp"
-                            tools:layout_conversion_absoluteWidth="206dp" />
+                            app:layout_constraintTop_toBottomOf="@+id/lineChart" />
+
 
                         <TextView
                             android:id="@+id/forgotPasswordHeader"
                             android:layout_width="120dp"
                             android:layout_height="50dp"
-                            android:layout_marginTop="63dp"
-                            android:layout_marginEnd="16dp"
+                            android:layout_marginEnd="8dp"
                             app:drawableEndCompat="@drawable/ic_baseline_chevron_right_24"
                             app:drawableTint="@color/blackAndWhite"
+                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/lineChart"
                             tools:layout_conversion_absoluteHeight="50dp"
                             tools:layout_conversion_absoluteWidth="103dp" />
 
-
                         <LinearLayout
+                            android:id="@+id/linearLayout27"
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_marginStart="20dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="80dp"
                             android:layout_marginEnd="20dp"
                             android:layout_marginBottom="5dp"
                             android:orientation="horizontal"
                             app:layout_constraintBottom_toTopOf="@+id/progressBar8"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/selectedMonth"
-                            app:layout_constraintVertical_bias="1.0">
+                            app:layout_constraintTop_toBottomOf="@+id/lineChart">
 
                             <TextView
                                 android:id="@+id/tvRemaining"
@@ -280,310 +215,126 @@
                             tools:layout_conversion_absoluteHeight="16dp"
                             tools:layout_conversion_absoluteWidth="382dp" />
 
-                        <HorizontalScrollView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content">
-
-                                <TextView
-                                    android:id="@+id/floatingActionButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:background="@drawable/border_styles"
-                                    android:clickable="true"
-                                    android:contentDescription="@string/add_a_new_biller"
-                                    android:padding="10dp"
-                                    android:text="@string/addBiller1"
-                                    android:textColor="@color/white"
-                                    android:textSize="12sp"
-                                    app:backgroundTint="@color/button" />
-
-                                <TextView
-                                    android:id="@+id/payNext"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:background="@drawable/border_styles"
-                                    android:padding="10dp"
-                                    android:text="@string/nextBillDue"
-                                    android:textColor="@color/white"
-                                    android:textSize="12sp"
-                                    app:backgroundTint="@color/button"
-                                    app:layout_constraintStart_toEndOf="@+id/floatingActionButton"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <TextView
-                                    android:id="@+id/contactUs"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="20dp"
-                                    android:background="@drawable/border_styles"
-                                    android:padding="10dp"
-                                    android:text="@string/contactUs"
-                                    android:textColor="@color/white"
-                                    android:textSize="12sp"
-                                    app:backgroundTint="@color/button"
-                                    app:layout_constraintStart_toEndOf="@+id/payNext"
-                                    app:layout_constraintTop_toTopOf="parent" />
-                            </LinearLayout>
-                        </HorizontalScrollView>
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/billsList1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="30dp"
+                android:nestedScrollingEnabled="true"
+                android:orientation="vertical"
+                android:translationY="1dp">
+
+                <LinearLayout
+                    android:id="@+id/todayList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/laterThisWeekList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:orientation="vertical">
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/billsList1"
+                    android:id="@+id/laterThisMonthList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="30dp"
-                    android:nestedScrollingEnabled="true"
-                    android:orientation="vertical"
-                    android:translationY="600dp">
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/noResults"
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/earlierThisMonthList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/noResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/group"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:visibility="gone"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="50dp"
+                        android:contentDescription="@string/no_results"
+                        app:srcCompat="@drawable/noun_not_found_2503986"
+                        app:tint="@color/grey" />
+
+                    <TextView
+                        android:id="@+id/textView16"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="visible"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <ImageView
-                            android:id="@+id/imageView5"
-                            android:layout_width="match_parent"
-                            android:layout_height="100dp"
-                            android:layout_marginTop="50dp"
-                            app:srcCompat="@drawable/noun_not_found_2503986"
-                            app:tint="@color/grey"
-                            android:contentDescription="@string/no_results" />
-
-                        <TextView
-                            android:id="@+id/textView16"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="50dp"
-                            android:gravity="center"
-                            android:text="@string/noBillersYet"
-                            android:textColor="@color/blackAndWhite"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                        android:layout_margin="50dp"
+                        android:gravity="center"
+                        android:text="@string/you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/navDrawer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:nestedScrollingEnabled="true"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            tools:ignore="UselessParent">
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".3"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/navHeaderBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="251dp"
-                    android:background="@color/blue"
-                    android:gravity="bottom"
-                    android:orientation="vertical"
-                    android:paddingStart="20dp"
-                    android:paddingTop="30dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="20dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="1dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="40dp"
-                        android:orientation="horizontal"
-                        tools:layout_conversion_absoluteHeight="56dp"
-                        tools:layout_conversion_absoluteWidth="246dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="38dp"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <ImageView
-                            android:id="@+id/iVLogo"
-                            android:layout_width="53dp"
-                            android:layout_height="61dp"
-                            android:contentDescription="@string/nav_header_desc"
-                            app:srcCompat="@drawable/newbillsicon"
-                            app:tint="@color/icon" />
-
-                        <TextView
-                            android:id="@+id/logoutButton"
-                            android:layout_width="120dp"
-                            android:layout_height="35dp"
-                            android:layout_marginStart="30dp"
-                            android:layout_marginTop="15dp"
-                            android:background="@drawable/border_styles"
-                            android:gravity="center"
-                            android:onClick="logout"
-                            android:text="@string/logout"
-                            android:textColor="@color/blackAndWhite"
-                            android:textSize="14sp"
-                            app:backgroundTint="@color/grey" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="@string/nav_header_title"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/white"
-                        tools:layout_conversion_absoluteHeight="27dp"
-                        tools:layout_conversion_absoluteWidth="246dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="113dp" />
-
-                    <TextView
-                        android:id="@+id/tvUserName2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nav_header_subtitle"
-                        android:textColor="@color/white"
-                        tools:layout_conversion_absoluteHeight="19dp"
-                        tools:layout_conversion_absoluteWidth="182dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="141dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/tray"
-                    android:elevation="10dp"
-                    android:orientation="vertical">
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@drawable/border"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:id="@+id/navHome"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/navHome"
-                            android:textSize="16sp"
-                            app:drawableStartCompat="@drawable/ic_baseline_home_24"
-                            app:drawableTint="@color/button" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/navViewBillers"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navViewBillers"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_list_alt_24"
-                        app:drawableTint="@color/blackAndWhite" />
-
-                    <TextView
-                        android:id="@+id/navPaymentHistory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navPaymentHistory"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
-                        app:drawableTint="@color/blackAndWhite" />
-
-                    <TextView
-                        android:id="@+id/myStats"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navInsights"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_insights_24"
-                        app:drawableTint="@color/blackAndWhite" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/hideNavDrawer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".7"
-                android:alpha="0.5"
-                android:background="@color/black"
-                android:orientation="vertical"
-                android:visibility="visible" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/progressBar9"
+    <include
+        layout="@layout/nav_tray"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha=".5"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
-    </LinearLayout>
+    <include
+        layout="@layout/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/include9"
+        layout="@layout/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/paymentConfirm"

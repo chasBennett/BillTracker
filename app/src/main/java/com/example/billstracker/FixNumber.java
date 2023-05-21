@@ -10,7 +10,6 @@ public class FixNumber {
     NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
     public String addSymbol (String string) {
 
-        Currency df = new DecimalFormat("###,###,###.00").getCurrency();
         string = String.format(Locale.getDefault(), string);
         return nf.format(Double.parseDouble(string.replaceAll("\\s", "").replaceAll(",", ".")));
     }

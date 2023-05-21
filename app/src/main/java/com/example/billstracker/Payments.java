@@ -18,17 +18,23 @@ class PaymentsComparator implements Comparator<Payments> {
 public class Payments {
 
     private String paymentAmount;
+    private double partialPayment;
     private int paymentDate;
     private boolean paid;
+    private boolean dateChanged;
+    private int paymentNumber;
     private String billerName;
     private int paymentId;
     private int datePaid;
 
-    public Payments(String paymentAmount, int paymentDate, boolean paid, String billerName, int paymentId, int datePaid) {
+    public Payments(String paymentAmount, double partialPayment, int paymentDate, boolean paid, boolean dateChanged, int paymentNumber, String billerName, int paymentId, int datePaid) {
 
         setPaymentAmount(paymentAmount);
+        setPartialPayment(partialPayment);
         setPaymentDate(paymentDate);
         setPaid(paid);
+        setDateChanged(dateChanged);
+        setPaymentNumber(paymentNumber);
         setBillerName(billerName);
         setPaymentId(paymentId);
         setDatePaid(datePaid);
@@ -84,5 +90,29 @@ public class Payments {
 
     public void setDatePaid(int datePaid) {
         this.datePaid = datePaid;
+    }
+
+    public double getPartialPayment() {
+        return partialPayment;
+    }
+
+    public void setPartialPayment(double partialPayment) {
+        this.partialPayment = partialPayment;
+    }
+
+    public int getPaymentNumber() {
+        return paymentNumber;
+    }
+
+    public void setPaymentNumber(int paymentNumber) {
+        this.paymentNumber = paymentNumber;
+    }
+
+    public boolean isDateChanged() {
+        return dateChanged;
+    }
+
+    public void setDateChanged(boolean dateChanged) {
+        this.dateChanged = dateChanged;
     }
 }

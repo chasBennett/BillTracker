@@ -1,6 +1,7 @@
 package com.example.billstracker;
 
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -39,11 +40,6 @@ public class TermsAndConditions extends AppCompatActivity {
 
                 DateFormatter df = new DateFormatter();
 
-        Bundle bundle = getIntent().getExtras();
-        String name = bundle.getString("Name", "");
-        String email = bundle.getString("Email", "");
-        String password = bundle.getString("Password", "");
-        String type = bundle.getString("Type", "");
         termsCheckBox.setEnabled(false);
 
         agree.setEnabled(false);
@@ -73,23 +69,13 @@ public class TermsAndConditions extends AppCompatActivity {
 
         agree.setOnClickListener(view -> {
             String date = df.createCurrentDateStringWithTime();
-            if (type.equals("Existing User")) {
                 thisUser.setTermsAccepted(true);
                 thisUser.setTermsAcceptedOn(date);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("users").document(thisUser.getUserName()).set(thisUser);
+                db.collection("users").document(uid).set(thisUser);
                 Intent main = new Intent (TermsAndConditions.this, MainActivity2.class);
                 main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(main);
-            }
-            else {
-                Intent biometrics = new Intent(getApplicationContext(), SetBiometrics.class);
-                biometrics.putExtra("Name", name);
-                biometrics.putExtra("Email", email);
-                biometrics.putExtra("Password", password);
-                biometrics.putExtra("Terms Accepted On", date);
-                startActivity(biometrics);
-            }
         });
     }
 }

@@ -3,6 +3,7 @@ package com.example.billstracker;
 import static android.content.ContentValues.TAG;
 import static com.example.billstracker.Logon.billers;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -26,7 +27,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -43,6 +43,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -56,17 +57,17 @@ import java.util.Set;
 public class AddBiller extends AppCompatActivity {
 
     BillerManager billerManager = new BillerManager();
-    LinearLayout backAddBillerLayout, pb;
+    LinearLayout backAddBillerLayout, pb, numberOfPaymentsLayout, currentBalanceLayout, escrowLayout;
     DateFormatter df = new DateFormatter();
 
     ConstraintLayout photoChooser;
     AutoCompleteTextView etBillerName;
-    EditText etWebsite, etAmountDue;
-    TextView etDueDate, billerNameError, websiteError, amountDueError, useDefault;
+    EditText etWebsite, etAmountDue, addNumberOfPayments, currentBalance, addEscrow;
+    TextView etDueDate, billerNameError, websiteError, amountDueError, useDefault, estimatedRate;
     Spinner sFrequency, sCategory;
     Context mContext;
     Button submitBiller;
-    SwitchCompat recurringSwitch;
+    SwitchCompat recurringSwitch, continuousSwitch;
     com.google.android.material.imageview.ShapeableImageView addBillerIcon;
     boolean customIcon;
     FixNumber fn = new FixNumber();
@@ -92,17 +93,25 @@ public class AddBiller extends AppCompatActivity {
         sCategory = findViewById(R.id.category);
         useDefault = findViewById(R.id.useDefault);
         etDueDate = findViewById(R.id.etDueDate);
+        addEscrow = findViewById(R.id.addEscrow);
         sFrequency = findViewById(R.id.frequency);
         etAmountDue = findViewById(R.id.etAmountDue);
         websiteError = findViewById(R.id.websiteError);
         etBillerName = findViewById(R.id.etBillerName);
+        escrowLayout = findViewById(R.id.escrowLayout);
         submitBiller = findViewById(R.id.btnSubmitBiller);
+        estimatedRate = findViewById(R.id.estimatedRate);
         addBillerIcon = findViewById(R.id.addBillerIcon);
         photoChooser = findViewById(R.id.addBillerPhotoChooser);
         amountDueError = findViewById(R.id.amountDueError);
+        currentBalance = findViewById(R.id.etcurrentBalance);
         billerNameError = findViewById(R.id.billerNameError);
         recurringSwitch = findViewById(R.id.recurringSwitch);
+        continuousSwitch = findViewById(R.id.continuousSwitch);
+        addNumberOfPayments = findViewById(R.id.addNumberOfPayments);
         backAddBillerLayout = findViewById(R.id.backAddBillerLayout);
+        currentBalanceLayout = findViewById(R.id.currentBalanceLayout);
+        numberOfPaymentsLayout = findViewById(R.id.numberOfPaymentsLayout);
 
         MobileAds.initialize(this, initializationStatus -> {
         });
@@ -157,11 +166,55 @@ public class AddBiller extends AppCompatActivity {
                     loadIcon.loadDefault(AddBiller.this, icons.get(adapter1.getPosition(sCategory.getSelectedItem().toString())), addBillerIcon);
                     customIcon = false;
                 }
+                if (sCategory.getSelectedItemPosition() == 0 || sCategory.getSelectedItemPosition() == 5 || sCategory.getSelectedItemPosition() == 6) {
+                    numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                    recurringSwitch.setChecked(true);
+                    continuousSwitch.setVisibility(View.VISIBLE);
+                    continuousSwitch.setChecked(true);
+                    currentBalanceLayout.setVisibility(View.VISIBLE);
+                    if (sCategory.getSelectedItemPosition() == 5) {
+                        escrowLayout.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        escrowLayout.setVisibility(View.GONE);
+                    }
+
+                }
+                else {
+                    numberOfPaymentsLayout.setVisibility(View.GONE);
+                    continuousSwitch.setVisibility(View.GONE);
+                    currentBalanceLayout.setVisibility(View.GONE);
+                    escrowLayout.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        recurringSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (recurringSwitch.isChecked()) {
+                continuousSwitch.setVisibility(View.VISIBLE);
+            }
+            else {
+                addNumberOfPayments.setText("");
+                continuousSwitch.setChecked(false);
+                continuousSwitch.setVisibility(View.GONE);
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+            }
+        });
+
+        continuousSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (continuousSwitch.isChecked()) {
+                numberOfPaymentsLayout.setVisibility(View.VISIBLE);
+                currentBalanceLayout.setVisibility(View.VISIBLE);
+            }
+            else {
+                addNumberOfPayments.setText("");
+                numberOfPaymentsLayout.setVisibility(View.GONE);
+                currentBalanceLayout.setVisibility(View.GONE);
             }
         });
 
@@ -210,7 +263,7 @@ public class AddBiller extends AppCompatActivity {
         });
 
         ArrayList <String> billerNames = new ArrayList<>();
-        for (Bills bills: thisUser.getBills()) {
+        for (Bill bills: thisUser.getBills()) {
             billerNames.add(bills.getBillerName().toLowerCase(Locale.getDefault()).trim());
         }
 
@@ -270,7 +323,7 @@ public class AddBiller extends AppCompatActivity {
                     nameLength[0] = false;
                 }
                 else {
-                    for (Bills bill: thisUser.getBills()) {
+                    for (Bill bill: thisUser.getBills()) {
                         if (bill.getBillerName().equals(etBillerName.getText().toString())) {
                             etBillerName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0);
                             nameLength[0] = false;
@@ -401,6 +454,62 @@ public class AddBiller extends AppCompatActivity {
 
         etAmountDue.setText(fn.addSymbol("0"));
         etAmountDue.addTextChangedListener( new MoneyInput(etAmountDue));
+        currentBalance.setText(fn.addSymbol("0"));
+        currentBalance.addTextChangedListener(new MoneyInput(currentBalance));
+        addEscrow.setText(fn.addSymbol("0"));
+        addEscrow.addTextChangedListener(new MoneyInput(currentBalance));
+
+        currentBalance.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (etAmountDue.getText().length() > 1 && addNumberOfPayments.getText().length() > 0) {
+                    double amountDue = Double.parseDouble(fn.makeDouble(etAmountDue.getText().toString()));
+                    if (addEscrow.getText().length() > 1) {
+                        amountDue = amountDue - Double.parseDouble(fn.makeDouble(addEscrow.getText().toString()));
+                    }
+                    double totalPaid = amountDue * Double.parseDouble(fn.makeDouble(addNumberOfPayments.getText().toString()));
+                    double totalInterest = totalPaid - Double.parseDouble(fn.makeDouble(currentBalance.getText().toString()));
+                    double numYears;
+                    double numberOfPayments = Double.parseDouble(addNumberOfPayments.getText().toString());
+                    double balance = Double.parseDouble(fn.makeDouble(currentBalance.getText().toString()));
+                    int freq = sFrequency.getSelectedItemPosition();
+                    if (freq == 0) {
+                        numYears = numberOfPayments / (365);
+                    }
+                    else if (freq == 1) {
+                        numYears = numberOfPayments / 52.1428571429;
+                    }
+                    else if (freq == 2) {
+                        numYears = numberOfPayments / 26.0714285714;
+                    }
+                    else if (freq == 3) {
+                        numYears = numberOfPayments / (365.0 / 30.4166666667);
+                    }
+                    else if (freq == 4) {
+                        numYears = numberOfPayments / (365.0 / 91.2500000001);
+                    }
+                    else {
+                        numYears = numberOfPayments;
+                    }
+                    DecimalFormat df = new DecimalFormat("###,###,##0.00");
+                    double rate = (totalInterest / (balance * numYears)) * 100;
+                    estimatedRate.setText(String.format("%s %s%%", getString(R.string.estimated_rate), df.format(rate)));
+                }
+                else {
+                    estimatedRate.setText("");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         etAmountDue.addTextChangedListener(new TextWatcher() {
             @Override
@@ -463,32 +572,38 @@ public class AddBiller extends AppCompatActivity {
             String billerName = etBillerName.getText().toString();
             String website = etWebsite.getText().toString();
             String amountDue1 = fn.makeDouble(etAmountDue.getText().toString());
+            double balance = 0.00;
+            double escrow = 0;
+            if (currentBalance.getText().length() > 1 && Double.parseDouble(fn.makeDouble(currentBalance.getText().toString())) > 0) {
+                balance = Double.parseDouble(fn.makeDouble(currentBalance.getText().toString()));
+            }
             String amountDue2 = fn.addSymbol(amountDue1);
             if (amountDue1.equals("")) {
                 amountDue1 = "0.00";
             }
+            if (addEscrow.getText().length() > 1 && Double.parseDouble(fn.makeDouble(addEscrow.getText().toString())) > 0) {
+                escrow = Double.parseDouble(fn.makeDouble(addEscrow.getText().toString()));
+            }
             String frequency = String.valueOf(sFrequency.getSelectedItemPosition());
             String category = String.valueOf(sCategory.getSelectedItemPosition());
+            String numberOfPayments = "1000";
             boolean recurring = recurringSwitch.isChecked();
+            if (recurring && continuousSwitch.isChecked()) {
+                if (!addNumberOfPayments.getText().toString().equals("")) {
+                    numberOfPayments = addNumberOfPayments.getText().toString();
+                }
+            }
 
-            String billerId = billerManager.id();
+            String billerId = String.valueOf(billerManager.id());
 
             int dueDateValue = df.convertDateStringToInt(etDueDate.getText().toString());
-            int datePaid = 0;
-            ArrayList<Payments> payments = new ArrayList<>();
-            Payments payment = new Payments(amountDue1, dueDateValue, false, billerName, Integer.parseInt(billerManager.id()), datePaid);
-            payments.add(payment);
-
-            if (recurring) {
-                payments = billerManager.generatePayments(payments, dueDateValue, frequency, "new", amountDue1);
-            }
 
             String icon = "";
             if (customIcon) {
                 BillerImage billerImage = new BillerImage();
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        icon = billerImage.storeImage(AddBiller.this, addBillerIcon.getDrawable(), billerName, customIcon);
+                        icon = billerImage.storeImage(addBillerIcon.getDrawable(), billerName, customIcon);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -498,43 +613,27 @@ public class AddBiller extends AppCompatActivity {
                 icon = String.valueOf(icons.get(adapter1.getPosition(sCategory.getSelectedItem().toString())));
             }
 
-            Bills newBiller = new Bills(billerName, amountDue1, dueDateValue, 0, billerId, recurring, frequency, website, payments, category, icon);
+            Bill newBiller = new Bill(billerName, amountDue1, dueDateValue, 0, billerId, recurring, frequency, website, category, icon, numberOfPayments, balance, escrow);
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             String finalIcon1 = icon;
-            db.collection("users").document(thisUser.getUserName()).get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    ArrayList<Bills> newBillList;
-                    if (thisUser.getBills() != null) {
-                        newBillList = thisUser.getBills();
-                    } else {
-                        newBillList = new ArrayList<>();
-                    }
-                    newBillList.add(newBiller);
-                    thisUser.setBills(newBillList);
-                    if (thisUser != null) {
-                        SaveUserData save = new SaveUserData();
-                        save.saveUserData(AddBiller.this, thisUser);
-                    }
-                    db.collection("users").document(thisUser.getUserName()).set(thisUser);
-                    Intent main = new Intent(mContext, BillerAdded.class);
-                    main.putExtra("Category", newBiller.getCategory());
-                    main.putExtra("Biller Name", newBiller.getBillerName());
-                    main.putExtra("Amount Due", amountDue2);
-                    main.putExtra("Website", newBiller.getWebsite());
-                    main.putExtra("Day Due", etDueDate.getText().toString());
-                    main.putExtra("Frequency", newBiller.getFrequency());
-                    main.putExtra("Recurring", newBiller.isRecurring());
-                    main.putExtra("Icon", finalIcon1);
-                    startActivity(main);
-                }
-                else {
-                    Log.w(TAG, "Error getting documents.");
-                    Toast.makeText(mContext, "An error has occurred. Please try again.",
-                            Toast.LENGTH_SHORT).show();
-                    pb.setVisibility(View.GONE);
-                }
-            });
+            thisUser.getBills().add(newBiller);
+            db.collection("users").document(uid).update("bills", thisUser.getBills());
+            billerManager.savePayments();
+            if (thisUser != null) {
+                SaveUserData save = new SaveUserData();
+                save.saveUserData(AddBiller.this);
+            }
+            Intent main = new Intent(mContext, BillerAdded.class);
+            main.putExtra("Category", newBiller.getCategory());
+            main.putExtra("Biller Name", newBiller.getBillerName());
+            main.putExtra("Amount Due", amountDue2);
+            main.putExtra("Website", newBiller.getWebsite());
+            main.putExtra("Day Due", etDueDate.getText().toString());
+            main.putExtra("Frequency", newBiller.getFrequency());
+            main.putExtra("Recurring", newBiller.isRecurring());
+            main.putExtra("Icon", finalIcon1);
+            startActivity(main);
         });
     }
 

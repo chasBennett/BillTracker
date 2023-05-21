@@ -15,9 +15,12 @@ public class Bills {
     private ArrayList<Payments> payments;
     private String category;
     private String icon;
+    private String paymentsRemaining;
+    private double balance;
+    private double escrow;
 
     public Bills(String billerName, String amountDue, int dayDue, int dateLastPaid, String billsId, boolean recurring, String frequency, String website,
-                 ArrayList<Payments> payments, String category, String icon) {
+                 ArrayList<Payments> payments, String category, String icon, String paymentsRemaining, double balance, double escrow) {
 
         setBillerName(billerName);
         setWebsite(website);
@@ -30,6 +33,9 @@ public class Bills {
         setPayments(payments);
         setCategory(category);
         setIcon(icon);
+        setPaymentsRemaining(paymentsRemaining);
+        setBalance(balance);
+        setEscrow(escrow);
     }
 
     public Bills() {
@@ -122,5 +128,29 @@ public class Bills {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getPaymentsRemaining() {
+        return paymentsRemaining;
+    }
+
+    public void setPaymentsRemaining(String paymentsRemaining) {
+        this.paymentsRemaining = paymentsRemaining;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getEscrow() {
+        return escrow;
+    }
+
+    public void setEscrow(double escrow) {
+        this.escrow = escrow;
     }
 }

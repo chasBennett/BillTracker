@@ -68,13 +68,13 @@ public class Administrator extends AppCompatActivity {
         TextView addBillerInfo = findViewById(R.id.addBillerInfo);
         display = findViewById(R.id.notices);
         uploadComplete = findViewById(R.id.uploadComplete);
-        View manual = View.inflate(Administrator.this, R.layout.manual_biller, null);
-        icon = manual.findViewById(R.id.billerIcon);
-        Button changeIcon = manual.findViewById(R.id.changeIcon);
-        billerName = manual.findViewById(R.id.newBillerName);
-        website = manual.findViewById(R.id.newWebsite);
-        type = manual.findViewById(R.id.typeSpinner);
-        Button submit = manual.findViewById(R.id.submitManualBiller);
+        //View manual = View.inflate(Administrator.this, R.layout.manual_biller, null);
+        //icon = manual.findViewById(R.id.billerIcon);
+        //Button changeIcon = manual.findViewById(R.id.changeIcon);
+        //billerName = manual.findViewById(R.id.newBillerName);
+        //website = manual.findViewById(R.id.newWebsite);
+        //type = manual.findViewById(R.id.typeSpinner);
+        //Button submit = manual.findViewById(R.id.submitManualBiller);
         pb = findViewById(R.id.progressBar11);
         storageReference = FirebaseStorage.getInstance().getReference("images");
         databaseReference = FirebaseDatabase.getInstance().getReference("images");
@@ -96,20 +96,20 @@ public class Administrator extends AppCompatActivity {
         addBillerInfo.setOnClickListener(view -> {
             display.removeAllViews();
             display.invalidate();
-            display.addView(manual);
+            //display.addView(manual);
         });
 
-        changeIcon.setOnClickListener(v -> {
-            Intent i = new Intent();
-            i.setType("image/*");
-            i.setAction(Intent.ACTION_GET_CONTENT);
-            startForResult.launch(i);
-        });
-        submit.setOnClickListener(view -> {
-            if (billerName.getText().toString().length() > 0 && website.getText().toString().length() > 0 && filePath != null) {
-                uploadImage();
-            }
-        });
+        //changeIcon.setOnClickListener(v -> {
+            //Intent i = new Intent();
+            //i.setType("image/*");
+            //i.setAction(Intent.ACTION_GET_CONTENT);
+            //startForResult.launch(i);
+        //});
+        //submit.setOnClickListener(view -> {
+            //if (billerName.getText().toString().length() > 0 && website.getText().toString().length() > 0 && filePath != null) {
+                //uploadImage();
+            //}
+        //});
 
 
     }

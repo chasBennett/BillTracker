@@ -27,10 +27,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     DateFormatter df = new DateFormatter();
 
     private final Context context;
-    private final ArrayList paymentList;
+    private final ArrayList <Payments> paymentList;
     Payments payment;
 
-    public Adapter(Context context, ArrayList paymentList) {
+    public Adapter(Context context, ArrayList <Payments> paymentList) {
         this.context = context;
         this.paymentList = paymentList;
     }
@@ -38,7 +38,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.bill_box_today, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.bill_box, parent, false);
         v.setClipToOutline(true);
         return new ViewHolder(v);
     }
@@ -48,7 +48,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.itemView.setTag(paymentList.get(position));
 
-        payment = (Payments) paymentList.get(position);
+        payment = paymentList.get(position);
 
         for (Biller biller: billers) {
             if (payment.getBillerName().toLowerCase().trim().contains(biller.getBillerName().toLowerCase().trim())) {
@@ -79,10 +79,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
 
-            icon = (ImageView) itemView.findViewById(R.id.billIconToday);
-            billerName = (TextView) itemView.findViewById(R.id.tvBillerName);
-            dueDate = (TextView) itemView.findViewById(R.id.tvDueDate);
-            amountDue = (TextView) itemView.findViewById(R.id.amountDue);
+            icon = itemView.findViewById(R.id.billIcon);
+            billerName = itemView.findViewById(R.id.tvBillerName);
+            dueDate = itemView.findViewById(R.id.tvDueDate);
+            amountDue = itemView.findViewById(R.id.amountDue);
             int todayDateValue = df.currentDateAsInt();
 
             itemView.setOnClickListener(view -> {

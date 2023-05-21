@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="30dp"
-    android:background="@drawable/edit_text"
     android:elevation="5dp"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="20dp"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:id="@+id/billerArrow"
             android:layout_width="45dp"
             android:layout_height="45dp"
+            android:contentDescription="@string/open_ticket"
             android:padding="10dp"
             app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-            app:tint="@color/blackAndWhite"
-            android:contentDescription="@string/open_ticket" />
+            app:tint="@color/blackAndWhite" />
 
         <TextView
             android:id="@+id/viewBillerName"
@@ -41,6 +42,8 @@
         android:id="@+id/billerDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:elevation="20dp"
         android:orientation="vertical"
         android:visibility="gone"
@@ -51,7 +54,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:layout_margin="15dp"
+            android:adjustViewBounds="true"
             android:gravity="center"
             android:visibility="visible"
             app:shapeAppearanceOverlay="@style/Circular"
@@ -220,7 +223,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -234,6 +236,32 @@
 
                 <TextView
                     android:id="@+id/showWebsite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/showPaymentsRemainingLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/viewPaymentsRemaining"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/payments_remaining"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/showPaymentsRemaining"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -262,24 +290,22 @@
 
                 <Button
                     android:id="@+id/btnPaymentHistory"
+                    style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/edit_text"
                     android:text="@string/payments"
-                    android:textColor="@color/white"
                     android:textSize="11sp" />
 
                 <Button
                     android:id="@+id/btnDeleteBiller"
+                    style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/edit_text"
                     android:text="@string/deleteBiller"
-                    android:textColor="@color/white"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -287,30 +313,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginBottom="15dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btnVisitWebsite"
+                    style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/edit_text"
                     android:text="@string/visitWebsite"
-                    android:textColor="@color/white"
                     android:textSize="11sp" />
 
                 <Button
                     android:id="@+id/btnEditBiller"
+                    style="@style/TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/edit_text"
                     android:text="@string/editBiller"
-                    android:textColor="@color/white"
                     android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider16"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:background="?android:attr/listDivider" />
 </LinearLayout>

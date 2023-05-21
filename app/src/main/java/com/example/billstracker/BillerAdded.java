@@ -16,13 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class BillerAdded extends AppCompatActivity {
 
-    TextView billerName, amountDue, dueDate, recurring, frequency, website, category;
+    TextView billerName, amountDue, dueDate, recurring, frequency, website, category, showPaymentsRemaining;
     Button btnContinue;
     com.google.android.material.imageview.ShapeableImageView billerIcon;
     LinearLayout pb;
     Context mContext;
     Bundle bundle;
     boolean darkMode;
+    LinearLayout paymentsRemainingLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class BillerAdded extends AppCompatActivity {
         category = findViewById(R.id.showCategory);
         btnContinue = findViewById(R.id.btnContinue);
         billerIcon = findViewById(R.id.addedBillerIcon);
+        showPaymentsRemaining = findViewById(R.id.showPaymentsRemaining2);
+        paymentsRemainingLayout = findViewById(R.id.paymentsRemainingLayout3);
         pb = findViewById(R.id.pb3);
         mContext = this;
         bundle = getIntent().getExtras();
@@ -82,9 +85,13 @@ public class BillerAdded extends AppCompatActivity {
         billerIcon.setImageDrawable(Drawable.createFromPath(icon));
         LoadIcon loadIcon = new LoadIcon();
         loadIcon.loadImageFromDatabase(BillerAdded.this, billerIcon, icon);
-        for (Bills bill: thisUser.getBills()) {
+        for (Bill bill: thisUser.getBills()) {
             if (bill.getBillerName().equals(billerName.getText().toString())) {
                 loadIcon.loadIcon(BillerAdded.this, billerIcon, bill.getCategory(), bill.getIcon());
+                if (!bill.getPaymentsRemaining().equals("1000")) {
+                    paymentsRemainingLayout.setVisibility(View.VISIBLE);
+                    showPaymentsRemaining.setText(bill.getPaymentsRemaining());
+                }
             }
         }
         dueDate.setText(getDate);

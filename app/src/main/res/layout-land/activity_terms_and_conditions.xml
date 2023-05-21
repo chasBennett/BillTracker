@@ -105,12 +105,10 @@
 
     <Button
         android:id="@+id/btnAgree"
+        style="@style/TextButton"
         android:layout_width="250dp"
-        android:layout_height="40dp"
-        android:background="@drawable/border_styles"
+        android:layout_height="50dp"
         android:text="@string/continueNow"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline14"
         app:layout_constraintStart_toStartOf="@+id/guideline13"

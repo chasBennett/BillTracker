@@ -29,17 +29,8 @@
     <string name="february">February %d</string>
     <string name="march">March %d</string>
     <string name="april">April %d</string>
-    <string name="tac1">Terms of Service
-\n\nLast Updated: March 31, 2023 (Section A)\n\n
-SECTION A TERMS\n\n
-Introduction and Overview\n\n
-Thank you for choosing the Bill Tracker app. Bill Tracker, along with any parent, subsidiary, affiliate, or related companies are referred to in these provisions as “Bill Tracker Group” or simply “Bill Tracker” or “us.”\n
-When you use the app, you enter into a binding contract with us. Each section of the agreement begins with an italicized annotation that is intended to help you navigate the agreement. The annotations do not completely
-        summarize the agreement, though, and you should read each section carefully and in full. We’ve also bolded a few areas that talk about important legal rights, and you should be sure to read those sections carefully.
-        These provisions in Section A apply to the app generally.\n
-If you are an individual acting on your company’s or client’s behalf, you accept these provisions on their behalf and the term “you” will refer to you, your company, or your client.\n\n
-Agreement to These Terms\n\n
-    </string>
+    <string name="emailAddressUpdatedSuccessfully">Email Address Updated Successfully</string>
+    <string name="tac1">"Terms of Service   Last Updated: March 31, 2023 (Section A)   SECTION A TERMS   Introduction and Overview   Thank you for choosing the Bill Tracker app. Bill Tracker, along with any parent, subsidiary, affiliate, or related companies are referred to in these provisions as “Bill Tracker Group” or simply “Bill Tracker” or “us.”  When you use the app, you enter into a binding contract with us. Each section of the agreement begins with an italicized annotation that is intended to help you navigate the agreement. The annotations do not completely         summarize the agreement, though, and you should read each section carefully and in full. We’ve also bolded a few areas that talk about important legal rights, and you should be sure to read those sections carefully.         These provisions in Section A apply to the app generally.  If you are an individual acting on your company’s or client’s behalf, you accept these provisions on their behalf and the term “you” will refer to you, your company, or your client.   Agreement to These Terms       "</string>
     <string name="tac2">
 You need to agree to these terms to use our app. Bill Tracker will not share your personal information with third parties, unless specifically instructed to do so by you in order to provide additional services within the app.\n
 To access and/or use the app, you acknowledge and agree:\n\n
@@ -353,7 +344,7 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="isLowercaseLetter"> Lowercase letter</string>
     <string name="noNumber">x Number</string>
     <string name="isNumber"> Number</string>
-    <string name="passwordsDontMatch">x Passwords Don\'t Match</string>
+    <string name="passwords_dont_match">x Passwords Don\'t Match</string>
     <string name="passwordsMatch"> Passwords Match</string>
     <string name="billerAlreadyExists">A Biller With That Name Already Exists</string>
     <string name="billerNameIsTooShort">Biller Name Is Too Short</string>
@@ -782,4 +773,111 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="facebook_client_token">a5a2a8a9c13289fbbeaccd95c4323a92</string>
     <string name="billerNameCantBeBlank">Biller Name Can\'t Be Blank</string>
     <string name="save">Save</string>
+    <string name="loginWithFacebookError">Login With Facebook Error</string>
+    <string name="my_achievements">My Achievements</string>
+    <string name="payments_remaining">Payments Remaining:</string>
+    <string name="continuous">Continuous</string>
+    <string name="set_payments_until_paid_off">Set Payments Until Paid Off?</string>
+    <string name="number_of_payments">Number of Payments:</string>
+    <string name="paid_in_full">Paid In Full</string>
+    <string name="final_payment">Final Payment!</string>
+    <string name="create_a_new_budget">Create A New Budget</string>
+    <string name="automotive">Automotive</string>
+    <string name="groceries">Groceries</string>
+    <string name="beauty">Beauty</string>
+    <string name="clothing">Clothing</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="health">Health</string>
+    <string name="other">Other</string>
+    <string name="transaction_titled">Transaction Titled: </string>
+    <string name="has_been_removed"> Has Been Removed</string>
+    <string name="create_a_budget">Create A Budget</string>
+    <string name="pay_amount">Pay Amount:</string>
+    <string name="pay_frequency">Pay Frequency:</string>
+    <string name="savings_amount">Savings Amount:</string>
+    <string name="weekly_bills_average">Weekly Bills Average:</string>
+    <string name="weekly_disposable_income">Weekly Disposable Income:</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income">Percent Values Are A Percentage of Your Disposable Income</string>
+    <string name="create_a_budget_for_me">Create A Budget For Me:</string>
+    <string name="automotive_budget">Automotive Budget:</string>
+    <string name="beauty_budget">Beauty Budget:</string>
+    <string name="clothing_budget">Clothing Budget:</string>
+    <string name="entertainment_budget">Entertainment Budget:</string>
+    <string name="groceries_budget">Groceries Budget:</string>
+    <string name="health_budget">Health Budget:</string>
+    <string name="restaurants_budget">Restaurants Budget:</string>
+    <string name="other_budget">Other Budget:</string>
+    <string name="budget_start_date">Budget Start Date:</string>
+    <string name="budget_end_date">Budget End Date:</string>
+    <string name="apply_budget">Apply Budget</string>
+    <string name="all_fields_must_be_filled_in">All Fields Must Be Filled In</string>
+    <string name="re_create_this_budget_for_me">Re-Create This Budget For Me:</string>
+    <string name="current_budget">Current Budget</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="you_don_t_have_a_budget_set_for_the_current_date">You Don\'t Have A Budget Set For The Current Date</string>
+    <string name="transactions">Transactions</string>
+    <string name="budget_remaining">Budget Remaining:</string>
+    <string name="budget_not_set">Budget Not Set</string>
+    <string name="total_spent">Total Spent:</string>
+    <string name="spending">Spending</string>
+    <string name="date">Date:</string>
+    <string name="cost">Cost:</string>
+    <string name="description">Description:</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="your_budget_has_been_updated_successfully">Your Budget Has Been Updated Successfully</string>
+    <string name="use_default_values">Use Default Values:</string>
+    <string name="percent_values_cannot_exceed_100_percent">Percent Values Cannot Exceed 100 Percent</string>
+    <string name="savings_amount_exceeds_available_funds">Savings Amount Exceeds Available Funds</string>
+    <string name="logging_you_in_as">Logging You In As</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="current_balance">Current Balance:</string>
+    <string name="estimated_apr">Estimated APR:</string>
+    <string name="finishing_up">Finishing Up</string>
+    <string name="creating_user_profile">Creating User Profile</string>
+    <string name="you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller">You Don\'t Have Any Bills Added For This Month Yet. Click The Plus Sign Above To Add A Biller!</string>
+    <string name="past_due">Past Due</string>
+    <string name="amount_remaining">Amount Remaining:</string>
+    <string name="partial_payment_made">Partial Payment Made:</string>
+    <string name="amount_paid">Amount Paid:</string>
+    <string name="estimated_rate">Estimated Rate:</string>
+    <string name="escrow_amount">Escrow Amount:</string>
+    <string name="estimated_balance">Estimated Balance:</string>
+    <string name="view_details">View Details</string>
+    <string name="total_payments_remaining">Total Payments Remaining:</string>
+    <string name="hide_details">Hide Details</string>
+    <string name="total_amount_remaining">Total Amount Remaining:</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted">Percent Values Are A Percentage of Your Disposable Income After Savings is Deducted</string>
+    <string name="income">Income:</string>
+    <string name="disposable_income">Disposable Income:</string>
+    <string name="savings_allocation">Savings Allocation:</string>
+    <string name="spending_allocation">Spending Allocation:</string>
+    <string name="edit_budget">Edit Budget</string>
+    <string name="weekly_savings_amount">Weekly Savings Amount:</string>
+    <string name="edit">Edit</string>
+    <string name="estimated_interest_paid">Estimated Interest Paid:</string>
+    <string name="partial_payment">Partial Payment</string>
+    <string name="spending_categories">Spending Categories</string>
+    <string name="noDataAvailable">No Data Available</string>
+    <string name="noBudgetDataWasFound">No Budget Data Was Found</string>
+    <string name="remove">Remove</string>
+    <string name="changePartialPayment">Change Partial Payment</string>
+    <string name="would_you_like_to_change_your_partial_payment_or_remove_it">Would You Like To Remove Your Partial Payment or Change The Amount?</string>
+    <string name="change_partial_payment_amount">Change Partial Payment Amount</string>
+    <string name="please_enter_the_new_partial_payment_amount">Please Enter The New Partial Payment Amount</string>
+    <string name="spent">Spent</string>
+    <string name="total_budget">Total Budget</string>
+    <string name="no_payments_reported">No Payments Reported</string>
+    <string name="select_a_date">Select A Date:</string>
+    <string name="no_transactions_were_found_for_the_selected_time_frame">No Transactions Were Found For The Selected Time Frame</string>
+    <string name="expenses_icon">Expenses Icon</string>
+    <string name="bills_icon">Bills Icon</string>
+    <string name="budget_icon">Budget Icon</string>
+    <string name="budget">Budget</string>
+    <string name="not_found_icon">Not Found Icon</string>
+    <string name="m19_14_12_94c0_04_0_3_0_06_0_61_0_06_0_94c0_0_32_0_02_0_64_0_07_0_94l2_03_1_58c0_18_0_14_0_23_0_41_0_12_0_61l_1_92_3_32c_0_12_0_22_0_37_0_29_0_59_0_22l_2_39_0_96c_0_5_0_38_1_03_0_7_1_62_0_94l14_4_2_81c_0_04_0_24_0_24_0_41_0_48_0_41h_3_84c_0_24_0_0_43_0_17_0_47_0_41l9_25_5_35c8_66_5_59_8_12_5_92_7_63_6_29l5_24_5_33c_0_22_0_08_0_47_0_0_59_0_22l2_74_8_87c2_62_9_08_2_66_9_34_2_86_9_48l2_03_1_58c4_84_11_36_4_8_11_69_4_8_12s0_02_0_64_0_07_0_94l_2_03_1_58c_0_18_0_14_0_23_0_41_0_12_0_61l1_92_3_32c0_12_0_22_0_37_0_29_0_59_0_22l2_39_0_96c0_5_0_38_1_03_0_7_1_62_0_94l0_36_2_54c0_05_0_24_0_24_0_41_0_48_0_41h3_84c0_24_0_0_44_0_17_0_47_0_41l0_36_2_54c0_59_0_24_1_13_0_56_1_62_0_94l2_39_0_96c0_22_0_08_0_47_0_0_59_0_22l1_92_3_32c0_12_0_22_0_07_0_47_0_12_0_61l19_14_12_94zm12_15_6c_1_98_0_3_6_1_62_3_6_3_6s1_62_3_6_3_6_3_6s3_6_1_62_3_6_3_6s13_98_15_6_12_15_6z" translatable="false">M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94L14.4,2.81c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z</string>
+    <string name="delete">Delete</string>
+    <string name="logo">logo</string>
+    <string name="pay_next_bill_button">Pay Next Bill Button</string>
+    <string name="arrow">arrow</string>
+    <string name="notifications_are_currently_turned_off_change_this_in_the_settings_menu_to_receive_notifications_when_your_bills_are_due">Notifications Are Currently Turned Off. Change This In The Settings Menu To Receive Notifications When Your Bills Are Due</string>
 </resources>

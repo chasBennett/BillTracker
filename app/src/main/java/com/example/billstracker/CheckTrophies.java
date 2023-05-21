@@ -1,6 +1,8 @@
 package com.example.billstracker;
 
+import static com.example.billstracker.Logon.paymentInfo;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.content.Context;
 import android.content.Intent;
@@ -45,12 +47,13 @@ public class CheckTrophies {
         viewParent = parent;
         billCounter = 0;
         paymentCounter = 0;
-        for (Bills bill : thisUser.getBills()) {
+        for (Bill bill : thisUser.getBills()) {
             ++billCounter;
             if (bill.getIcon().contains("custom")) {
                 customIcon = true;
             }
-            for (Payments payment : bill.getPayments()) {
+        }
+            for (Payments payment : paymentInfo.getPayments()) {
                 if (payment.isPaid()) {
                     ++paymentCounter;
                 }
@@ -58,7 +61,7 @@ public class CheckTrophies {
                     earlyBird = true;
                 }
             }
-        }
+
         checkEligibility();
     }
 
@@ -198,7 +201,7 @@ public class CheckTrophies {
                 createBadge(5, context.getString(R.string.journeyman));
                 trophy5 = false;
             } else if (trophy6) {
-                createBadge(6, context.getString(R.string.hiImNew));
+                createBadge(6, context.getString(R.string.welcomeToBillTracker));
                 trophy6 = false;
             } else if (trophy7) {
                 createBadge(7, context.getString(R.string.gettingThoseRepsIn));
@@ -214,9 +217,9 @@ public class CheckTrophies {
             }
         }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(thisUser.getUserName()).set(thisUser);
+        db.collection("users").document(uid).set(thisUser);
         SaveUserData save = new SaveUserData();
-        save.saveUserData(context, thisUser);
+        save.saveUserData(context);
         trophy1 = false;
         trophy2 = false;
         trophy3 = false;
@@ -262,7 +265,7 @@ public class CheckTrophies {
                 }
             }
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(thisUser.getUserName()).set(thisUser);
+            db.collection("users").document(uid).set(thisUser);
             ShareImage shareImage = new ShareImage();
             shareImage.shareImage(context, trophy, "I Just Earned The \"" + message + "\" Badge On Bill Tracker!");
         });

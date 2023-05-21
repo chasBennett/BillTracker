@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         minSdk 26
         targetSdk 33
         compileSdkVersion 33
-        versionCode 5
-        versionName "Kolache"
+        versionCode 10
+        versionName "1.9.2"
         tasks.withType(JavaCompile) {
             options.compilerArgs << "-Xlint:deprecation"
         }
@@ -50,19 +51,21 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'androidx.activity:activity-compose:1.7.0'
-    implementation 'androidx.fragment:fragment:1.5.6'
+    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.fragment:fragment:1.5.7'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
     implementation 'com.google.android.gms:play-services-tagmanager-v4-impl:18.0.2'
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
-    implementation 'com.google.android.libraries.places:places:3.0.0'
-    implementation 'com.google.firebase:firebase-firestore:24.4.5'
+    implementation 'com.google.android.libraries.places:places:3.1.0'
+    implementation 'com.google.firebase:firebase-firestore:24.5.0'
     implementation 'androidx.room:room-common:2.5.1'
     implementation 'androidx.wear.tiles:tiles-material:1.1.0'
     implementation 'androidx.wear.tiles:tiles-material:'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.3.6'
+    implementation 'com.google.firebase:firebase-analytics:21.2.2'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -70,7 +73,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.4.0')
     implementation 'com.google.firebase:firebase-database'
     implementation('com.google.firebase:firebase-core:21.1.1')
-    implementation('com.google.firebase:firebase-firestore:24.4.5')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'

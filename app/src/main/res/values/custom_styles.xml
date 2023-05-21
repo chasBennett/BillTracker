@@ -3,6 +3,5 @@
     <style name="Circular">
         <item name="android:backgroundTint">@color/tiles</item>
         <item name="cornerSize">50%</item>
-        <item name="android:padding">10dp</item>
     </style>
 </resources>

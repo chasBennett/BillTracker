@@ -2,6 +2,7 @@ package com.example.billstracker;
 
 import static android.content.ContentValues.TAG;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,11 +15,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +26,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.biometric.BiometricManager;
 import androidx.core.widget.TextViewCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,10 +47,9 @@ public class EditProfile extends AppCompatActivity {
     int nightModeFlags;
     LinearLayout hideError, passRequirements, pb;
     TextView submit;
-    Spinner sCurrency;
     SwitchCompat biometricSwitch2;
-    ArrayAdapter<String> adapter;
     ImageView backEditProfile;
+    com.google.android.material.imageview.ShapeableImageView icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,7 @@ public class EditProfile extends AppCompatActivity {
 
         pb = findViewById(R.id.pb6);
         err = findViewById(R.id.showFrequency);
+        icon = findViewById(R.id.editProfileIcon);
         match = findViewById(R.id.textView25);
         submit = findViewById(R.id.btnSubmitUser);
         newName = findViewById(R.id.etEditName);
@@ -82,6 +82,11 @@ public class EditProfile extends AppCompatActivity {
         sp = getSharedPreferences("shared preferences", Context.MODE_PRIVATE);
         biometricPreference = sp.getBoolean("biometricPreference", false);
         editor = sp.edit();
+
+        SaveUserData load = new SaveUserData();
+        load.loadUserData(EditProfile.this);
+
+        Glide.with(EditProfile.this).load(R.drawable.daco_3157628).optionalCircleCrop().optionalFitCenter().into(icon);
 
         biometricSwitch2.setChecked(biometricPreference);
         firstScan = false;
@@ -120,8 +125,6 @@ public class EditProfile extends AppCompatActivity {
         newName.setText(thisUser.getName());
         newUserName.setText(thisUser.getUserName());
         newPassword.setText(thisUser.getPassword());
-        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.button, getTheme())));
-        submit.setOnClickListener(v -> submit());
 
         final boolean[] userName = {true}, firstPassword = {true}, name = {true}, password = {true};
 
@@ -133,30 +136,27 @@ public class EditProfile extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                userName[0] = false;
                 submit.setEnabled(false);
+                userName[0] = false;
                     if (newUserName.getText().toString().length() < 1 && newUserName.getText().toString().length() > 0) {
-                        submit.setEnabled(false);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                        submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                         usernameTooShort.setVisibility(View.VISIBLE);
                         usernameTooShort.setText(R.string.tooShort);
                     } else if (newUserName.getText().toString().length() == 0) {
-                        submit.setEnabled(false);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                        submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                         usernameTooShort.setVisibility(View.GONE);
                     } else if (!newUserName.getText().toString().contains("@") || !newUserName.getText().toString().contains(".com") && !newUserName.getText().toString().contains(".edu") &&
                             !newUserName.getText().toString().contains(".net") && !newUserName.getText().toString().contains(".gov") && !newUserName.getText().toString().contains(".org")) {
-                        submit.setEnabled(false);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                        submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                         usernameTooShort.setVisibility(View.VISIBLE);
                         usernameTooShort.setText(R.string.enterAValidEmailAddress);
                     } else {
                         usernameTooShort.setVisibility(View.GONE);
                         userName[0] = true;
                         if (firstPassword[0] && name[0] && password[0]) {
+                            submit.setTextColor(getResources().getColor(R.color.white, getTheme()));
                             submit.setEnabled(true);
-                            submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white, getTheme())));
-                            submit.setOnClickListener(view -> submit());
+                            submit.setOnClickListener(v -> submit());
                         }
                     }
             }
@@ -175,15 +175,14 @@ public class EditProfile extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                firstPassword[0] = false;
                 submit.setEnabled(false);
+                firstPassword[0] = false;
                 if (!firstScan) {
                     firstScan = true;
                 }
                 else {
                     passRequirements.setVisibility(View.VISIBLE);
-                    submit.setEnabled(false);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                     hideError.setVisibility(View.VISIBLE);
                 }
 
@@ -207,23 +206,19 @@ public class EditProfile extends AppCompatActivity {
                 if (newPassword.getText().toString().length() < 6) {
                     passwordTooShort.setVisibility(View.VISIBLE);
                     passwordTooShort.setText(R.string.notSixCharacters);
-                    submit.setEnabled(false);
                     passwordTooShort.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                 } else {
                     passwordTooShort.setText(R.string.isSixCharacters);
                     length1 = true;
                     passwordTooShort.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkmarksmall,0,0,0);
                     TextViewCompat.setCompoundDrawableTintList(passwordTooShort, ColorStateList.valueOf(getResources().getColor(R.color.green, getTheme())));
                 }
-                submit.setEnabled(false);
-                submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
                 if (!capital) {
                     noUppercase.setVisibility(View.VISIBLE);
                     noUppercase.setText(R.string.noUppercaseLetter);
-                    submit.setEnabled(false);
                     noUppercase.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                 } else {
                     noUppercase.setText(R.string.isUppercaseLetter);
                     noUppercase.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkmarksmall,0,0,0);
@@ -232,9 +227,8 @@ public class EditProfile extends AppCompatActivity {
                 if (!lowercase1) {
                     noLowercase.setVisibility(View.VISIBLE);
                     noLowercase.setText(R.string.notOneLowercase);
-                    submit.setEnabled(false);
                     noLowercase.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                 } else {
                     noLowercase.setText(R.string.isOneLowercase);
                     noLowercase.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkmarksmall,0,0,0);
@@ -243,9 +237,8 @@ public class EditProfile extends AppCompatActivity {
                 if (!number1) {
                     noNumber.setVisibility(View.VISIBLE);
                     noNumber.setText(R.string.notOneNumber);
-                    submit.setEnabled(false);
                     noNumber.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                 } else {
                     noNumber.setText(R.string.isOneNumber);
                     noNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkmarksmall,0,0,0);
@@ -256,9 +249,9 @@ public class EditProfile extends AppCompatActivity {
                     passRequirements.setVisibility(View.GONE);
                     if (userName[0] && name[0] && password[0]) {
 
+                        submit.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         submit.setEnabled(true);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white, getTheme())));
-                        submit.setOnClickListener(view -> submit());
+                        submit.setOnClickListener(v -> submit());
                     }
 
                 }
@@ -278,11 +271,11 @@ public class EditProfile extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                submit.setEnabled(false);
                 password[0] = false;
                 if (!confirm.getText().toString().equals(newPassword.getText().toString())) {
-                    submit.setEnabled(false);
                     password[0] = false;
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                     match.setVisibility(View.VISIBLE);
                     match.setTextColor(getTheme().getResources().getColor(R.color.grey, getTheme()));
                 }
@@ -294,9 +287,9 @@ public class EditProfile extends AppCompatActivity {
                     newPassword.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkmarksmall,0,0,0);
                     TextViewCompat.setCompoundDrawableTintList(newPassword, ColorStateList.valueOf(getResources().getColor(R.color.green, getTheme())));
                     if (name[0] && userName[0] && firstPassword[0]) {
+                        submit.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         submit.setEnabled(true);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blueGrey, getTheme())));
-                        submit.setOnClickListener(view -> submit());
+                        submit.setOnClickListener(v -> submit());
 
                     }
                 }
@@ -317,11 +310,10 @@ public class EditProfile extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int n, int i1, int i2) {
-                name[0] = false;
                 submit.setEnabled(false);
+                name[0] = false;
                 if (newName.getText().toString().length() < 1 && newName.getText().toString().length() > 0) {
-                    submit.setEnabled(false);
-                    submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey, getTheme())));
+                    submit.setTextColor(getResources().getColor(R.color.grey, getTheme()));
                     nameTooShort.setVisibility(View.VISIBLE);
                 }
                 else if (newName.getText().toString().length() == 0) {
@@ -331,8 +323,8 @@ public class EditProfile extends AppCompatActivity {
                     nameTooShort.setVisibility(View.GONE);
                     name[0] = true;
                     if (userName[0] && firstPassword[0] && password[0]) {
+                        submit.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         submit.setEnabled(true);
-                        submit.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.white, getTheme())));
                         submit.setOnClickListener(view -> submit());
                     }
                 }
@@ -352,6 +344,10 @@ public class EditProfile extends AppCompatActivity {
 
     public void submit() {
 
+        SaveUserData load = new SaveUserData();
+        if (thisUser == null) {
+            load.loadUserData(EditProfile.this);
+        }
         pb.setVisibility(View.VISIBLE);
         EditText newName = findViewById(R.id.etEditName);
         EditText newUserName = findViewById(R.id.etEditUsername);
@@ -359,42 +355,35 @@ public class EditProfile extends AppCompatActivity {
         String nName = newName.getText().toString();
         String nPassword = newPassword.getText().toString();
         String nUserName = newUserName.getText().toString().toLowerCase();
-        String choice = adapter.getItem(sCurrency.getSelectedItemPosition());
-        StringBuilder b = new StringBuilder();
-        boolean found = false;
-        for (int i = 0; i < choice.length(); ++i) {
-            char c = choice.charAt(i);
-            if (!found) {
-                if (c == '(') {
-                    found = true;
-                }
-            }
-            else {
-                if (c == ')') {
-                    thisUser.setCurrency(b.toString());
-                    break;
-                }
-                else {
-                    b.append(c);
-                }
-            }
-        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String currentEmail = null;
+        if (user != null) {
+            currentEmail = user.getEmail();
+        }
         AuthCredential credential = EmailAuthProvider.getCredential(thisUser.getUserName(), thisUser.getPassword());
-        assert user != null;
+        String finalCurrentEmail = currentEmail;
         user.reauthenticate(credential).addOnCompleteListener(task -> {
-            user.updateEmail(nUserName).addOnCompleteListener(task1 -> {
-                if (task1.isSuccessful()) {
-                    Log.d(TAG, "User email address updated.");
-                    editor.putString("email", nName);
-                    editor.apply();
-                } else {
-                    Log.d(TAG, "User email address update failed.");
-                }
-            });
+            if (!nUserName.equals(finalCurrentEmail)) {
+                user.updateEmail(nUserName).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        thisUser.setUserName(nUserName);
+                        thisUser.setPassword(nPassword);
+                        thisUser.setName(nName);
+                        Log.d(TAG, "User email address updated.");
+                        editor.putString("email", nUserName);
+                        editor.apply();
+                    } else {
+                        Log.d(TAG, "User email address update failed.");
+
+                    }
+                });
+            }
             user.updatePassword(nPassword).addOnCompleteListener(task12 -> {
                 if (task12.isSuccessful()) {
+                    thisUser.setUserName(nUserName);
+                    thisUser.setPassword(nPassword);
+                    thisUser.setName(nName);
                     Log.d(TAG, "User password was updated.");
                     editor.putString("password", nPassword);
                     editor.apply();
@@ -402,54 +391,55 @@ public class EditProfile extends AppCompatActivity {
                     Log.d(TAG, "User password update failed.");
                 }
             });
-            UserProfileChangeRequest update = new UserProfileChangeRequest.Builder().setDisplayName(nName).build();
-            user.updateProfile(update);
+            user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(nName).build());
         });
         if (!nUserName.equalsIgnoreCase(thisUser.getUserName())) {
             FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
 
-            assert user1 != null;
-            user1.sendEmailVerification()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // email sent
-                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                            builder.setMessage(getString(R.string.emailAddressUpdated)).setTitle(getString(R.string.accountCreatedSuccessfully))
-                                    .setPositiveButton(getString(R.string.ok), (dialogInterface, i) -> {
+            if (user1 != null) {
+                user1.sendEmailVerification()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // email sent
+                                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                                builder.setMessage(getString(R.string.emailAddressUpdated)).setTitle(getString(R.string.emailAddressUpdatedSuccessfully))
+                                        .setPositiveButton(getString(R.string.ok), (dialogInterface, i) -> {
 
-                                        FirebaseAuth.getInstance().signOut();
-                                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                                        mAuth.signInWithEmailAndPassword(nUserName, nPassword)
-                                                .addOnCompleteListener(task13 -> {
+                                            FirebaseAuth.getInstance().signOut();
+                                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                            mAuth.signInWithEmailAndPassword(nUserName, nPassword)
+                                                    .addOnCompleteListener(task13 -> {
 
-                                                    if (task13.isSuccessful()) {
-                                                        Log.d(TAG, "signInWithEmail:success");
-                                                    } else {
-                                                        Log.w(TAG, "signInWithEmail:failure", task13.getException());
-                                                    }
+                                                        if (task13.isSuccessful()) {
+                                                            Log.d(TAG, "signInWithEmail:success");
+                                                        } else {
+                                                            Log.w(TAG, "signInWithEmail:failure", task13.getException());
+                                                        }
 
-                                                });
-                                        thisUser.setUserName(nUserName);
-                                        thisUser.setPassword(nPassword);
-                                        thisUser.setName(nName);
-                                        editor.putString("email", thisUser.getUserName());
-                                        editor.putString("password", thisUser.getPassword());
-                                        editor.apply();
-                                        db.collection("users").document(thisUser.getUserName()).set(thisUser);
-                                        Intent restart = new Intent(mContext, Logon.class);
-                                        restart.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(restart);
-                                    });
-                            pb.setVisibility(View.INVISIBLE);
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        } else {
-                            Toast.makeText(mContext, getString(R.string.anErrorHasOccurred),
-                                    Toast.LENGTH_SHORT).show();
-                            overridePendingTransition(0, 0);
+                                                    });
+                                            thisUser.setUserName(nUserName);
+                                            thisUser.setPassword(nPassword);
+                                            thisUser.setName(nName);
+                                            editor.putString("email", thisUser.getUserName());
+                                            editor.putString("password", thisUser.getPassword());
+                                            editor.apply();
+                                            db.collection("users").document(uid).set(thisUser);
+                                            load.saveUserData(EditProfile.this);
+                                            Intent restart = new Intent(mContext, Logon.class);
+                                            restart.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(restart);
+                                        });
+                                pb.setVisibility(View.INVISIBLE);
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            } else {
+                                Toast.makeText(mContext, getString(R.string.anErrorHasOccurred),
+                                        Toast.LENGTH_SHORT).show();
+                                overridePendingTransition(0, 0);
 
-                        }
-                    });
+                            }
+                        });
+            }
         } else {
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             mAuth.signInWithEmailAndPassword(nUserName, nPassword)
@@ -468,7 +458,7 @@ public class EditProfile extends AppCompatActivity {
             editor.apply();
             if (thisUser != null) {
                 SaveUserData save = new SaveUserData();
-                save.saveUserData(EditProfile.this, thisUser);
+                save.saveUserData(EditProfile.this);
             }
             Toast.makeText(this, getString(R.string.informationUpdated), Toast.LENGTH_SHORT).show();
             Context mContext = this;
@@ -477,7 +467,6 @@ public class EditProfile extends AppCompatActivity {
             home.putExtra("Welcome", true);
             startActivity(home);
         }
-        db.collection("users").document(thisUser.getUserName()).set(thisUser);
 
     }
 

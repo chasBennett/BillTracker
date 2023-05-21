@@ -14,118 +14,46 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:translationZ="2dp"
         app:adSize="BANNER"
         app:adUnitId="ca-app-pub-7376638390241452/6281228857"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/toolbar1"
+    <include
+        android:id="@+id/include2"
+        layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:background="@color/offset"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/drawerToggle1"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:contentDescription="@string/drawer_toggle"
-            android:gravity="start"
-            android:padding="15dp"
-            app:srcCompat="@drawable/ic_baseline_menu_24"
-            app:tint="@color/blackAndWhite" />
-
-        <TextView
-            android:id="@+id/textView481"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="65dp"
-            android:layout_height="65dp">
-
-            <ImageView
-                android:id="@+id/help1"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:contentDescription="@string/help_icon"
-                android:padding="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/mail_5888"
-                app:tint="@color/blackAndWhite" />
-
-            <TextView
-                android:id="@+id/ticketCounter1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:paddingStart="7dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="7dp"
-                android:paddingBottom="2dp"
-                android:text="@string/two"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                app:backgroundTint="@color/button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/settingsButton1"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:contentDescription="@string/settings_icon"
-            android:gravity="end"
-            android:padding="20dp"
-            android:visibility="visible"
-            app:srcCompat="@drawable/settings_3110"
-            app:tint="@color/blackAndWhite" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar1" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/border_styles"
+        android:backgroundTint="@color/group"
+        android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/adView3">
+        app:layout_constraintTop_toBottomOf="@+id/include2">
 
         <TextView
             android:id="@+id/viewBillersHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:text="@string/registeredBillers"
             android:textAlignment="center"
             android:textColor="@color/blackAndWhite"
             android:textSize="26sp"
             android:textStyle="bold"
-            android:translationX="600dp"
+            android:translationX="1dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -133,63 +61,52 @@
             android:id="@+id/textView43"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:text="@string/clickBillerTile"
             android:textSize="16sp"
-            android:translationX="-600dp"
+            android:translationX="-1dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/viewBillersHeader" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView6"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/constraintLayout3" />
-
     <ScrollView
         android:id="@+id/scrollView6"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="20dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/border_styles"
+        android:backgroundTint="@color/group"
+        android:padding="10dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider2">
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
         <LinearLayout
             android:id="@+id/llViewBillers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:translationY="600dp">
+            android:translationY="1dp">
 
             <LinearLayout
                 android:id="@+id/noBillers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="400dp"
                 android:orientation="vertical"
+                android:visibility="gone"
                 tools:ignore="UseCompoundDrawables,UselessParent">
 
                 <ImageView
                     android:id="@+id/imageView9"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="100dp"
                     android:contentDescription="@string/no_results"
                     app:srcCompat="@drawable/noun_not_found_2503986"
                     app:tint="@color/grey" />
@@ -198,6 +115,7 @@
                     android:id="@+id/textView24"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
                     android:layout_marginTop="30dp"
                     android:gravity="center"
                     android:text="@string/noBillers"
@@ -207,183 +125,15 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/navDrawer1"
+    <include
+        layout="@layout/nav_tray"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:nestedScrollingEnabled="true"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            tools:ignore="UselessParent">
-
-            <LinearLayout
-                android:id="@+id/linearLayout21"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".3"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/navHeaderBox1"
-                    android:layout_width="match_parent"
-                    android:layout_height="251dp"
-                    android:background="@color/blue"
-                    android:gravity="bottom"
-                    android:orientation="vertical"
-                    android:paddingStart="20dp"
-                    android:paddingTop="30dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="20dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="1dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="40dp"
-                        android:orientation="horizontal"
-                        tools:ignore="UseCompoundDrawables"
-                        tools:layout_conversion_absoluteHeight="56dp"
-                        tools:layout_conversion_absoluteWidth="246dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="38dp">
-
-                        <ImageView
-                            android:id="@+id/iVLogo1"
-                            android:layout_width="53dp"
-                            android:layout_height="61dp"
-                            android:contentDescription="@string/nav_header_desc"
-                            app:srcCompat="@drawable/newbillsicon"
-                            app:tint="@color/icon" />
-
-                        <TextView
-                            android:id="@+id/logoutButton1"
-                            android:layout_width="120dp"
-                            android:layout_height="35dp"
-                            android:layout_marginStart="30dp"
-                            android:layout_marginTop="15dp"
-                            android:background="@drawable/border_styles"
-                            android:gravity="center"
-                            android:text="@string/logout"
-                            android:textColor="@color/blackAndWhite"
-                            android:textSize="14sp"
-                            app:backgroundTint="@color/grey" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvName1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="@string/nav_header_title"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/white"
-                        tools:layout_conversion_absoluteHeight="27dp"
-                        tools:layout_conversion_absoluteWidth="246dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="113dp" />
-
-                    <TextView
-                        android:id="@+id/tvUserName1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nav_header_subtitle"
-                        android:textColor="@color/white"
-                        tools:layout_conversion_absoluteHeight="19dp"
-                        tools:layout_conversion_absoluteWidth="182dp"
-                        tools:layout_editor_absoluteX="16dp"
-                        tools:layout_editor_absoluteY="141dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout511"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/tray"
-                    android:elevation="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/navHome1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navHome"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_home_24"
-                        app:drawableTint="@color/blackAndWhite" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/border"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:id="@+id/navViewBillers1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/navViewBillers"
-                            android:textSize="16sp"
-                            app:drawableStartCompat="@drawable/ic_baseline_list_alt_24"
-                            app:drawableTint="@color/button" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/navPaymentHistory1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navPaymentHistory"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
-                        app:drawableTint="@color/blackAndWhite" />
-
-                    <TextView
-                        android:id="@+id/myStats1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:padding="10dp"
-                        android:text="@string/navInsights"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@drawable/ic_baseline_insights_24"
-                        app:drawableTint="@color/blackAndWhite" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/hideNavDrawer1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".7"
-                android:alpha="0.5"
-                android:background="@color/black"
-                android:orientation="vertical"
-                android:visibility="visible" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/pb14"

@@ -1,9 +1,9 @@
 package com.example.billstracker;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,12 +12,12 @@ import java.io.IOException;
 
 public class BillerImage {
 
-    public String storeImage (Context context, Drawable drawable, String billerName, boolean custom) throws IOException {
+    public String storeImage (Drawable drawable, String billerName, boolean custom) throws IOException {
 
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-        File dir = new File(context.getFilesDir(),"billerImages");
+        bitmap.compress(Bitmap.CompressFormat.PNG, 75, bytes);
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"billerImages");
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -28,7 +28,7 @@ public class BillerImage {
         else {
             outFile = new File(dir, billerName + ".png");
         }
-        FileOutputStream outStream = new FileOutputStream(outFile);
+        FileOutputStream outStream = new FileOutputStream(outFile, false);
         outStream.write(bytes.toByteArray());
 
         outStream.flush();

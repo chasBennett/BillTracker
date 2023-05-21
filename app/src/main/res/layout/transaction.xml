@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<me.thanel.swipeactionview.SwipeActionView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/expenseSwipeView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false">
+
+    <TextView
+        android:id="@+id/textView88"
+        android:layout_width="120dp"
+        android:layout_height="match_parent"
+        android:background="@color/red"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="@string/delete"
+        android:textColor="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/offset"
+            android:clipChildren="false"
+            android:orientation="horizontal"
+            android:paddingStart="25dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="25dp"
+            android:paddingBottom="15dp"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".6"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/viewExpenseDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/viewExpenseCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/viewExpenseAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight=".4"
+                android:gravity="end"
+                android:text="" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</me.thanel.swipeactionview.SwipeActionView>

@@ -22,8 +22,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
-            app:srcCompat="@drawable/trophy"
-            android:contentDescription="@string/trophy_image" />
+            android:contentDescription="@string/trophy_image"
+            app:srcCompat="@drawable/trophy" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -69,11 +69,11 @@
                 android:layout_height="0dp"
                 android:layout_gravity="top|center"
                 android:layout_weight=".5"
+                android:contentDescription="@string/close_button"
                 android:padding="15dp"
                 app:srcCompat="@drawable/ic_baseline_close_24"
                 app:tint="@color/white"
-                tools:ignore="NestedWeights"
-                android:contentDescription="@string/close_button" />
+                tools:ignore="NestedWeights" />
 
             <ImageView
                 android:id="@+id/shareTrophy1"
@@ -81,10 +81,10 @@
                 android:layout_height="0dp"
                 android:layout_gravity="bottom|center"
                 android:layout_weight=".5"
+                android:contentDescription="@string/share_button"
                 android:padding="15dp"
                 app:srcCompat="@drawable/baseline_share_24"
-                app:tint="@color/white"
-                android:contentDescription="@string/share_button" />
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 

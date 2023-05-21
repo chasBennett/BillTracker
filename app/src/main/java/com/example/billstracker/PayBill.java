@@ -1,6 +1,8 @@
 package com.example.billstracker;
 
+import static com.example.billstracker.Logon.paymentInfo;
 import static com.example.billstracker.Logon.thisUser;
+import static com.example.billstracker.Logon.uid;
 import static com.example.billstracker.MainActivity2.channelId;
 
 import android.app.AlarmManager;
@@ -30,6 +32,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,20 +44,24 @@ import java.util.Locale;
 public class PayBill extends AppCompatActivity {
 
     Dialog dialog;
-    TextView paymentDueDate, paymentAmountDue, editBiller, viewPayments, dueDateLabel, amountDueLabel, webAddress, tvBillerName, datePaidLabel, paymentDatePaid;
+    TextView paymentDueDate, paymentAmountDue, editBiller, viewPayments, dueDateLabel, amountDueLabel, webAddress, tvBillerName, datePaidLabel, paymentDatePaid, displayPaymentsRemaining,
+            displayPartialPayment;
     ImageView paidIcon;
     com.google.android.material.imageview.ShapeableImageView payBillIcon;
     ConstraintLayout payBill;
-    Button payButton;
+    Button payButton, partialPayment;
     int paymentId;
     Payments pay;
-    Bills bil;
+    Bill bil;
     Context mContext = this;
-    LinearLayout datePaidLayout, back, pb;
+    LinearLayout datePaidLayout, back, pb, paymentsRemainingLayout, partialPaymentLayout;
     DateFormatter df;
-    String datePaid, billerName;
+    String billerName;
     boolean darkMode;
     FixNumber fn = new FixNumber();
+    SaveUserData save = new SaveUserData();
+    BillerManager bm = new BillerManager();
+    int newDueDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +79,19 @@ public class PayBill extends AppCompatActivity {
         paidIcon = findViewById(R.id.paidIcon);
         pb = findViewById(R.id.pb10);
         amountDueLabel = findViewById(R.id.amountDueLabel);
+        partialPayment = findViewById(R.id.btnPartialPayment);
         webAddress = findViewById(R.id.webAddress);
         paymentDueDate = findViewById(R.id.paymentDueDate1);
         datePaidLabel = findViewById(R.id.datePaidLabel);
         paymentDatePaid = findViewById(R.id.paymentDatePaid);
+        partialPaymentLayout = findViewById(R.id.partialPaymentLayout);
+        displayPartialPayment = findViewById(R.id.displayPartialPayment);
+        displayPaymentsRemaining = findViewById(R.id.displayPaymentsRemaining);
+        paymentsRemainingLayout = findViewById(R.id.paymentsRemainingLayout2);
         datePaidLayout = findViewById(R.id.datePaidLayout);
         df = new DateFormatter();
         darkMode = false;
+        overridePendingTransition(0,0);
         int nightModeFlags = getApplicationContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
             darkMode = true;
@@ -93,9 +106,8 @@ public class PayBill extends AppCompatActivity {
     public void startPayBill() {
 
         Bundle bundle = getIntent().getExtras();
-        String dueDate = bundle.getString("Due Date", "");
-        billerName = bundle.getString("Biller Name", "");
-        boolean isPaid = bundle.getBoolean("Is Paid", false);
+        String dueDate = null;
+        boolean isPaid = false;
         paymentId = bundle.getInt("Payment Id");
         int todaysDate = df.currentDateAsInt();
 
@@ -103,35 +115,55 @@ public class PayBill extends AppCompatActivity {
             SaveUserData load = new SaveUserData();
             load.loadUserData(PayBill.this);
         }
-        ArrayList<Bills> billList = thisUser.getBills();
+        ArrayList<Bill> billList = thisUser.getBills();
         String website = "www.google.com";
 
-        for (Bills bill : thisUser.getBills()) {
+        for (Payments payment : paymentInfo.getPayments()) {
+            if (payment.getPaymentId() == paymentId) {
+                dueDate = df.convertIntDateToString(payment.getPaymentDate());
+                paymentDueDate.setText(dueDate);
+                pay = payment;
+                billerName = pay.getBillerName();
+                isPaid = pay.isPaid();
+                paymentAmountDue.setText(fn.addSymbol(pay.getPaymentAmount()));
+                if (payment.isPaid()) {
+                    datePaidLayout.setVisibility(View.VISIBLE);
+                    paymentDatePaid.setText(df.convertIntDateToString(payment.getDatePaid()));
+                    amountDueLabel.setText(R.string.amount_paid);
+                    payButton.setText(R.string.unmarkAsPaid);
+                } else {
+                    datePaidLayout.setVisibility(View.GONE);
+                    payButton.setText(R.string.markAsPaid);
+                    paidIcon.setImageDrawable(null);
+                }
+                if (payment.getPartialPayment() > 0 && !payment.isPaid()) {
+                    partialPaymentLayout.setVisibility(View.VISIBLE);
+                    displayPartialPayment.setText(fn.addSymbol(fn.makeDouble(String.valueOf(payment.getPartialPayment()))));
+                    amountDueLabel.setText(R.string.amount_remaining);
+                    paymentAmountDue.setText(fn.addSymbol(fn.makeDouble(String.valueOf(Double.parseDouble(payment.getPaymentAmount()) - payment.getPartialPayment()))));
+                }
+            }
+
+        }
+
+        for (Bill bill : thisUser.getBills()) {
             if (bill.getBillerName().equals(billerName)) {
                 bil = bill;
-                for (Payments payment : bill.getPayments()) {
-                    if (payment.getPaymentId() == paymentId) {
-                        paymentDueDate.setText(df.convertIntDateToString(payment.getPaymentDate()));
-                        pay = payment;
-                        if (payment.isPaid()) {
-                            datePaidLayout.setVisibility(View.VISIBLE);
-                            paymentDatePaid.setText(df.convertIntDateToString(payment.getDatePaid()));
-                            payButton.setText(R.string.unmarkAsPaid);
-                        } else {
-                            datePaidLayout.setVisibility(View.GONE);
-                            payButton.setText(R.string.markAsPaid);
-                            paidIcon.setImageDrawable(null);
-                        }
+                if (Integer.parseInt(bil.getPaymentsRemaining()) < 400) {
+                    paymentsRemainingLayout.setVisibility(View.VISIBLE);
+                    if (bil.getPaymentsRemaining().equals("0")) {
+                        displayPaymentsRemaining.setText(getString(R.string.paid_in_full));
                     }
-
+                    else {
+                        displayPaymentsRemaining.setText(bil.getPaymentsRemaining());
+                    }
                 }
-                website = bill.getWebsite();
             }
+            website = bill.getWebsite();
         }
         LoadIcon loadIcon = new LoadIcon();
         loadIcon.loadIcon(PayBill.this, payBillIcon, bil.getCategory(), bil.getIcon());
         tvBillerName.setText(pay.getBillerName());
-        paymentAmountDue.setText(fn.addSymbol(pay.getPaymentAmount()));
 
         String finalWebsite = website;
         webAddress.setOnClickListener(view -> {
@@ -143,23 +175,130 @@ public class PayBill extends AppCompatActivity {
             startActivity(launch);
         });
 
-        paymentDatePaid.setOnClickListener(view -> getDateFromUser(paymentDatePaid, false));
+        displayPartialPayment.setOnClickListener(v -> {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+            alert.setTitle(getString(R.string.changePartialPayment));
+            alert.setMessage(getString(R.string.would_you_like_to_change_your_partial_payment_or_remove_it));
+            alert.setPositiveButton(getString(R.string.changeAmount), (dialogInterface, i) -> {
+                AlertDialog.Builder alert1 = new AlertDialog.Builder(mContext);
+                alert1.setTitle(getString(R.string.change_partial_payment_amount));
+                alert1.setMessage(getString(R.string.please_enter_the_new_partial_payment_amount));
+                LinearLayout ll = new LinearLayout(PayBill.this);
+                final EditText input = new EditText(PayBill.this);
+                input.setText(String.format(Locale.getDefault(), "  %s", fn.addSymbol(String.valueOf(pay.getPartialPayment()))));
+                input.setBackground(AppCompatResources.getDrawable(PayBill.this, R.drawable.edit_text));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(50, 50, 50, 50);
+                ll.setLayoutParams(lp);
+                ll.setPadding(30, 0, 0, 0);
+                input.setLayoutParams(lp);
+                ll.addView(input);
+                input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+                input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                input.addTextChangedListener(new MoneyTextWatcher(input));
+                alert1.setView(ll);
+                final double[] remaining = {0};
+                alert1.setPositiveButton(getString(R.string.submit), (dialogInterface1, n) -> {
+                    for (Payments pay: paymentInfo.getPayments()) {
+                        if (pay.getPaymentId() == paymentId) {
+                            pay.setPartialPayment(Double.parseDouble(fn.makeDouble(input.getText().toString())));
+                            remaining[0] = Double.parseDouble(fn.makeDouble(pay.getPaymentAmount())) - Double.parseDouble(fn.makeDouble(input.getText().toString()));
+                            pay.setDateChanged(true);
+                        }
+                    }
+                    partialPaymentLayout.setVisibility(View.VISIBLE);
+                    displayPartialPayment.setText(fn.addSymbol(fn.makeDouble(input.getText().toString())));
+                    amountDueLabel.setText(R.string.amount_remaining);
+                    paymentAmountDue.setText(fn.addSymbol(fn.makeDouble(String.valueOf(remaining[0]))));
+                    bm.savePayments();
+                    save.saveUserData(PayBill.this);
+                });
+                alert1.setNegativeButton(getString(R.string.cancel), (dialogInterface1, n) -> {
 
+                });
+                AlertDialog builder = alert1.create();
+                builder.show();
+            });
+            alert.setNeutralButton(getString(R.string.remove), (dialogInterface, i) -> {
+                for (Payments payments: paymentInfo.getPayments()) {
+                    if (payments.getPaymentId() == pay.getPaymentId()) {
+                        payments.setPartialPayment(0);
+                    }
+                }
+                partialPaymentLayout.setVisibility(View.GONE);
+                displayPartialPayment.setText("");
+                amountDueLabel.setText(R.string.amount_due);
+                paymentAmountDue.setText(fn.addSymbol(fn.makeDouble(String.valueOf(pay.getPaymentAmount()))));
+                bm.savePayments();
+                save.saveUserData(PayBill.this);
+                    });
+            alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+
+            });
+            AlertDialog builder = alert.create();
+            builder.show();
+        });
+
+        partialPayment.setOnClickListener(v -> {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+            alert.setTitle(getString(R.string.partial_payment));
+            alert.setMessage(getString(R.string.pleaseEnterYourPaymentAmount));
+            LinearLayout ll = new LinearLayout(PayBill.this);
+            final EditText input = new EditText(PayBill.this);
+            input.setText(String.format(Locale.getDefault(), "  %s", fn.addSymbol(pay.getPaymentAmount())));
+            input.setBackground(AppCompatResources.getDrawable(PayBill.this, R.drawable.edit_text));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(50, 50, 50, 50);
+            ll.setLayoutParams(lp);
+            ll.setPadding(30, 0, 0, 0);
+            input.setLayoutParams(lp);
+            ll.addView(input);
+            input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            input.addTextChangedListener(new MoneyTextWatcher(input));
+            alert.setView(ll);
+            final double[] remaining = {0};
+            alert.setPositiveButton(getString(R.string.submit), (dialogInterface, i) -> {
+                for (Payments pay: paymentInfo.getPayments()) {
+                    if (pay.getPaymentId() == paymentId) {
+                        pay.setPartialPayment(Double.parseDouble(fn.makeDouble(input.getText().toString())));
+                        remaining[0] = Double.parseDouble(fn.makeDouble(pay.getPaymentAmount())) - Double.parseDouble(fn.makeDouble(input.getText().toString()));
+                        pay.setDateChanged(true);
+                    }
+                }
+                partialPaymentLayout.setVisibility(View.VISIBLE);
+                displayPartialPayment.setText(fn.addSymbol(fn.makeDouble(input.getText().toString())));
+                amountDueLabel.setText(R.string.amount_remaining);
+                paymentAmountDue.setText(fn.addSymbol(fn.makeDouble(String.valueOf(remaining[0]))));
+                bm.savePayments();
+                save.saveUserData(PayBill.this);
+            });
+            alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+
+            });
+            AlertDialog builder = alert.create();
+            builder.show();
+        });
+
+        paymentDatePaid.setOnClickListener(view -> getDateFromUser(paymentDatePaid));
+
+        String finalDueDate = dueDate;
+        boolean finalIsPaid = isPaid;
         paymentAmountDue.setOnClickListener(view -> {
             androidx.appcompat.app.AlertDialog.Builder alert = new androidx.appcompat.app.AlertDialog.Builder(mContext);
             alert.setTitle(getString(R.string.changeAmount));
             alert.setMessage(getString(R.string.pleaseEnterYourPaymentAmount));
             LinearLayout ll = new LinearLayout(PayBill.this);
             final EditText input = new EditText(PayBill.this);
-            input.setText(String.format(Locale.getDefault(),"  %s", fn.addSymbol(pay.getPaymentAmount())));
+            input.setText(String.format(Locale.getDefault(), "  %s", fn.addSymbol(pay.getPaymentAmount())));
             input.setBackground(AppCompatResources.getDrawable(this, R.drawable.edit_text));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(50,50,50,50);
+            lp.setMargins(50, 50, 50, 50);
             ll.setLayoutParams(lp);
-            ll.setPadding(30,0,0,0);
+            ll.setPadding(30, 0, 0, 0);
             input.setLayoutParams(lp);
             ll.addView(input);
-            input.setFilters(new InputFilter[] {new InputFilter.LengthFilter(12)});
+            input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             input.addTextChangedListener(new MoneyTextWatcher(input));
             alert.setView(ll);
@@ -175,56 +314,54 @@ public class PayBill extends AppCompatActivity {
                 alert1.setPositiveButton(getString(R.string.updateAll), (dialogInterface1, i12) -> {
                     pb.setVisibility(View.VISIBLE);
 
-                    for (Bills bill : thisUser.getBills()) {
+                    for (Bill bill : thisUser.getBills()) {
                         if (bill.getBillerName().equals(tvBillerName.getText().toString())) {
                             bill.setAmountDue(finalNewAmountDue);
-                            for (Payments payment : bill.getPayments()) {
-                                if (!payment.isPaid()) {
-                                    payment.setPaymentAmount(finalNewAmountDue);
-                                }
-                            }
+                        }
+                    }
+                    for (Payments payment : paymentInfo.getPayments()) {
+                        if (!payment.isPaid() && payment.getBillerName().equals(tvBillerName.getText().toString())) {
+                            payment.setPaymentAmount(finalNewAmountDue);
                         }
                     }
                     paymentAmountDue.setText(fn.addSymbol(finalNewAmountDue));
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     if (thisUser != null) {
                         SaveUserData save = new SaveUserData();
-                        save.saveUserData(PayBill.this, thisUser);
+                        save.saveUserData(PayBill.this);
                     }
-                    db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
+                    db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+                    bm.savePayments();
                     pb.setVisibility(View.GONE);
                 });
                 alert1.setNeutralButton(getString(R.string.justThisOccurence), (dialogInterface12, i13) -> {
                     pb.setVisibility(View.VISIBLE);
-                    for (Bills bill : thisUser.getBills()) {
-                        if (bill.getBillerName().equals(tvBillerName.getText().toString())) {
-                            for (Payments payment : bill.getPayments()) {
-                                if (payment.getPaymentId() == (paymentId)) {
-                                    payment.setPaymentAmount(finalNewAmountDue);
-                                }
-                            }
+                    for (Payments payment : paymentInfo.getPayments()) {
+                        if (payment.getPaymentId() == (paymentId)) {
+                            payment.setPaymentAmount(finalNewAmountDue);
+                            payment.setDateChanged(true);
                         }
                     }
                     paymentAmountDue.setText(fn.addSymbol(finalNewAmountDue));
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
                     if (thisUser != null) {
                         SaveUserData save = new SaveUserData();
-                        save.saveUserData(PayBill.this, thisUser);
+                        save.saveUserData(PayBill.this);
                     }
-                    db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
+                    bm.savePayments();
                     pb.setVisibility(View.GONE);
                 });
-                alert1.setNegativeButton(getString(R.string.cancel), (dialogInterface13, i14) -> startPay(dueDate, billerName, fn.makeDouble(bil.getAmountDue()), isPaid, todaysDate));
+                alert1.setNegativeButton(getString(R.string.cancel), (dialogInterface13, i14) -> startPay(finalDueDate, billerName, fn.makeDouble(bil.getAmountDue()), finalIsPaid, todaysDate));
                 alert1.create();
                 alert1.show();
             });
             alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
 
             });
-                    androidx.appcompat.app.AlertDialog builder = alert.create();
+            androidx.appcompat.app.AlertDialog builder = alert.create();
             builder.show();
         });
 
+        boolean finalIsPaid1 = isPaid;
         editBiller.setOnClickListener(view -> {
             pb.setVisibility(View.VISIBLE);
 
@@ -236,14 +373,14 @@ public class PayBill extends AppCompatActivity {
             edit.putExtra("frequency", bil.getFrequency());
             edit.putExtra("recurring", bil.isRecurring());
             edit.putExtra("Payment Id", paymentId);
-            edit.putExtra("Paid", isPaid);
+            edit.putExtra("Paid", finalIsPaid1);
             startActivity(edit);
         });
 
         viewPayments.setOnClickListener(view -> {
             pb.setVisibility(View.VISIBLE);
 
-            for (Bills bill : billList) {
+            for (Bill bill : billList) {
                 if (bill.getBillerName().equals(billerName)) {
                     Intent history = new Intent(mContext, PaymentHistory.class);
                     history.putExtra("User Id", thisUser.getid());
@@ -253,32 +390,41 @@ public class PayBill extends AppCompatActivity {
             }
         });
 
+        boolean finalIsPaid2 = isPaid;
         payButton.setOnClickListener(view -> {
 
             androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
-            if (!isPaid) {
+            if (!finalIsPaid2) {
 
                 builder.setMessage(getString(R.string.areYouSureYouWantToMarkThisBillAsPaid)).setTitle(
                         getString(R.string.markAsPaid)).setPositiveButton(getString(R.string.markAsPaid), (dialogInterface, i) -> {
                     pb.setVisibility(View.VISIBLE);
-                    for (Bills bill : billList) {
+                    for (Bill bill : billList) {
                         if (bill.getBillerName().equals(billerName)) {
-                            ArrayList<Payments> find = bill.getPayments();
+                            if (!bill.getPaymentsRemaining().equals("1000")) {
+                                bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) - 1));
+                            }
+                            ArrayList<Payments> find = new ArrayList<>();
+                            for (Payments pay : paymentInfo.getPayments()) {
+                                if (pay.getBillerName().equals(bill.getBillerName())) {
+                                    find.add(pay);
+                                }
+                            }
                             for (Payments payment : find) {
                                 if (payment.getPaymentId() == (paymentId)) {
                                     payment.setPaid(true);
                                     payment.setDatePaid(todaysDate);
-                                    bill.setPayments(find);
                                     bill.setDateLastPaid(todaysDate);
                                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                                     NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                     nm.cancel(paymentId);
                                     nm.cancel(paymentId + 1);
                                     nm.cancel(paymentId + 11);
-                                    db.collection("users").document(thisUser.getUserName()).update("bills", billList);
+                                    db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+                                    bm.savePayments();
                                     if (thisUser != null) {
                                         SaveUserData save = new SaveUserData();
-                                        save.saveUserData(PayBill.this, thisUser);
+                                        save.saveUserData(PayBill.this);
                                     }
                                     Intent home = new Intent(mContext, MainActivity2.class);
                                     home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -299,25 +445,32 @@ public class PayBill extends AppCompatActivity {
                 builder.setTitle(getString(R.string.unmarkAsPaid));
                 builder.setPositiveButton(getString(R.string.unmarkAsPaid), (dialogInterface, i) -> {
                     pb.setVisibility(View.VISIBLE);
-                    for (Bills bill : billList) {
+                    for (Bill bill : billList) {
                         if (bill.getBillerName().equals(billerName)) {
-                            ArrayList<Payments> find = bill.getPayments();
+                            if (!bill.getPaymentsRemaining().equals("1000")) {
+                                bill.setPaymentsRemaining(String.valueOf(Integer.parseInt(bill.getPaymentsRemaining()) + 1));
+                            }
+                            ArrayList<Payments> find = new ArrayList<>();
+                            for (Payments pay : paymentInfo.getPayments()) {
+                                if (pay.getBillerName().equals(bill.getBillerName())) {
+                                    find.add(pay);
+                                }
+                            }
                             for (Payments payment : find) {
                                 if (payment.getPaymentId() == (paymentId)) {
                                     payment.setPaid(false);
                                     payment.setDatePaid(0);
                                     int highest = 0;
-                                    for (Payments pay: bill.getPayments()) {
-                                        if (pay.isPaid() && pay.getDatePaid() > highest) {
+                                    for (Payments pay : paymentInfo.getPayments()) {
+                                        if (pay.getBillerName().equals(bill.getBillerName()) && pay.isPaid() && pay.getDatePaid() > highest) {
                                             highest = pay.getDatePaid();
                                         }
                                     }
                                     bill.setDateLastPaid(highest);
-                                    bill.setPayments(find);
                                     scheduleNotifications(payment);
                                     if (thisUser != null) {
                                         SaveUserData save = new SaveUserData();
-                                        save.saveUserData(PayBill.this, thisUser);
+                                        save.saveUserData(PayBill.this);
                                     }
                                     payBill.setBackground(new ColorDrawable(Color.TRANSPARENT));
                                     Intent home = new Intent(mContext, MainActivity2.class);
@@ -332,7 +485,8 @@ public class PayBill extends AppCompatActivity {
                             int lastPaid = Collections.max(dates);
                             bill.setDateLastPaid(lastPaid);
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("users").document(thisUser.getUserName()).update("bills", billList);
+                            db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+                            bm.savePayments();
                         }
                     }
                 });
@@ -343,7 +497,7 @@ public class PayBill extends AppCompatActivity {
             }
         });
 
-        paymentDueDate.setOnClickListener(view -> getDateFromUser(paymentDueDate, true));
+        paymentDueDate.setOnClickListener(view -> getDateFromUser(paymentDueDate));
     }
 
     public void startPay(String dueDate, String billerName, String amountDue, boolean isPaid, int todaysDate) {
@@ -366,7 +520,7 @@ public class PayBill extends AppCompatActivity {
         startPayBill();
     }
 
-    public void refreshDate(int dueDate) {
+    public void refreshDate() {
 
         String billerName1 = tvBillerName.getText().toString();
 
@@ -377,43 +531,40 @@ public class PayBill extends AppCompatActivity {
             builder.setMessage(getString(R.string.changeAllOccurrences));
             builder.setPositiveButton(getString(R.string.changeAll), (dialogInterface, i) -> {
                 pb.setVisibility(View.VISIBLE);
-
-                ArrayList <Payments> newPaymentList = bil.getPayments();
-                BillerManager billerManager = new BillerManager();
-                Bills newBill = bil;
-                newPaymentList = billerManager.generatePayments(newPaymentList, dueDate, bil.getFrequency(), "changeDate", pay.getPaymentAmount());
-                newBill.setDayDue(pay.getPaymentDate());
-                RemoveDuplicatePayments rdp = new RemoveDuplicatePayments();
-                rdp.removeDuplicatePayments(newPaymentList);
-                newBill.setPayments(newPaymentList);
+                Bill newBill = bil;
+                newBill.setDayDue(newDueDate);
                 thisUser.getBills().remove(bil);
                 thisUser.getBills().add(newBill);
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
+                db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+                for (Payments pay: paymentInfo.getPayments()) {
+                    if (pay.getBillerName().equals(billerName1) && !pay.isPaid()) {
+                        pay.setPaymentDate(newDueDate);
+                    }
+                }
                 if (thisUser != null) {
                     SaveUserData save = new SaveUserData();
-                    save.saveUserData(PayBill.this, thisUser);
+                    save.saveUserData(PayBill.this);
                 }
+                bm.savePayments();
                 pb.setVisibility(View.GONE);
             });
             builder.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
             });
             builder.setNeutralButton(getString(R.string.justThisOne), (dialogInterface, i) -> {
                 pb.setVisibility(View.VISIBLE);
-                for (Bills bills : thisUser.getBills()) {
-                    if (bills.getBillerName().equals(bil.getBillerName())) {
-                        for (Payments payments : bills.getPayments()) {
-                            if (payments.getPaymentId() == paymentId) {
-                                payments.setPaymentDate(dueDate);
-                                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                                if (thisUser != null) {
-                                    SaveUserData save = new SaveUserData();
-                                    save.saveUserData(PayBill.this, thisUser);
-                                }
-                                break;
-                            }
+
+                for (Payments payments : paymentInfo.getPayments()) {
+                    if (payments.getPaymentId() == paymentId) {
+                        payments.setPaymentDate(newDueDate);
+                        payments.setDateChanged(true);
+                        bm.savePayments();
+                        bm.refreshPayments(df.convertIntDateToLocalDate(newDueDate));
+                        if (thisUser != null) {
+                            SaveUserData save = new SaveUserData();
+                            save.saveUserData(PayBill.this);
                         }
+                        break;
                     }
                 }
                 pb.setVisibility(View.GONE);
@@ -422,29 +573,23 @@ public class PayBill extends AppCompatActivity {
             dialog.show();
         } else {
             pb.setVisibility(View.VISIBLE);
-            for (Bills bill : thisUser.getBills()) {
-                if (bill.getBillerName().equals(tvBillerName.getText().toString())) {
-                    for (Payments payment : bill.getPayments()) {
-                        if (payment.getPaymentId() == paymentId) {
-                            payment.setPaymentDate(dueDate);
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            db.collection("users").document(thisUser.getUserName()).update("bills", thisUser.getBills());
-                            if (thisUser != null) {
-                                SaveUserData save = new SaveUserData();
-                                save.saveUserData(PayBill.this, thisUser);
-                            }
-                            break;
-                        }
-                    }
+            bil.setDayDue(newDueDate);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+            for (Payments pay: paymentInfo.getPayments()) {
+                if (pay.getPaymentId() == paymentId) {
+                    pay.setDateChanged(true);
+                    pay.setPaymentDate(newDueDate);
+                    bm.savePayments();
                 }
             }
             pb.setVisibility(View.GONE);
         }
-        pay.setPaymentDate(dueDate);
+        pay.setPaymentDate(newDueDate);
         bil.setBillerName(billerName1);
     }
 
-    public void getDateFromUser(TextView dueDate, Boolean createPayments) {
+    public void getDateFromUser(TextView dueDate) {
 
         LocalDate local = df.convertIntDateToLocalDate(pay.getPaymentDate());
         int day = local.getDayOfMonth();
@@ -456,32 +601,15 @@ public class PayBill extends AppCompatActivity {
             int fixMonth = i1 + 1;
             LocalDate selected = LocalDate.of(i, fixMonth, i2);
             DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
-            String startDate = formatter.format(selected);
             dueDate.setText(formatter.format(selected));
-            if (createPayments) {
-                refreshDate(df.calcDateValue(selected));
-            }
-            else {
-                datePaid = startDate;
-                for (Bills bill: thisUser.getBills()) {
-                    if (bill.getBillerName().equals(billerName)) {
-                        for (Payments payment: bill.getPayments()) {
-                            if (payment.getPaymentId() == paymentId) {
-                                DateFormatter dateFormatter = new DateFormatter();
-                                payment.setDatePaid(dateFormatter.convertDateStringToInt(datePaid));
-                                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                db.collection("users").document(thisUser.getUserName()).set(thisUser);
-                            }
-                        }
-                    }
-                }
-            }
+            newDueDate = df.calcDateValue(selected);
+            refreshDate();
         }, year, month - 1, day);
-        datePicker.setTitle("Select Date");
+        datePicker.setTitle(getString(R.string.selectDate));
         datePicker.show();
     }
 
-    public void scheduleNotifications (Payments payment) {
+    public void scheduleNotifications(Payments payment) {
 
         DateFormatter df = new DateFormatter();
 

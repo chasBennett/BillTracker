@@ -4,21 +4,23 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">#0960A3</item>
         <item name="colorPrimaryVariant">#0960A3</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/offset</item>
         <item name="editTextBackground">@color/white</item>
         <item name="android:textColor">#353535</item>
         <item name="itemTextColor">@color/white</item>
+        <item name ="android:windowBackground">@color/background</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">#0960A3</item>
-        <item name="colorSecondaryVariant">@color/white</item>
+        <item name="colorSecondaryVariant">@color/offset</item>
         <item name="colorButtonNormal">@color/black</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/button</item>
+        <item name="android:statusBarColor">@color/toolbar</item>
         <!-- Customize your theme here. -->
         <item name="alertDialogTheme">@style/MyDialogStyle</item>
         <item name="colorError">@color/black</item>
         <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="buttonStyle">@style/TextButton</item>
     </style>
 
     <style name="Theme.BillTracker.NoActionBar">
@@ -27,4 +29,12 @@
     </style>
 
     <style name="Theme.BillTracker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Fullscreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="alertDialogTheme">@style/MyDialogStyle</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="buttonStyle">@style/TextButton</item>
+    </style>
 </resources>

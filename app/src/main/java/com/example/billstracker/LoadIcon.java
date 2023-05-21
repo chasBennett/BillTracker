@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,17 +39,17 @@ public class LoadIcon {
 
         if (!path.contains("custom") || !file.exists()) {
 
-            view.setContentPadding(40,40,40,40);
+            view.setContentPadding(30,30,30,30);
             view.setPadding(0,0,0,0);
             view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            Glide.with(context).load(icons.get(Integer.parseInt(category))).into(view);
+            Glide.with(context).load(icons.get(Integer.parseInt(category))).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).centerInside().into(view);
         }
         else {
             view.setImageTintList(null);
-            view.setContentPadding(40,40,40,40);
-            view.setPadding(5,5,5,5);
+            view.setContentPadding(0,0,0,0);
+            view.setPadding(40,40,40,40);
             view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            Glide.with(context).load(path).into(view);
+            Glide.with(context).load(path).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).circleCrop().into(view);
         }
     }
     public void loadDefault (Context context, int image, com.google.android.material.imageview.ShapeableImageView view) {
@@ -65,9 +66,9 @@ public class LoadIcon {
             view.setBackground(null);
         }
         view.setContentPadding(40,40,40,40);
-        view.setPadding(5,5,5,5);
+        view.setPadding(0,0,0,0);
         view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        Glide.with(context).load(image).into(view);
+        Glide.with(context).load(image).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).centerInside().into(view);
     }
     public void loadImageFromDatabase (Context context, com.google.android.material.imageview.ShapeableImageView view, String path) {
 
@@ -75,10 +76,10 @@ public class LoadIcon {
         darkMode = nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
         view.setImageTintList(null);
 
-        view.setContentPadding(40,40,40,40);
-        view.setPadding(5,5,5,5);
-        view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        Glide.with(view).load(path).optionalCenterInside().into(view);
+        view.setContentPadding(0,0,0,0);
+        view.setPadding(40,40,40,40);
+        view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        Glide.with(view).load(path).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).circleCrop().into(view);
 
         if (darkMode) {
             view.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.circle, context.getTheme()));
