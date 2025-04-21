@@ -1,23 +1,24 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     ext.kotlin_version = '1.8.0'
     repositories {
-        // Make sure that you have the following two repositories
-        google()  // Google's Maven repository
-        // Maven Central repository
+        google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://jitpack.io'}
+        maven { url "https://plugins.gradle.org/m2/"}
 
     }
     dependencies {
-        // Add the dependency for the Google services Gradle plugin
-        classpath 'com.android.tools.build:gradle:8.0.1'
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.android.tools.build:gradle:8.8.2'
+        classpath 'com.google.gms:google-services:4.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
+        classpath "com.autonomousapps:dependency-analysis-gradle-plugin:1.25.0"
 
     }
 }
+
+apply plugin: "com.autonomousapps.dependency-analysis"
 
 allprojects {
     repositories {
@@ -27,6 +28,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }

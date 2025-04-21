@@ -1,53 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="blue">#095B87</color>
-    <color name="lightblue">#AEB1B1</color>
-    <color name="lightGrey">#2B2A2A</color>
+    <color name="primary">#0E569D</color>
+    <color name="accent">#2598F4</color>
+    <color name="blueAndBlack">#084475</color>
+    <color name="lightGrey">#AEB1B1</color>
     <color name="black">#FF000000</color>
-    <color name="toolbar">#0473BC</color>
-    <color name="darkBlue">#03426C</color>
-    <color name="stroke">#9EB0BD</color>
-    <color name="accent">#0C5F8C</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="button">#0473BC</color>
-    <color name="offset">#FAF9F9</color>
-    <color name="blackAndWhite">#141415</color>
-    <color name="whiteAndBlack">#F7F7F8</color>
-    <color name="blueAndBlack">#0C5F8C</color>
+    <color name="newStroke">#9EB0BD</color>
+    <color name="blackAndWhite">#2F2F2F</color>
     <color name="neutralGray">#4C4B4B</color>
-    <color name="tiles">#F3F1F1</color>
-    <color name="custom">#92F4E9</color>
-    <color name="whiteAndGray">#F1EFEF</color>
-    <color name="chatWindow">#ECEAEA</color>
-    <color name="circle">#FBFBFC</color>
-    <color name="tray">#F4F4F4</color>
-    <color name="tabs">#D3D2D2</color>
+    <color name="grayAndWhite">#4C4B4B</color>
+    <color name="whiteAndBlack">#FFFFFF</color>
+    <color name="whiteAndGrey">#FFFFFF</color>
+    <color name="tabs">#E7E6E6</color>
     <color name="tabsSemiTransparent">#CCC4C3C3</color>
-    <color name="group">#F3F1F1</color>
-    <color name="fingerprint">#084C81</color>
-    <color name="payBill">#448747</color>
-    <color name="transparentGreen">#4D92BC8B</color>
-    <color name="green">#21BF29</color>
-    <color name="blueGrey">#34887F</color>
-    <color name="grey">#8C8B8B</color>
-    <color name="darkGrey">#292828</color>
-    <color name="background">#DFDDDD</color>
-    <color name="buttonStroke">#CECDCD</color>
+    <color name="payBill">#56AB5A</color>
+    <color name="transparentBlack">#800C0C0C</color>
+    <color name="turquoise">#34887F</color>
+    <color name="grey">#7A7A7A</color>
     <color name="yellow">#E4C93F</color>
-    <color name="red">#8C3434</color>
-    <color name="transparentRed">#0DEF3838</color>
-    <color name="lightRed">#8C0505</color>
-    <color name="header">#0473BC</color>
+    <color name="red">#AD2323</color>
 
-    <array name="pieChart">
-        <item>#AEDA88</item>
-        <item>#2272AF</item>
-        <item>#06BFAA</item>
-        <item>@color/blueGrey</item>
-        <item>#22B16D</item>
-        <item>#C3AF68</item>
-        <item>#6BC86D</item>
-        <item>#0552C7</item>
+    <array name="pieChartCorresponding">
+        <item>#5E40BE</item>
+        <item>#2598F4</item>
+        <item>#4BF257</item>
+        <item>#05FDCB</item>
+        <item>#269458</item>
+        <item>#7551E0</item>
+        <item>#88BF1F</item>
+        <item>#D98703</item>
     </array>
 </resources>

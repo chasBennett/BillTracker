@@ -5,185 +5,78 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".PaymentHistory">
+    tools:context=".activities.PaymentHistory">
 
     <include
-        android:id="@+id/include5"
+        android:id="@+id/toolbar"
         layout="@layout/toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <LinearLayout
-        android:id="@+id/linearLayout24"
-        android:layout_width="0dp"
+        android:id="@+id/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="15dp"
+        android:layout_marginBottom="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include5">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <LinearLayout
-            android:id="@+id/linearLayout28"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/border_styles"
-            android:backgroundTint="@color/group"
-            android:orientation="vertical"
-            android:padding="15dp"
-            tools:ignore="UselessParent">
-
-            <TextView
-                android:id="@+id/paymentHistoryHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/paymentHistory"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/filterBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="30dp"
-                    android:text="@string/filterResults"
-                    android:textSize="16sp" />
-
-                <LinearLayout
-                    android:id="@+id/linearLayout7"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_margin="10dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/edit_text"
-                        android:orientation="vertical">
-
-                        <Spinner
-                            android:id="@+id/dateRangeSpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="16sp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView3" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_margin="10dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/edit_text"
-                        android:orientation="vertical">
-
-                        <Spinner
-                            android:id="@+id/billerNameSpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:textSize="16sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/textView3" />
-                    </LinearLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/scrollView7"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout24">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_styles"
-            android:backgroundTint="@color/group"
-            android:orientation="vertical"
-            tools:layout_editor_absoluteX="25dp"
-            tools:layout_editor_absoluteY="272dp">
-
-            <LinearLayout
-                android:id="@+id/paymentList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="25dp"
-                android:orientation="vertical"
-                android:translationY="600dp">
-
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <include
-        layout="@layout/nav_tray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/pb11"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha=".6"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ProgressBar
-            android:id="@+id/progressBar31"
-            style="?android:attr/progressBarStyle"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="10dp"
+            android:text="@string/paymentHistory"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/filterPayments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|end"
+            android:paddingHorizontal="20dp"
+            android:text="@string/filterResults"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="5dp"
-        android:translationZ="3dp"
-        app:adSize="BANNER"
-        app:adUnitId="ca-app-pub-7376638390241452/6690392581"
+
+    <LinearLayout
+        android:id="@+id/paymentsList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/paymentsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <include
+        android:id="@+id/pb"
+        layout="@layout/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

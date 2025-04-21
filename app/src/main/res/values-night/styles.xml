@@ -1,35 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="MyTimePickerStyle" parent="ThemeOverlay.MaterialComponents.TimePicker">
-        <item name="colorAccent">@color/quantum_bluegrey500</item>
-        <item name="android:colorPrimary">@color/black</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="colorSecondary">@color/quantum_grey900</item>
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/quantum_grey500</item>
-    </style>
-
-    <style name="MyDatePickerStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="colorAccent">@color/black</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorSecondary">#FDD10D</item>
-        <item name="colorControlActivated">@color/grey</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:background">@color/quantum_grey900</item>
-        <item name="android:textColorSecondary">@color/custom</item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
-    </style>
-
     <style name="MyDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="colorAccent">@color/quantum_bluegrey500</item>
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:background">@color/quantum_grey900</item>
-        <item name="android:textColor">@color/custom</item>
+        <item name="android:textColorPrimary">@color/blackAndWhite</item>
+        <item name="android:textColor">@color/blackAndWhite</item>
         <item name="android:textColorSecondary">@color/white</item>
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
@@ -40,31 +14,17 @@
     </style>
 
     <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/blackAndWhite</item>
     </style>
 
     <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/custom</item>
-    </style>
-
-    <style name="progressBarStyle" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminateTintMode">@color/custom</item>
-    </style>
-
-    <style name="ShareButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/white</item>
-        <item name="backgroundTint">@color/blue</item>
-        <item name="elevation">10dp</item>
-        <item name="android:background">@drawable/border_styles</item>
-    </style>
-
-    <style name="TextButtonDark" parent="ButtonColor">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/blackAndWhite</item>
     </style>
 
     <style name="DarkSwitch" parent="Theme.AppCompat.DayNight">
-        <item name="colorControlActivated">@color/custom</item>
-        <item name="colorSwitchThumbNormal">@color/quantum_grey300</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorSwitchThumbNormal">@color/grey</item>
         <item name="android:colorForeground">#C3C2C2</item>
     </style>
+
 </resources>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:background="@drawable/border_square"
+    android:elevation="10dp"
+    android:padding="15dp"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/confirmBillerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/biller_name"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/confirmPaymentNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/payment_number"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/confirmDueDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:text="Due Apr 22, 2023"
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/confirmPaidDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:text="Paid Apr 21, 2023"
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:text="@string/paymentAmount"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/confirmPaymentAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:text="$127.46"
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/amount_remaining"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/confirmAmountRemaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:gravity="center"
+            android:text="$0.00"
+            android:textSize="12sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+</LinearLayout>

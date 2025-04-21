@@ -1,97 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:elevation="1dp"
+    android:orientation="horizontal"
+    tools:ignore="UselessParent">
 
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/backToHome"
+        android:layout_width="60dp"
         android:layout_height="65dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:background="@color/toolbar"
-        android:orientation="horizontal" >
+        android:contentDescription="@string/back_button"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="start"
+        android:hapticFeedbackEnabled="true"
+        android:padding="17dp"
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+        app:tint="@color/blackAndWhite" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:paddingVertical="15dp"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/loadingBills"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:visibility="gone" />
 
         <ImageView
-            android:id="@+id/drawerToggle"
-            android:layout_width="60dp"
-            android:layout_height="65dp"
-            android:contentDescription="@string/drawer_toggle"
-            android:gravity="start"
-            android:padding="15dp"
-            app:srcCompat="@drawable/ic_baseline_menu_24"
-            app:tint="@color/white" />
-
-        <TextView
-            android:id="@+id/textView48"
-            android:layout_width="0dp"
+            android:id="@+id/toolbarLogo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/btnAddBiller"
-            android:layout_width="60dp"
-            android:layout_height="65dp"
-            android:background="@drawable/border_styles"
-            android:clickable="true"
-            android:contentDescription="@string/add_a_new_biller"
-            android:padding="15dp"
-            android:textSize="12sp"
-            app:srcCompat="@drawable/plus_symbol"
-            app:tint="@color/white" />
-
-        <ImageView
-            android:id="@+id/payNext"
-            android:layout_width="60dp"
-            android:layout_height="65dp"
-            android:padding="17dp"
-            app:srcCompat="@drawable/baseline_next_plan_24"
-            app:tint="@color/white"
-            android:contentDescription="@string/pay_next_bill_button" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="65dp"
-            android:layout_height="65dp">
-
-            <ImageView
-                android:id="@+id/helpMe"
-                android:layout_width="60dp"
-                android:layout_height="65dp"
-                android:contentDescription="@string/help_icon"
-                android:padding="17dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/support_icon"
-                app:tint="@color/white" />
-
-            <TextView
-                android:id="@+id/ticketCounter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:paddingStart="7dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="7dp"
-                android:paddingBottom="2dp"
-                android:text="@string/two"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                app:backgroundTint="@color/blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/settingsButton"
-            android:layout_width="60dp"
-            android:layout_height="65dp"
-            android:contentDescription="@string/settings_icon"
-            android:gravity="end"
-            android:padding="17dp"
-            android:visibility="visible"
-            app:srcCompat="@drawable/settings"
-            app:tint="@color/white" />
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/logo_long" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btnAddBiller"
+        android:layout_width="60dp"
+        android:layout_height="65dp"
+        android:clickable="true"
+        android:contentDescription="@string/add_a_new_biller"
+        android:hapticFeedbackEnabled="true"
+        android:padding="14dp"
+        android:textSize="12sp"
+        app:srcCompat="@drawable/plus_symbol"
+        app:tint="@color/blackAndWhite" />
+
+    <ImageView
+        android:id="@+id/payNext"
+        android:layout_width="60dp"
+        android:layout_height="65dp"
+        android:contentDescription="@string/pay_next_bill_button"
+        android:hapticFeedbackEnabled="true"
+        android:padding="19dp"
+        app:srcCompat="@drawable/next_icon"
+        app:tint="@color/grayAndWhite" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profileIcon"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:hapticFeedbackEnabled="true"
+        app:contentPadding="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/Circular"
+        app:srcCompat="@drawable/profile_icon" />
+
+</LinearLayout>

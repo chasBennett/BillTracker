@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/header1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
-    android:layout_marginBottom="15dp"
+    android:layout_marginVertical="50dp"
     android:orientation="horizontal">
 
         <TextView
@@ -14,6 +12,7 @@
             android:layout_marginStart="20dp"
             android:layout_weight=".6"
             android:text="@string/earlier_this_month"
+            android:textColor="@color/blackAndWhite"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -24,6 +23,7 @@
             android:layout_marginEnd="20dp"
             android:layout_weight=".4"
             android:gravity="end"
+            android:textColor="@color/blackAndWhite"
             android:textSize="18sp"
             android:textStyle="bold" />
 

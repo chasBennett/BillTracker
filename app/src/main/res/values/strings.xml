@@ -1,106 +1,63 @@
 <resources>
     <string name="app_name">Bill Tracker</string>
-    <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="enter_a_password">Enter A Password</string>
-    <string name="enter_your_email_address">Enter Your Email Address</string>
-    <string name="please_enter_your_details_below_to_create_an_account">Please Enter Your Details Below To Create An Account</string>
-    <string name="enter_your_name">Enter Your Name</string>
     <string name="submit">Submit</string>
     <string name="biometric_login">Biometric Login</string>
-    <string name="password">Password:</string>
-    <string name="username">Username</string>
-    <string name="bills_tracker">Bills Tracker</string>
     <string name="title_activity_main2">MainActivity2</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="enter_new_email_address">Enter New Email Address</string>
-    <string name="enter_new_password">Enter New Password</string>
-    <string name="December">\"December \"</string>
     <string name="resendEmail">Resend Email</string>
     <string name="title_activity_forgot_password">ForgotPassword</string>
-    <string name="January_year">January %d</string>
-    <string name="february">February %d</string>
-    <string name="march">March %d</string>
-    <string name="april">April %d</string>
-    <string name="emailAddressUpdatedSuccessfully">Email Address Updated Successfully</string>
-    <string name="tac1">"Terms of Service   Last Updated: March 31, 2023 (Section A)   SECTION A TERMS   Introduction and Overview   Thank you for choosing the Bill Tracker app. Bill Tracker, along with any parent, subsidiary, affiliate, or related companies are referred to in these provisions as “Bill Tracker Group” or simply “Bill Tracker” or “us.”  When you use the app, you enter into a binding contract with us. Each section of the agreement begins with an italicized annotation that is intended to help you navigate the agreement. The annotations do not completely         summarize the agreement, though, and you should read each section carefully and in full. We’ve also bolded a few areas that talk about important legal rights, and you should be sure to read those sections carefully.         These provisions in Section A apply to the app generally.  If you are an individual acting on your company’s or client’s behalf, you accept these provisions on their behalf and the term “you” will refer to you, your company, or your client.   Agreement to These Terms       "</string>
-    <string name="tac2">
-You need to agree to these terms to use our app. Bill Tracker will not share your personal information with third parties, unless specifically instructed to do so by you in order to provide additional services within the app.\n
+    <string name="emailAddressUpdatedSuccessfully">Email address updated successfully</string>
+    <string name="tac1">Terms of Service\nLast Updated: March 31, 2023 \n\n(Section A) SECTION A TERMS\n\nIntroduction and Overview\n
+        \nThank you for choosing the Bill Tracker app. Bill Tracker, along with any parent, subsidiary, affiliate, or related companies are referred to in these provisions as “Bill Tracker Group” or simply “Bill Tracker” or “us.”  When you use the app, you enter into a binding contract with us. Each section of the agreement begins with an italicized annotation that is intended to help you navigate the agreement. The annotations do not completely summarize the agreement, though, and you should read each section carefully and in full. We’ve also bolded a few areas that talk about important legal rights, and you should be sure to read those sections carefully. These provisions in Section A apply to the app generally. If you are an individual acting on your company’s or client’s behalf, you accept these provisions on their behalf and the term “you” will refer to you, your company, or your client.\n\nAgreement to These Terms\n\n"</string>
+    <string name="tac2">You need to agree to these terms to use our app. Bill Tracker will not share your personal information with third parties, unless specifically instructed to do so by you in order to provide additional services within the app.\n\n
 To access and/or use the app, you acknowledge and agree:\n\n
 To the terms and conditions of this agreement (“Agreement”), which includes:\n\n
 The current version of the terms set out in Section A and:\n\n
-Any additional provisions and conditions provided separately to you for your use of the app, which may include terms and conditions from third parties (which we refer to as “Additional Terms”)\n\n
-You are at least 18 years of age;\n
-You are capable of forming a binding contract with Bill Tracker; and\n
-You are not a person who is prohibited from using the app under the laws of the United States, or any other applicable jurisdiction.\n\n
-Your Personal Information\n\n
-We want to be transparent about how we use personal information and about your rights in our Privacy Statement. You should only provide us with personal information of others if you have received permission to do so.\n
-You agree that Bill Tracker may use and maintain your personal information to provide services within the scope of the app.\n
-To the extent we allow you to input personal information (as the term is defined under applicable law) about other individuals other than yourself, you represent and warrant that you have complied with all applicable laws and
-        received the proper authority or consent to allow us to collect and process such information to operate our business. You agree such sharing does not constitute a “sale” of information as defined under the California Consumer
-        Privacy Act (CCPA).\n\n
+Any additional provisions and conditions provided separately to you for your use of the app, which may include terms and conditions from third parties (which we refer to as “Additional Terms”)\n
+\nYou are at least 18 years of age;\n
+\nYou are capable of forming a binding contract with Bill Tracker; and\n
+\nYou are not a person who is prohibited from using the app under the laws of the United States, or any other applicable jurisdiction.\n\n
+Your Personal Information\n\n\n
+We want to be transparent about how we use personal information and about your rights in our Privacy Statement. You should only provide us with personal information of others if you have received permission to do so.\n\n
+You agree that Bill Tracker may use and maintain your personal information to provide services within the scope of the app.\n\n
+To the extent we allow you to input personal information (as the term is defined under applicable law) about other individuals other than yourself, you represent and warrant that you have complied with all applicable laws and received the proper authority or consent to allow us to collect and process such information to operate our business. You agree such sharing does not constitute a “sale” of information as defined under the California Consumer Privacy Act (CCPA).\n\n
 Changes\n\n
     </string>
-    <string name="tac3">
-Change happens. When it does happen, we will update this Agreement. If the changes are material, you may need to accept the changes to use the app. Similarly, there may be circumstances where we need to update or discontinue the app.\n
-We may modify the provisions of this Agreement at any time. We may notify you of such modifications by posting through the app or by other means. It is important that you review this Agreement whenever we modify it because your
-        continued use of the app indicates your agreement to the modifications.\n
-In some cases, you may need to accept changes to this Agreement to continue using the app. If you do not agree to these changes, you may stop using the app or terminate your account.\n
-Similarly, we may update the app, including with tools, utilities, improvements or third party applications. You agree to receive these updates. We may further modify, suspend or discontinue the app at any time. You agree that we
-        will not be liable to you or any third party for any modification, suspensions, or discontinuance of the app.\n\n
+    <string name="tac3">Change happens. When it does happen, we will update this Agreement. If the changes are material, you may need to accept the changes to use the app. Similarly, there may be circumstances where we need to update or discontinue the app.\n
+\nWe may modify the provisions of this Agreement at any time. We may notify you of such modifications by posting through the app or by other means. It is important that you review this Agreement whenever we modify it because your continued use of the app indicates your agreement to the modifications.\n
+\nIn some cases, you may need to accept changes to this Agreement to continue using the app. If you do not agree to these changes, you may stop using the app or terminate your account.\n
+\nSimilarly, we may update the app, including with tools, utilities, improvements or third party applications. You agree to receive these updates. We may further modify, suspend or discontinue the app at any time. You agree that we will not be liable to you or any third party for any modification, suspensions, or discontinuance of the app.\n\n
 Your Rights to Use the app\n\n
 You can use our app for your own personal and lawful use or as otherwise permitted under this Agreement.\n
-You may access and use the app for your own internal, lawful and non-commercial purposes only.\n\n
+\nYou may access and use the app for your own internal, lawful and non-commercial purposes only.\n\n
 Beta Features\n\n
-We may provide you with access to beta features in the app. You are free to use them, but they are provided as-is.\n
-We may include new and/or updated pre-release and trial features in the app and such features are provided as-is. Your use of such features is at no additional cost but you must follow additional rules or restrictions that we may
-        place on their use.\n\n
+We may provide you with access to beta features in the app. You are free to use them, but they are provided as-is.\n\n
+We may include new and/or updated pre-release and trial features in the app and such features are provided as-is. Your use of such features is at no additional cost but you must follow additional rules or restrictions that we may place on their use.\n\n
 Account\n\n
     </string>
     <string name="tac4">
-You will provide accurate, up-to-date account information and securely manage such information.\n
-You may need to sign up for an account to use the app. We may need to verify your identity, and you authorize us to collect information (e.g., date of birth, address) from you to do so (collectively, with all information requested
-        to enable your account, “Account Information”). You will provide accurate, up-to-date Account Information, and we disclaim any liability arising from your failure to do so. Such failure may further limit your ability to use
-        the app and affect the app’s accuracy and effectiveness.\n
-You are responsible for securely managing your Account Information, including any password(s) for the app. You will notify us immediately if you believe that your Account Information or device you use to access the app has been lost
-        or stolen or that someone is using your account without your permission.\n\n
-
+You will provide accurate, up-to-date account information and securely manage such information.\n\n
+You may need to sign up for an account to use the app. We may need to verify your identity, and you authorize us to collect information (e.g., date of birth, address) from you to do so (collectively, with all information requested to enable your account, “Account Information”). You will provide accurate, up-to-date Account Information, and we disclaim any liability arising from your failure to do so. Such failure may further limit your ability to use the app and affect the app’s accuracy and effectiveness.\n\n
+You are responsible for securely managing your Account Information, including any password(s) for the app. You will notify us immediately if you believe that your Account Information or device you use to access the app has been lost or stolen or that someone is using your account without your permission.\n\n
 Mobile App Use\n\n
 Mobile versions of our app may be available for download but you must follow applicable third-party terms when using them.\n\n
-
-With respect to the applicable Software, you are only granted limited rights to install and use the Software you have downloaded, signed up for or for which you have purchased a license or acquired a free trial. Bill Tracker reserves
-        all other rights in the applicable Software not granted to you in writing in this Agreement. Conditioned upon your compliance with the terms and conditions of this Agreement, Bill Tracker grants you a personal, limited,
-        nonexclusive, nontransferable, revocable license to use the applicable Software only for the period of use provided in the ordering and activation terms (as applicable), as set forth in this Agreement or in Bill Tracker’s
+With respect to the applicable Software, you are only granted limited rights to install and use the Software you have downloaded, signed up for or for which you have purchased a license or acquired a free trial. Bill Tracker reserves all other rights in the applicable Software not granted to you in writing in this Agreement. Conditioned upon your compliance with the terms and conditions of this Agreement, Bill Tracker grants you a personal, limited, nonexclusive, nontransferable, revocable license to use the applicable Software only for the period of use provided in the ordering and activation terms (as applicable), as set forth in this Agreement or in Bill Tracker’s
     </string>
-    <string name="tac5">
-        then-current product discontinuation policies (as updated from time to time) and only for the purposes described by Bill Tracker for the applicable Software.\n
+    <string name="tac5"> then-current product discontinuation policies (as updated from time to time) and only for the purposes described by Bill Tracker for the applicable Software.\n\n
 You acknowledge and agree that such Software is licensed, not sold.
-You may make a single copy of the Software for backup purposes, provided that you reproduce on it all copyright and other proprietary notices that are on the original copy of the Software. You will not delete or in any manner alter
-        the copyright, trademark and other proprietary rights notices or markings appearing on the Software as delivered to you.\n\n
+You may make a single copy of the Software for backup purposes, provided that you reproduce on it all copyright and other proprietary notices that are on the original copy of the Software. You will not delete or in any manner alter the copyright, trademark and other proprietary rights notices or markings appearing on the Software as delivered to you.\n\n
 Third Party Advice and Products\n\n
-You may have access to professional advice and third-party products. Any such advice and products are not covered under this Agreement.\n
-From time to time, we may offer specific functionality in the app that provides you with the opportunity to seek professional advice, for example, the ability to speak with a loan expert. Unless specifically disclosed, Bill Tracker
-        is not in the business of providing legal, financial, accounting, tax, health care, insurance, real estate or other professional service or advice, and you should consult with professionals for advice prior to making important
-        decisions in these areas.\n
-The app may include information about or offers for third-party services or products or allow you to access or connect your account to third-party services or products. Bill Tracker does not warrant, and is not responsible for, the
-        services and products or claims made about them, or the actions or inactions of any third party. You must review and comply with the third-party’s services and product provisions. Bill Tracker may be compensated by those third
-        parties, which could impact whether, how and where the services and products are displayed.\n
+You may have access to professional advice and third-party products. Any such advice and products are not covered under this Agreement.\n\n
+From time to time, we may offer specific functionality in the app that provides you with the opportunity to seek professional advice, for example, the ability to speak with a loan expert. Unless specifically disclosed, Bill Tracker is not in the business of providing legal, financial, accounting, tax, health care, insurance, real estate or other professional service or advice, and you should consult with professionals for advice prior to making important decisions in these areas.\n\n
+The app may include information about or offers for third-party services or products or allow you to access or connect your account to third-party services or products. Bill Tracker does not warrant, and is not responsible for, the services and products or claims made about them, or the actions or inactions of any third party. You must review and comply with the third-party’s services and product provisions. Bill Tracker may be compensated by those third parties, which could impact whether, how and where the services and products are displayed.\n\n
 Content and Data\n\n
     </string>
     <string name="tac6">
-What’s yours remains yours, what’s ours remains ours, but we may use information you provide to improve our app.\n
-You are solely responsible for anything you write, submit, receive, share and store or any data you input into the app (collectively, your “Content”). Content includes, but is not limited to, data, information, materials, text,
-        graphics, images, audio, video that are uploaded, transmitted, posted, generated, stored, or otherwise made available through the app. You have no obligation to provide any content to the app, and you’re free to choose
-        the content that you want to provide. You acknowledge certain functionality in the app may be dependent on the provision of Content and may not be available without such Content.\n\n
-Your Content remains yours, which means that you retain any intellectual property rights that you have in your Content. By sharing your Content on the app, you hereby grant Bill Tracker a license to use your Content, as described
-        in more detail below.\n\n
+What’s yours remains yours, what’s ours remains ours, but we may use information you provide to improve our app.\n\n
+You are solely responsible for anything you write, submit, receive, share and store or any data you input into the app (collectively, your “Content”). Content includes, but is not limited to, data, information, materials, text, graphics, images, audio, video that are uploaded, transmitted, posted, generated, stored, or otherwise made available through the app. You have no obligation to provide any content to the app, and you’re free to choose the content that you want to provide. You acknowledge certain functionality in the app may be dependent on the provision of Content and may not be available without such Content.\n\n
+Your Content remains yours, which means that you retain any intellectual property rights that you have in your Content. By sharing your Content on the app, you hereby grant Bill Tracker a license to use your Content, as described in more detail below.\n\n
 1. What\'s covered\n\n
 This license covers your Content to the extent your Content is protected by intellectual property rights.\n\n
 2. Scope\n\n
@@ -119,15 +76,13 @@ Modify and create derivative works based on your Content, such as reformatting o
 This license is for the limited purpose of:\n\n
 Operating, providing and improving the app, which means allowing the app to work as designed and creating new features and functionalities.\n\n
 5. Duration\n\n
-This license lasts for as long as your Content is protected by intellectual property rights.\n
-Bill Tracker may collect, derive or generate deidentified and/or aggregated data regarding your usage of or the performance of the app, including data derived from your Content. Bill Tracker will own all such data and may use this
-        data without restriction, including, but not limited to, operating, analyzing, improving, or marketing Bill Tracker’s products and services, including the app.\n
+This license lasts for as long as your Content is protected by intellectual property rights.\n\n
+Bill Tracker may collect, derive or generate de-identified and/or aggregated data regarding your usage of or the performance of the app, including data derived from your Content. Bill Tracker will own all such data and may use this data without restriction, including, but not limited to, operating, analyzing, improving, or marketing Bill Tracker’s products and services, including the app.\n\n
 As between you and Bill Tracker, Bill Tracker and its licensors retain all right, title or interest in and to the app, except for the rights granted to you.\n\n
 Prohibited Uses\n\n
 </string>
-    <string name="tac8">We expect you to obey the law and follow certain rules in using the app.\n
-Bill Tracker does not condone or support any activity that is illegal, violates the rights of others, harms or damages Bill Tracker’s reputation, or could cause Bill Tracker to be liable to a third party. At minimum, you may not
-        use the app to:\n\n
+    <string name="tac8">We expect you to obey the law and follow certain rules in using the app.\n\n
+Bill Tracker does not condone or support any activity that is illegal, violates the rights of others, harms or damages Bill Tracker’s reputation, or could cause Bill Tracker to be liable to a third party. At minimum, you may not use the app to:\n\n
 Violate any law, regulation, executive order or ordinance, including through actions that give rise to criminal, civil, administrative or regulatory liability and/or fines;\n\n
 Post or share Content that is or may be illegal or inappropriate, including material that may be defamatory, obscene, harassing, offensive, fraudulent, objectionable or infringing;\n\n
 Transmit any virus, trojan horse, or other disruptive or harmful software or data;\n\n
@@ -135,194 +90,116 @@ Send any unsolicited or unauthorized advertising, such as spam;\n\n
 Impersonate or misrepresent your affiliation with Bill Tracker;\n\n
 Reproduce, modify, resell, license, or provide free or unauthorized access to the app or make the app available on any file-sharing, virtual desktop or application hosting service;\n\n
 Attempt to reverse engineer, decompile or disassemble in any way any of the app;\n\n
-Engage in unauthorized access, monitoring, interference with, or use of the app or third party accounts, information (including personal information), computers, systems or networks, including scraping or downloading content that
-        doesn’t belong to you;\n\n
+Engage in unauthorized access, monitoring, interference with, or use of the app or third party accounts, information (including personal information), computers, systems or networks, including scraping or downloading content that doesn’t belong to you;\n\n
     </string>
     <string name="tac9">
 Use the app for general archiving or back-up purposes; or\n\n
 Encourage or enable any other individual to do any of the above or otherwise violate this Agreement.\n\n
-We take copyright seriously at Bill Tracker. We respect the copyrights of others and expect you to do the same. If you repeatedly infringe the copyrights of others, we may terminate your account.\n
-Bill Tracker may terminate your use of the app based on our reasonable suspicion that your activities, business or products are objectionable or promote, support or engage in any of the prohibited uses described above.\n
-Bill Tracker may (but has no obligation to) monitor the use of the app or Content and may edit or remove any Content. We may disclose any information necessary to satisfy our legal obligations, protect Bill Tracker or its customers,
-        or operate the app properly.\n\n
+We take copyright seriously at Bill Tracker. We respect the copyrights of others and expect you to do the same. If you repeatedly infringe the copyrights of others, we may terminate your account.\n\n
+Bill Tracker may terminate your use of the app based on our reasonable suspicion that your activities, business or products are objectionable or promote, support or engage in any of the prohibited uses described above.\n\n
+Bill Tracker may (but has no obligation to) monitor the use of the app or Content and may edit or remove any Content. We may disclose any information necessary to satisfy our legal obligations, protect Bill Tracker or its customers, or operate the app properly.\n\n
 Community Forums; Feedback\n\n
-You may be able to communicate with others through our app but please be respectful. Suggestions you provide for improving our app may be used freely by us.\n
+You may be able to communicate with others through our app but please be respectful. \n\nSuggestions you provide for improving our app may be used freely by us.\n\n
     </string>
     <string name="tac10">
-The app may include a community forum or other social features that enable you to exchange Content and information with other users of the app and the public. Bill Tracker does not support and is not responsible for the Content in
-        these community forums. Please be respectful when you interact with other users. Do not reveal information that you do not want to make public. Users may post hypertext links to content of third parties for which Bill Tracker
-        is not responsible.\n
-You may provide Bill Tracker your feedback, suggestions, or ideas for the app. You grant Bill Tracker a perpetual, worldwide, fully transferable, sublicensable, irrevocable, fully paid-up, royalty-free license to use your feedback,
-        suggestions, and ideas in any way, including in future modifications of the app, other products or services, advertising or marketing materials.\n\n
+The app may include a community forum or other social features that enable you to exchange Content and information with other users of the app and the public. Bill Tracker does not support and is not responsible for the Content in these community forums. Please be respectful when you interact with other users. Do not reveal information that you do not want to make public. Users may post hypertext links to content of third parties for which Bill Tracker is not responsible.\n\n
+You may provide Bill Tracker your feedback, suggestions, or ideas for the app. You grant Bill Tracker a perpetual, worldwide, fully transferable, sublicensable, irrevocable, fully paid-up, royalty-free license to use your feedback, suggestions, and ideas in any way, including in future modifications of the app, other products or services, advertising or marketing materials.\n\n
 Termination\n\n
-You may cancel your account and Bill Tracker may suspend or terminate your use of the app. For mobile apps, removing the app may not cancel your subscription or delete your data.\n
-This Agreement is effective until your subscription expires or you cancel your account or Bill Tracker terminates this Agreement (or your account). Bill Tracker may terminate this Agreement (and your account) or suspend the app at
-        any time in our discretion.\n
+You may cancel your account and Bill Tracker may suspend or terminate your use of the app. For mobile apps, removing the app may not cancel your subscription or delete your data.\n\n
+This Agreement is effective until your subscription expires or you cancel your account or Bill Tracker terminates this Agreement (or your account). Bill Tracker may terminate this Agreement (and your account) or suspend the app at any time in our discretion.\n\n
 Please note that removing any Bill Tracker mobile app from your device may not cancel your subscription or delete your data.\n\n
 Effect of Termination\n\n
         </string>
     <string name="tac11">
-You must stop using the app once your subscription expires or you cancel your account (or if this Agreement or your account is terminated).\n
-Upon expiration of your subscription or cancellation of your account, or Bill Tracker’s termination of your account or this Agreement, you must immediately stop using the app and pay all fees for  the app used. No expiration or
-        termination will affect your obligation to pay all fees due or that may have accrued through the effective date of expiration or termination or entitle you to any refund.\n\n
+You must stop using the app once your subscription expires or you cancel your account (or if this Agreement or your account is terminated).\n\n
+Upon expiration of your subscription or cancellation of your account, or Bill Tracker’s termination of your account or this Agreement, you must immediately stop using the app and pay all fees for  the app used. No expiration or termination will affect your obligation to pay all fees due or that may have accrued through the effective date of expiration or termination or entitle you to any refund.\n\n
 Survival\n\n
-There are a few parts of this Agreement that will continue to apply after termination.\n
-The following Sections will survive any termination, discontinuation or cancellation of the app or your account: “Your Personal Information,” “Payment and Cancellations” (with respect to fees due and unpaid), “Content and Data,”
-        “Community Forums; Feedback,” “Effect of Termination,” “Disclaimers,” “Limitation of Liability,” “Indemnity Obligations,” “Disputes,” and “General Terms (Miscellaneous)”.\n\n
+There are a few parts of this Agreement that will continue to apply after termination.\n\n
+The following Sections will survive any termination, discontinuation or cancellation of the app or your account: “Your Personal Information,” “Payment and Cancellations” (with respect to fees due and unpaid), “Content and Data,” “Community Forums; Feedback,” “Effect of Termination,” “Disclaimers,” “Limitation of Liability,” “Indemnity Obligations,” “Disputes,” and “General Terms (Miscellaneous)”.\n\n
 Bill Tracker Communications\n\n
-We may contact you from time to time to support your use of the app.\n
-In order to properly support and serve you, we occasionally need to reach out and contact you, and may do so in a variety of ways such as via text message, email or messaging functionality in the app. We want to provide you options
-        for receiving communications from us, and as such you may opt-in or opt-out of receiving certain types of communications from us or sign up to receive certain kinds of messages from us, depending on the app. You will need to
-        notify us of any changes to your contact details to ensure your preferences are updated.\n\n
+We may contact you from time to time to support your use of the app.\n\n
+In order to properly support and serve you, we occasionally need to reach out and contact you, and may do so in a variety of ways such as via text message, email or messaging functionality in the app. We want to provide you options for receiving communications from us, and as such you may opt-in or opt-out of receiving certain types of communications from us or sign up to receive certain kinds of messages from us, depending on the app. You will need to notify us of any changes to your contact details to ensure your preferences are updated.\n\n
 Third Party Account Information\n\n
     </string>
     <string name="tac12">
-Bill Tracker is not responsible for any account information obtained from third parties.\n
-When you direct Bill Tracker to retrieve your account information from third parties, you grant Bill Tracker a limited power of attorney to access the third party services to retrieve such account information. Bill Tracker will be
-        acting as your agent and will not be acting on behalf of the third party.\n
-Bill Tracker does not review third party account information for accuracy and is not responsible for any issues or expenses resulting from such account information, including any inaccuracy, error, delay, or non-delivery. For clarity,
-        Bill Tracker is not responsible for any payment processing errors or fees arising from inaccurate account information provided by third parties.\n\n
+Bill Tracker is not responsible for any account information obtained from third parties.\n\n
+When you direct Bill Tracker to retrieve your account information from third parties, you grant Bill Tracker a limited power of attorney to access the third party services to retrieve such account information. Bill Tracker will be acting as your agent and will not be acting on behalf of the third party.\n\n
+Bill Tracker does not review third party account information for accuracy and is not responsible for any issues or expenses resulting from such account information, including any inaccuracy, error, delay, or non-delivery. For clarity, Bill Tracker is not responsible for any payment processing errors or fees arising from inaccurate account information provided by third parties.\n\n
 Disclaimers\n\n
-We don’t make any warranties about the app except as expressly stated in this Agreement.\n
-The only warranties we make about the app are (1) stated in this Agreement, or (2) as provided under applicable laws. The app is otherwise provided “as-is,” and we do not make any other warranties about the app. Unless required by law,
-        we do not provide implied warranties, such as the implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the app is error-free, secure, or free from any viruses or
+We don’t make any warranties about the app except as expressly stated in this Agreement.\n\n
+The only warranties we make about the app are (1) stated in this Agreement, or (2) as provided under applicable laws. The app is otherwise provided “as-is,” and we do not make any other warranties about the app. Unless required by law, we do not provide implied warranties, such as the implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the app is error-free, secure, or free from any viruses or
     </string>
-    <string name="tac13">
-    other harmful components. We also do not provide any warranties with respect to data loss or to the accuracy, reliability, or availability of the app, nor of any content (including any Content) or information made available in
-        the app. If the exclusions for implied warranties do not apply to you, any implied warranties are limited to sixty (60) days from the date of purchase or delivery of the app, whichever is sooner.\n\n
+    <string name="tac13"> other harmful components. We also do not provide any warranties with respect to data loss or to the accuracy, reliability, or availability of the app, nor of any content (including any Content) or information made available in the app. If the exclusions for implied warranties do not apply to you, any implied warranties are limited to sixty (60) days from the date of purchase or delivery of the app, whichever is sooner.\n\n
 Limitation of Liability\n\n
-Our liability is limited when it comes to issues you may encounter with our app.\n
-Other than the rights and responsibilities described in this Agreement and as allowed by applicable law, Bill Tracker won’t be responsible for any losses.\n
-The Bill Tracker app is provided free of charge, and as such, it is understood and agreed upon by you that Bill Tracker will not be held liable for any damages incurred as a result of the download, use, or installation of the app or
-        any third party services offered by Bill Tracker.\n
+Our liability is limited when it comes to issues you may encounter with our app.\n\n
+Other than the rights and responsibilities described in this Agreement and as allowed by applicable law, Bill Tracker won’t be responsible for any losses.\n\n
+The Bill Tracker app is provided free of charge, and as such, it is understood and agreed upon by you that Bill Tracker will not be held liable for any damages incurred as a result of the download, use, or installation of the app or any third party services offered by Bill Tracker.\n\n
 The Bill Tracker Parties won’t be responsible for the following:\n\n
 Loss of data, profits, revenues, business opportunities, goodwill or anticipated savings;\n\n
 Indirect, incidental, or consequential loss; or\n\n
 Punitive damages.\n\n
     </string>
     <string name="tac14">
-The above limitations apply even if the Bill Tracker Parties have been advised of the possibility of such damages. This Agreement sets forth your exclusive remedy with respect to the app and its use.\n
-If you’re legally exempt from certain responsibilities, including indemnification, then those responsibilities don’t apply to you under this Agreement. For example, the United Nations enjoys certain immunities from legal obligations
-        and this Agreement doesn’t override those immunities.\n\n
+The above limitations apply even if the Bill Tracker Parties have been advised of the possibility of such damages. This Agreement sets forth your exclusive remedy with respect to the app and its use.\n\n
+If you’re legally exempt from certain responsibilities, including indemnification, then those responsibilities don’t apply to you under this Agreement. For example, the United Nations enjoys certain immunities from legal obligations and this Agreement doesn’t override those immunities.\n\n
 Indemnity Obligations\n\n
-If someone sues us because you used the app unlawfully or didn’t follow our rules, you will be responsible for any harm to us.\n
-You will indemnify and hold harmless the Bill Tracker Parties for any losses, damages, judgments, fines, costs and expenses (including legal fees) in connection with any claims arising out of or relating to your unlawful or
-        unauthorized use of the app or violation of this Agreement. Bill Tracker reserves the right, in its sole discretion and at its own expense, to assume the exclusive defense and control of any claims. You agree to reasonably
-        cooperate as requested by Bill Tracker in the defense of any claims.\n\n
+If someone sues us because you used the app unlawfully or didn’t follow our rules, you will be responsible for any harm to us.\n\n
+You will indemnify and hold harmless the Bill Tracker Parties for any losses, damages, judgments, fines, costs and expenses (including legal fees) in connection with any claims arising out of or relating to your unlawful or unauthorized use of the app or violation of this Agreement. Bill Tracker reserves the right, in its sole discretion and at its own expense, to assume the exclusive defense and control of any claims. You agree to reasonably cooperate as requested by Bill Tracker in the defense of any claims.\n\n
 Disputes\n\n
-In the event we are unable to resolve any dispute through an informal dialogue, a third-party arbitrator or small claims court will help us resolve any disputes we might have, and any disputes will be resolved on an individual basis
-        rather than as a class action.\n\n
+In the event we are unable to resolve any dispute through an informal dialogue, a third-party arbitrator or small claims court will help us resolve any disputes we might have, and any disputes will be resolved on an individual basis rather than as a class action.\n\n
 If you are a U.S. customer:\n\n
         </string>
     <string name="tac15">
-You and Bill Tracker agree that, except as provided below, any dispute, claim or controversy arising out of or relating in any way to the app or this Agreement (a “Claim”) will be determined by binding arbitration or small claims
-        court, instead of in courts of general jurisdiction.
-Either you or Bill Tracker can seek to have a Claim resolved in small claims court if all the requirements of the small claims court are satisfied. Either you or Bill Tracker may seek to have a Claim resolved in small claims court
-        in your county of residence or the small claims court in closest proximity to your residence, and you may also bring a claim in small claims court in the Superior Court of California, County of Santa Clara.
-Arbitration is more informal than a lawsuit in court. Arbitration uses a neutral arbitrator instead of a judge or jury, may allow for more limited discovery than in court, and is subject to very limited review by courts. Arbitrators
-        can award the same damages and relief that a court can award. You agree that the U.S. Federal Arbitration Act governs the interpretation and enforcement of this arbitration provision, and that you and Bill Tracker are each
+You and Bill Tracker agree that, except as provided below, any dispute, claim or controversy arising out of or relating in any way to the app or this Agreement (a “Claim”) will be determined by binding arbitration or small claims court, instead of in courts of general jurisdiction.
+Either you or Bill Tracker can seek to have a Claim resolved in small claims court if all the requirements of the small claims court are satisfied. Either you or Bill Tracker may seek to have a Claim resolved in small claims court in your county of residence or the small claims court in closest proximity to your residence, and you may also bring a claim in small claims court in the Superior Court of California, County of Santa Clara.
+Arbitration is more informal than a lawsuit in court. Arbitration uses a neutral arbitrator instead of a judge or jury, may allow for more limited discovery than in court, and is subject to very limited review by courts. Arbitrators can award the same damages and relief that a court can award. You agree that the U.S. Federal Arbitration Act governs the interpretation and enforcement of this arbitration provision, and that you and Bill Tracker are each
         </string>
-    <string name="tac16">
-            waiving the right to a trial by jury or to participate in a class action. This arbitration provision shall survive termination of this Agreement and/or the termination of your account.
-If you elect to seek arbitration, you must first send to Bill Tracker a written notice of your Claim ("Notice of Claim"). The Notice of Claim to Bill Tracker should be sent in care of our registered agent Corporation Service Company,
-        251 Little Falls Drive, Wilmington, DE 19808. The Notice of Claim should include both the mailing address and email address you would like Bill Tracker to use to contact you. If Bill Tracker elects to seek arbitration, it will
-        send, by certified mail, a written Notice of Claim to your address on file. A Notice of Claim, whether sent by you or by Bill Tracker, must (a) describe the nature and basis of the Claim or dispute; and (b) set forth the
-        specific amount of damages or other relief sought.
-You and Bill Tracker agree that good-faith informal efforts to resolve disputes often can result in a prompt, low-cost and mutually beneficial outcome. You and Bill Tracker therefore agree that, after a Notice of Claim is sent but
-        before either you or Bill Tracker commence arbitration or file a Claim in small claims court against the other, we will personally meet, via telephone or videoconference, in a good-faith effort to confer with each other and
-        try to resolve informally any Claim covered by this Agreement. If you are represented by counsel, your counsel may participate in the conference as well, but you agree to fully participate in the conference. Likewise, if
+    <string name="tac16"> waiving the right to a trial by jury or to participate in a class action. This arbitration provision shall survive termination of this Agreement and/or the termination of your account.
+If you elect to seek arbitration, you must first send to Bill Tracker a written notice of your Claim ("Notice of Claim"). The Notice of Claim to Bill Tracker should be sent in care of our registered agent Corporation Service Company, 251 Little Falls Drive, Wilmington, DE 19808. The Notice of Claim should include both the mailing address and email address you would like Bill Tracker to use to contact you. If Bill Tracker elects to seek arbitration, it will send, by certified mail, a written Notice of Claim to your address on file. A Notice of Claim, whether sent by you or by Bill Tracker, must (a) describe the nature and basis of the Claim or dispute; and (b) set forth the specific amount of damages or other relief sought.
+You and Bill Tracker agree that good-faith informal efforts to resolve disputes often can result in a prompt, low-cost and mutually beneficial outcome. You and Bill Tracker therefore agree that, after a Notice of Claim is sent but before either you or Bill Tracker commence arbitration or file a Claim in small claims court against the other, we will personally meet, via telephone or videoconference, in a good-faith effort to confer with each other and try to resolve informally any Claim covered by this Agreement. If you are represented by counsel, your counsel may participate in the conference as well, but you agree to fully participate in the conference. Likewise, if
     </string>
-    <string name="tac17">
-        Bill Tracker is represented by counsel, its counsel may participate in the conference as well, but Bill Tracker agrees to have a company representative fully participate in the conference. The statute of limitations and any
-        filing fee deadlines shall be tolled while the parties engage in the informal dispute resolution process required by this paragraph.
-If we do not reach an agreement to resolve the Claim within sixty (60) days after the Notice of Claim is received, you or Bill Tracker may commence an arbitration proceeding by filing a Demand for Arbitration or, alternatively, by
-        filing a Claim in small claims court. You agree that you may not commence any arbitration or file a Claim in small claims court unless you and Bill Tracker are unable to resolve the Claim within sixty (60) days after we
-        receive your completed Notice of Claim and you have made a good faith effort to resolve your claim directly with Bill Tracker during that time. If a Claim qualifies for small claims court, but a party commences an
-        arbitration proceeding, you and Bill Tracker agree that either party may elect instead to have the Claim resolved in small claims court, and upon written notice of a party’s election, the American Arbitration Association
-        (“AAA”) will administratively close the arbitration proceeding. Any dispute about whether a Claim qualifies for small claims court shall be resolved by that court, not by an arbitrator. In the event of any such dispute,
-        the arbitration proceeding shall remain closed unless and until a decision by the small claims court that the Claim should proceed in arbitration. You may download or copy a form of notice and a form to initiate arbitration
+    <string name="tac17"> Bill Tracker is represented by counsel, its counsel may participate in the conference as well, but Bill Tracker agrees to have a company representative fully participate in the conference. The statute of limitations and any filing fee deadlines shall be tolled while the parties engage in the informal dispute resolution process required by this paragraph.
+If we do not reach an agreement to resolve the Claim within sixty (60) days after the Notice of Claim is received, you or Bill Tracker may commence an arbitration proceeding by filing a Demand for Arbitration or, alternatively, by filing a Claim in small claims court. You agree that you may not commence any arbitration or file a Claim in small claims court unless you and Bill Tracker are unable to resolve the Claim within sixty (60) days after we receive your completed Notice of Claim and you have made a good faith effort to resolve your claim directly with Bill Tracker during that time. If a Claim qualifies for small claims court, but a party commences an arbitration proceeding, you and Bill Tracker agree that either party may elect instead to have the Claim resolved in small claims court, and upon written notice of a party’s election, the American Arbitration Association (“AAA”) will administratively close the arbitration proceeding. Any dispute about whether a Claim qualifies for small claims court shall be resolved by that court, not by an arbitrator. In the event of any such dispute, the arbitration proceeding shall remain closed unless and until a decision by the small claims court that the Claim should proceed in arbitration. You may download or copy a form of notice and a form to initiate arbitration
     </string>
-    <string name="tac18">
-        at www.adr.org or by calling 1-800-778-7879. The arbitration will be conducted by the AAA before a single AAA arbitrator under the AAA’s rules, which are available at www.adr.org or by calling 1-800-778-7879, except
-        as modified by this Agreement. Unless Bill Tracker and you agree otherwise, any arbitration hearings will take place in the county (or parish) of either your residence or of the mailing address you provided in your Notice of Claim.
-The arbitrator will be either (1) a retired judge or (2) an attorney specifically licensed to practice law in the state of California or the state of your residence and will be selected by the parties from the AAA’s National Roster of
-        Arbitrators. The arbitrator will be selected using the following procedure: (a) the AAA will send the parties a list of five candidates meeting this criteria; (b) if the parties cannot agree on an arbitrator from the list,
-        each party shall return its list to the AAA within 10 days, striking up to two candidates, and ranking the remaining candidates in order of preference; © the AAA shall appoint as arbitrator the candidate with the highest
-        aggregate ranking; and (d) if for any reason the appointment cannot be made according to this procedure, the AAA may exercise its discretion in appointing the arbitrator. The arbitrator is bound by this Agreement. Except
-        as otherwise provided below, all issues are for the arbitrator to decide, including issues relating to the scope and enforceability of this arbitration provision.
+    <string name="tac18"> at www.adr.org or by calling 1-800-778-7879. The arbitration will be conducted by the AAA before a single AAA arbitrator under the AAA’s rules, which are available at www.adr.org or by calling 1-800-778-7879, except as modified by this Agreement. Unless Bill Tracker and you agree otherwise, any arbitration hearings will take place in the county (or parish) of either your residence or of the mailing address you provided in your Notice of Claim.
+The arbitrator will be either (1) a retired judge or (2) an attorney specifically licensed to practice law in the state of California or the state of your residence and will be selected by the parties from the AAA’s National Roster of Arbitrators. The arbitrator will be selected using the following procedure: (a) the AAA will send the parties a list of five candidates meeting this criteria; (b) if the parties cannot agree on an arbitrator from the list, each party shall return its list to the AAA within 10 days, striking up to two candidates, and ranking the remaining candidates in order of preference; © the AAA shall appoint as arbitrator the candidate with the highest aggregate ranking; and (d) if for any reason the appointment cannot be made according to this procedure, the AAA may exercise its discretion in appointing the arbitrator. The arbitrator is bound by this Agreement. Except as otherwise provided below, all issues are for the arbitrator to decide, including issues relating to the scope and enforceability of this arbitration provision.
     </string>
     <string name="tac19">
-        The parties agree that an administrative conference with the AAA shall be conducted in each arbitration proceeding, and you and an Bill Tracker company representative shall appear at the administrative conference via telephone. If you
-        fail to appear at the administrative conference, regardless of whether your counsel attends, the AAA will administratively close the arbitration proceeding without prejudice, unless you show good cause as to why you were not
-        able to attend the conference.
-The arbitrator shall issue a reasoned written decision sufficient to explain the essential findings and conclusions on which the award is based. The award shall be binding only among the parties and shall have no preclusive effect in
-        any other arbitration or other proceeding involving a different party. Bill Tracker will not seek to recover its attorneys’ fees and costs in arbitration from you unless the arbitrator finds that either the substance of your
-        Claim or the relief sought in your Demand for Arbitration was frivolous or was brought for an improper purpose (as measured by the standards set forth in Federal Rule of Civil Procedure 11(b)). Judgment on any award may be
-        entered in any court having jurisdiction. This agreement to arbitrate shall not preclude any party to the arbitration from at any time seeking injunctions or other forms of equitable relief in aid of arbitration from a court
-        of appropriate jurisdiction including whether a Demand for Arbitration is filed in violation of this Agreement.
+        The parties agree that an administrative conference with the AAA shall be conducted in each arbitration proceeding, and you and an Bill Tracker company representative shall appear at the administrative conference via telephone. If you fail to appear at the administrative conference, regardless of whether your counsel attends, the AAA will administratively close the arbitration proceeding without prejudice, unless you show good cause as to why you were not able to attend the conference.
+The arbitrator shall issue a reasoned written decision sufficient to explain the essential findings and conclusions on which the award is based. The award shall be binding only among the parties and shall have no preclusive effect in any other arbitration or other proceeding involving a different party. Bill Tracker will not seek to recover its attorneys’ fees and costs in arbitration from you unless the arbitrator finds that either the substance of your Claim or the relief sought in your Demand for Arbitration was frivolous or was brought for an improper purpose (as measured by the standards set forth in Federal Rule of Civil Procedure 11(b)). Judgment on any award may be entered in any court having jurisdiction. This agreement to arbitrate shall not preclude any party to the arbitration from at any time seeking injunctions or other forms of equitable relief in aid of arbitration from a court of appropriate jurisdiction including whether a Demand for Arbitration is filed in violation of this Agreement.
     </string>
     <string name="tac20">
-        Unless you or Bill Tracker seek to have a Claim resolved in small claims court, the arbitrator shall determine all issues of liability on the merits of any Claim asserted by you or Bill Tracker and may award declaratory or injunctive
-        relief only in favor of the individual party seeking relief and only to the extent necessary to provide relief warranted by that party\'s individual claim. To the extent that you or Bill Tracker prevail on a Claim and seek
-        public injunctive relief (that is, injunctive relief that has the primary purpose and effect of prohibiting unlawful acts that threaten future injury to the public), the entitlement to and extent of such relief must be
-        litigated in a civil court of competent jurisdiction and not in arbitration. The parties agree that litigation of any issues of public injunctive relief shall be stayed pending the outcome of the merits of any individual
-        Claims in arbitration. Before a court of competent jurisdiction issues any public injunctive relief, it shall review the factual findings of the arbitration award on which any injunction would issue with no deference to the
+        Unless you or Bill Tracker seek to have a Claim resolved in small claims court, the arbitrator shall determine all issues of liability on the merits of any Claim asserted by you or Bill Tracker and may award declaratory or injunctive relief only in favor of the individual party seeking relief and only to the extent necessary to provide relief warranted by that party\'s individual claim. To the extent that you or Bill Tracker prevail on a Claim and seek public injunctive relief (that is, injunctive relief that has the primary purpose and effect of prohibiting unlawful acts that threaten future injury to the public), the entitlement to and extent of such relief must be litigated in a civil court of competent jurisdiction and not in arbitration. The parties agree that litigation of any issues of public injunctive relief shall be stayed pending the outcome of the merits of any individual Claims in arbitration. Before a court of competent jurisdiction issues any public injunctive relief, it shall review the factual findings of the arbitration award on which any injunction would issue with no deference to the
     </string>
-    <string name="tac21">
-        arbitrator.
-Payment of all filing, administration and arbitrator fees will be governed by the AAA Rules. You are required to pay AAA’s initial filing fee, but Bill Tracker will reimburse you for this filing fee at the conclusion of the
-        arbitration to the extent it exceeds the fee for filing a complaint in a federal or state court in your county of residence or in Santa Clara County, California. If the arbitrator finds that either the substance of your
-        Claim or the relief sought in your Demand for Arbitration was frivolous or was brought for an improper purpose (as measured by the standards set forth in Federal Rule of Civil Procedure 11(b)), then the payment of all
-        fees will be governed by the AAA Rules and Bill Tracker will not reimburse your initial filing fee. The parties agree that the AAA has discretion to modify the amount or timing of any administrative or arbitration fees
-        due under the AAA Rules where it deems appropriate, provided that such modification does not increase the AAA fees to you or Bill Tracker, and you and Bill Tracker waive any objection to such fee modification.
+    <string name="tac21"> arbitrator.
+Payment of all filing, administration and arbitrator fees will be governed by the AAA Rules. You are required to pay AAA’s initial filing fee, but Bill Tracker will reimburse you for this filing fee at the conclusion of the arbitration to the extent it exceeds the fee for filing a complaint in a federal or state court in your county of residence or in Santa Clara County, California. If the arbitrator finds that either the substance of your Claim or the relief sought in your Demand for Arbitration was frivolous or was brought for an improper purpose (as measured by the standards set forth in Federal Rule of Civil Procedure 11(b)), then the payment of all fees will be governed by the AAA Rules and Bill Tracker will not reimburse your initial filing fee. The parties agree that the AAA has discretion to modify the amount or timing of any administrative or arbitration fees due under the AAA Rules where it deems appropriate, provided that such modification does not increase the AAA fees to you or Bill Tracker, and you and Bill Tracker waive any objection to such fee modification.
 You and Bill Tracker agree that each may bring Claims against the other only in your or its individual capacity, and not as a plaintiff or class member in any purported class or representative proceeding. Further, if you have
     </string>
-    <string name="tac22">
-        elected arbitration, unless both you and Bill Tracker agree otherwise, the arbitrator may not consolidate any other person\'s Claims with your Claims and may not otherwise preside over any form of a representative or
-        class proceeding. If Bill Tracker believes that any Claim you have filed in arbitration or in court is inconsistent with the limitations in this paragraph, then you agree that Bill Tracker may seek an order from a
-        court determining whether your Claim is within the scope of the Class Action Waiver. If this Class Action Waiver is found to be unenforceable, then the entirety of this Disputes Section shall be null and void.\n\n
+    <string name="tac22"> elected arbitration, unless both you and Bill Tracker agree otherwise, the arbitrator may not consolidate any other person\'s Claims with your Claims and may not otherwise preside over any form of a representative or class proceeding. If Bill Tracker believes that any Claim you have filed in arbitration or in court is inconsistent with the limitations in this paragraph, then you agree that Bill Tracker may seek an order from a court determining whether your Claim is within the scope of the Class Action Waiver. If this Class Action Waiver is found to be unenforceable, then the entirety of this Disputes Section shall be null and void.\n\n
 General Terms (Miscellaneous)\n\n
 Governing Law\n\n
-The laws of Texas govern this Agreement and any disputes that may arise.\n
+The laws of Texas govern this Agreement and any disputes that may arise.\n\n
 Texas law and the Federal Arbitration Act will govern all disputes arising out of or relating to the app, this Agreement and any Additional Terms, regardless of conflict of laws rules.\n\n
 Global Trade and Export Restrictions\n\n
     </string>
     <string name="tac23">
-        You are allowed to use the app under the laws of the U.S. and other applicable territories. The app shall not be exported to countries that are embargoed by the U.S. government.\n
-You agree that you and anyone who uses the app, including the related website, online services and mobile apps, are not prohibited from using the app under the laws and regulations of the United States or other applicable
-        jurisdiction.  For example, you are not on the U.S. Treasury Department’s list of Specially Designated Nationals or any other similar prohibition. You acknowledge that the app may be subject to restrictions under
-        applicable U.S. export control laws and regulations. You agree that you will comply with these export control and sanctions laws and regulations, and will not transfer or provide any part of the app, in violation of
-        these laws and regulations, directly or indirectly.\n\n
+        You are allowed to use the app under the laws of the U.S. and other applicable territories. The app shall not be exported to countries that are embargoed by the U.S. government.\n\n
+You agree that you and anyone who uses the app, including the related website, online services and mobile apps, are not prohibited from using the app under the laws and regulations of the United States or other applicable jurisdiction.  For example, you are not on the U.S. Treasury Department’s list of Specially Designated Nationals or any other similar prohibition. You acknowledge that the app may be subject to restrictions under applicable U.S. export control laws and regulations. You agree that you will comply with these export control and sanctions laws and regulations, and will not transfer or provide any part of the app, in violation of these laws and regulations, directly or indirectly.\n\n
 Government End Users of Software\n\n
-Even if you are a government end user, your rights to Software are limited to what is described in this Agreement.\n
+Even if you are a government end user, your rights to Software are limited to what is described in this Agreement.\n\n
     </string>
     <string name="tac24">
-        The Software is a "commercial item" as that term is defined in FAR 2.101, consisting of "commercial computer software," as such term is used in FAR 12.212 and DFARS 227.7202. If the Software is being acquired by or on behalf
-        of the U.S. Government, then, as provided in FAR 12.212 and DFARS 227.7202-1 through 227.7202-4, as applicable, the U.S. Government’s rights in the Software will be only those specified in this Agreement.\n\n
+        The Software is a "commercial item" as that term is defined in FAR 2.101, consisting of "commercial computer software," as such term is used in FAR 12.212 and DFARS 227.7202. If the Software is being acquired by or on behalf of the U.S. Government, then, as provided in FAR 12.212 and DFARS 227.7202-1 through 227.7202-4, as applicable, the U.S. Government’s rights in the Software will be only those specified in this Agreement.\n\n
 Waiver\n\n
-If we waive some of our rights under this Agreement, it doesn’t mean we waive our rights in other circumstances.\n
+If we waive some of our rights under this Agreement, it doesn’t mean we waive our rights in other circumstances.\n\n
 Bill Tracker’s failure to act or enforce any of its rights does not constitute a waiver of any of our rights. Any waiver by Bill Tracker of any of the provisions in the Agreement must be made in writing and signed by a duly
         authorized officer of Bill Tracker.\n\n
 Assignment\n\n
     </string>
-    <string name="tac25">
-You can’t transfer this Agreement or your right to use the app to someone else without our permission.\n
-Bill Tracker may assign this Agreement to any party at any time without notice to you. You may not assign your rights under this Agreement, by operation of law or otherwise, without our consent. Any attempts to do so without
-        our consent will be void.\n\n
-Severability\n\n
-If a court voids a term of this Agreement, the other terms will not be affected.\n
-If any provision of this Agreement is unlawful, void, or unenforceable for any reason, then that provision will be severed and the remaining provisions will remain in full force and effect.\n\n
-Contact Information\n\n
-If you have any questions about the app or this Agreement, please contact support@billtracker.us</string>
-    <string name="NotificationsOn">Turn Notifications On</string>
-    <string name="notificationsOff">Turn Notifications Off</string>
-    <string name="billerExists">A Biller With That Name Already Exists</string>
-    <string name="nameTooShort">Biller Name Is Too Short</string>
-    <string name="websiteTooShort">Website Address Is Too Short</string>
-    <string name="enterValidWebsite">Please Enter A Valid Website</string>
-    <string name="totalBillersAdded">Total Billers Added:</string>
-    <string name="lastPaymentMadeOn">Last Payment Made On:</string>
-    <string name="noPaymentsAreDue">No Payments Are Due</string>
+    <string name="tac25">" You can’t transfer this agreement or your right to use the app to someone else without our permission. \n\nBill Tracker may assign this agreement to any party at any time without notice to you. You may not assign your rights under this agreement, by operation of law or otherwise, without our consent. Any attempts to do so without our consent will be void. \n\nSeverability \n\nIf a court voids a term of this Agreement, the other terms will not be affected.  \n\nIf any provision of this Agreement is unlawful, void, or unenforceable for any reason, then that provision will be severed and the remaining provisions will remain in full force and effect. \n\nContact Information\n\nIf you have any questions about the app or this Agreement, please contact support@billtracker.us"</string>
+    <string name="NotificationsOn">Turn notifications on</string>
+    <string name="notificationsOff">Turn notifications off</string>
+    <string name="noPaymentsAreDue">No payments are due</string>
     <string name="yourDtiRatingGood">Your DTI rating: Good</string>
     <string name="lendersPreferAbove50">Lenders generally prefer to see a DTI below 50 percent. Great Job!</string>
     <string name="yourDtiRatingExcellent">Your DTI rating: Excellent</string>
@@ -332,131 +209,68 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="dtiRatingPoor">Your DTI rating: Poor</string>
     <string name="dtiIsWayTooHigh">Your DTI is well above the recommended 50 percent threshold and you will likely find it difficult to obtain a loan.</string>
     <string name="myStats">My Stats</string>
-    <string name="noPaymentsDue">No Payments Are Due</string>
     <string name="noPaymentsFound">No payments were found based on your selected criteria.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="notSixCharacters">x At least 6 characters long</string>
     <string name="isSixCharacters"> At least 6 characters</string>
-    <string name="noCapitalLetter">x Capital letter</string>
-    <string name="isCapitalLetter"> Capital letter</string>
-    <string name="noLowercaseLetter">x Lowercase letter</string>
-    <string name="isLowercaseLetter"> Lowercase letter</string>
-    <string name="noNumber">x Number</string>
-    <string name="isNumber"> Number</string>
     <string name="passwords_dont_match">x Passwords Don\'t Match</string>
-    <string name="passwordsMatch"> Passwords Match</string>
-    <string name="billerAlreadyExists">A Biller With That Name Already Exists</string>
-    <string name="billerNameIsTooShort">Biller Name Is Too Short</string>
-    <string name="tooShort">Too Short</string>
-    <string name="enterAValidEmailAddress">Enter A Valid Email Address</string>
-    <string name="noUppercaseLetter">X At Least One Uppercase letter</string>
-    <string name="isUppercaseLetter"> At Least One Uppercase letter</string>
-    <string name="notOneLowercase">X At Least One Lowercase Letter</string>
-    <string name="isOneLowercase"> At Least One Lowercase Letter</string>
-    <string name="notOneNumber">X At Least One Number</string>
-    <string name="isOneNumber"> At Least One Number</string>
-    <string name="invalidLogin">Invalid username or password</string>
+    <string name="enterAValidEmailAddress">Enter a valid email address</string>
     <string name="dueYesterday">Due yesterday</string>
     <string name="dueToday">Due today</string>
     <string name="dueTomorrow">Due tomorrow</string>
-    <string name="unmarkAsPaid">Unmark As Paid</string>
-    <string name="markAsPaid">Mark As Paid</string>
+    <string name="unmarkAsPaid">Unmark as paid</string>
+    <string name="markAsPaid">Mark as paid</string>
     <string name="continueNow">Continue</string>
-    <string name="splitRegex">%\\$/</string>
-    <string name="statusOpen">Status: Open</string>
-    <string name="statusClosed">Status: Closed</string>
-    <string name="namemustBe3Characters">Name must be at least 3 characters</string>
-    <string name="emailTooShort">Email Is Too Short</string>
-    <string name="enterValidEmail">Please Enter A Valid Email Address</string>
-    <string name="usernameAvailable">Username Is Available</string>
-    <string name="usernameUnavailable">Username Is Unavailable</string>
-    <string name="a">Bill Tracker Needs Your Permission To Send Push Notifications When Your Bills Are Due</string>
-    <string name="b">Select Continue To Open Your App Settings And Turn Notifications On</string>
+    <string name="usernameAvailable">Username is available</string>
+    <string name="usernameUnavailable">Username is unavailable</string>
+    <string name="a">Bill Tracker needs your permission to send push notifications when your bills are due</string>
+    <string name="b">Select continue to open your app settings and turn notifications on</string>
     <string name="c">Notification Settings</string>
-    <string name="d">Notifications Allow The Bill Tracker App To Send Push Notifications When Your Bills Are Due. Enable Push Notifications And Never Miss A Due Date Again!</string>
-    <string name="e">  Notifications Are Currently Turned On</string>
-    <string name="f">  Notifications Are Currently Turned Off</string>
-    <string name="g">Turn Notifications Off</string>
-    <string name="back">Back</string>
-    <string name="h">Go Back To Previous Page</string>
+    <string name="d">Notifications allow the Bill Tracker app to send push notifications when your bills are due. Enable push notifications and never miss a due date again!</string>
+    <string name="e">  Notifications are currently turned on</string>
+    <string name="f">  Notifications are currently turned off</string>
+    <string name="g">Turn notifications off</string>
     <string name="i">Screenshot of notifications</string>
-    <string name="j">Enter Your Biller Details</string>
-    <string name="k">Biller Name:</string>
-    <string name="l">Biller Name Is Too Short   </string>
-    <string name="m">Category:</string>
     <string name="n">Website:</string>
-    <string name="o">Website Is Too Short</string>
     <string name="dueDate">Due Date:</string>
-    <string name="dueDateCantBeBlank">Due Date Can\'t Be Blank</string>
     <string name="amountDue">Amount Due:</string>
-    <string name="amountDueCantBeBlank">Amount Due Can\'t Be Blank </string>
-    <string name="amountDue1">Amount Due:</string>
-    <string name="frequency">Frequency:</string>
     <string name="recurring">Recurring:</string>
     <string name="submitBiller">Submit Biller</string>
-    <string name="billerAddedSuccessfully">Your Biller Was Added Successfully!</string>
-    <string name="hereAreTheDetails">Here Are The Details:</string>
     <string name="billerName">Biller Name</string>
     <string name="category">Category:</string>
     <string name="miscellaneous">Miscellaneous</string>
     <string name="nextDueDate">Next Due Date:</string>
     <string name="frequency1">Frequency:</string>
     <string name="website">Website:</string>
-    <string name="almostReady">Almost Ready!</string>
-    <string name="createPassword">Now Let\'s Create A Password To Secure Your Account</string>
     <string name="not6">x At Least 6 Characters</string>
     <string name="noUpper">x Uppercase Letter</string>
     <string name="noLower">x Lowercase Letter</string>
     <string name="notNumber">x Number</string>
-    <string name="enterPassword">Enter Password</string>
     <string name="reEnterPassword">Re-Enter Your Password</string>
-    <string name="nextTermsAndConditions">Next: Terms and Conditions</string>
     <string name="goBack">Go Back</string>
-    <string name="websiteIsTooShort">Website Is Too Short        </string>
-    <string name="dueDate1">Due Date:</string>
-    <string name="amountDueBlank">Amount Due Can\'t Be Blank </string>
     <string name="editProfile">Edit Profile</string>
     <string name="emailAddress">Email Address:</string>
-    <string name="usernameTooShort">Username Is Too Short</string>
-    <string name="enterPasswordAgain">Enter Password Again</string>
     <string name="name">Name:</string>
-    <string name="nametooShort">Name Is Too Short</string>
     <string name="forgotPassword">Forgot Password</string>
-    <string name="enterEmail">Enter Your Email Address To Receive A Password Reset Link</string>
-    <string name="pleaseEnterValidEmail">Please Enter A Valid Email</string>
+    <string name="pleaseEnterValidEmail">Please enter a valid email address</string>
     <string name="sendEmail">Send Email</string>
     <string name="welcomeToBillTracker">Welcome To Bill Tracker!</string>
-    <string name="getFamiliar">Let\'s Take A Moment To Get Familiar With How To Navigate The App. </string>
-    <string name="letsDoIt">Let\'s Do It!</string>
-    <string name="skip">Skip</string>
-    <string name="addFirstBiller">Add Your First Biller</string>
-    <string name="changeSettings">Change Settings</string>
-    <string name="viewPaymentsAndBillers">View Payments and Billers</string>
-    <string name="imReady">I\'m Ready</string>
     <string name="register">Register</string>
-    <string name="billTrackerCaps">BILL TRACKER</string>
-    <string name="welcomeToBillTrackerApp">Welcome to the Bill Tracker App!</string>
-    <string name="wrongUser">Not userName? Click the register button to get started!</string>
-    <string name="saveUsername">Save Username?</string>
-    <string name="staySignedIn">Stay Signed In</string>
-    <string name="forgotPassword1">Forgot Password?</string>
     <string name="login">Login</string>
     <string name="two">2</string>
-    <string name="billPaymentsByCategory">Bill Payments By Category</string>
-    <string name="startTracking">Add A Biller To Start Tracking Your Spending Categories</string>
+    <string name="billPaymentsByCategory">Bill payments by category</string>
+    <string name="startTracking">Add a biller to start tracking your spending categories</string>
     <string name="addABiller">Add A Biller</string>
     <string name="month">Month:</string>
     <string name="dti">Debt To Income (DTI)</string>
     <string name="yourDtiRatio">Your Debt To Income Ratio:</string>
     <string name="fairRating">Your DTI rating: Fair</string>
-    <string name="lendersWant50">Lenders Generally Prefer To See A DTI At Or Below 50 Percent</string>
+    <string name="lendersWant50">Lenders generally prefer to see a DTI at or below 50 percent</string>
     <string name="changeIncome">Change Income</string>
-    <string name="enterIncome">Please Enter Your Income To Calculate Your DTI</string>
-    <string name="enterIncomeinfo">Enter Income Info</string>
+    <string name="enterIncome">Please enter your income to calculate your DTI</string>
+    <string name="enterIncomeinfo">Enter income info</string>
     <string name="incomeAmount">Income Amount:</string>
     <string name="howOften">How Often?</string>
-    <string name="calculateMyDti">Calculate My DTI</string>
     <string name="stats">Stats</string>
     <string name="totalAmountPaid">Total Amount Paid:</string>
     <string name="totalPaymentsMade">Total Payments Made:</string>
@@ -466,81 +280,43 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="navHome">  Home</string>
     <string name="navViewBillers">  View Billers</string>
     <string name="navPaymentHistory">  Payment History</string>
-    <string name="navInsights">  Insights</string>
     <string name="visitBillerWebsite">Visit Biller Website</string>
     <string name="datePaid">Date Paid:</string>
     <string name="editBiller">Edit Biller</string>
     <string name="history">History</string>
     <string name="filterResults">Filter Results</string>
     <string name="paymentHistory">Payment History</string>
-    <string name="enableBiometrics">Would You Like To Enable Biometric Authentication?</string>
-    <string name="biometricsNotEnabled">Biometrics Are Not Enabled On Your Device</string>
-    <string name="enable">Enable</string>
     <string name="settings">Settings</string>
     <string name="usersName">User\'s Name</string>
     <string name="notificationSettings">Notification Settings</string>
-    <string name="turnOnPushNotifications">Turn Push Notifications On Or Off</string>
+    <string name="turnOnPushNotifications">Turn push notifications on or off</string>
     <string name="deleteYourAccount">Delete Your Account</string>
-    <string name="permanentlyRemoveYourData">Permanently Remove Your Data</string>
-    <string name="logoutSecurely">Logout Securely</string>
+    <string name="permanentlyRemoveYourData">Permanently remove your data</string>
+    <string name="logoutSecurely">Logout securely</string>
     <string name="typeYourMessageHere">Type Your Message Here</string>
     <string name="exit">Exit</string>
     <string name="supportTickets">Support Tickets</string>
     <string name="noTicketsWereFound">No Tickets Were Found</string>
-    <string name="billTrackerTerms">Bill Tracker Terms And Conditions</string>
-    <string name="pleaseReviewTerms">Please review our terms and conditions in order to use the Bill Tracker app</string>
-    <string name="scrollToAccept">Scroll To The Bottom Of The Terms To Accept</string>
-    <string name="iAgreeToTerms">I Agree To The Terms and Conditions</string>
     <string name="registeredBillers">Registered Billers</string>
-    <string name="clickBillerTile">Click A Biller Tile To View More Information</string>
-    <string name="noBillers">You haven\'t Added Any Billers Yet. Click Here To Add A Biller</string>
+    <string name="clickBillerTile">Click a biller tile to view more information</string>
     <string name="stms">Support Ticket Management System (STMS)</string>
-    <string name="welcometoBillTracker">Welcome To Bill Tracker</string>
-    <string name="whatsYourName">What\'s your name?</string>
-    <string name="enter3Characters">Enter 3 Characters</string>
-    <string name="alreadyRegistered">Already Registered? Click Here To Login</string>
-    <string name="getStarted">Get Started</string>
-    <string name="permissionNeeded">Bill Tracker Needs Your Permission To Send Push Notifications When Your Bills Are Due</string>
-    <string name="youCanChangeLater">(Your Selection Can Be Changed Later In The Settings Menu)</string>
-    <string name="heyName">Hey Name!</string>
-    <string name="whatsYourEmail">You\'re Off To A Great Start! What\'s Your Email Address?</string>
-    <string name="emailAddressinvalid">Email Address Invalid</string>
-    <string name="thisIsYourUsername">(This Will Be Your Username. We Will Never Share Your Personal Info)</string>
-    <string name="nextCreatePassword">Next: Create Password</string>
     <string name="customerService1">Customer Service:</string>
     <string name="helloUser">Hello user and thank you for reaching out to us. We\'re overjoyed at the opportunity to serve you today! Please describe your issue in detail so that we may assist you!</string>
     <string name="overallStats">     Overall Stats     </string>
-    <string name="administratorConsole">Administrator Console</string>
-    <string name="august">August 2022</string>
-    <string name="addBiller1">  Add A Biller  </string>
-    <string name="nextBillDue">  Next Bill Due  </string>
-    <string name="contactUs">  Contact Us  </string>
-    <string name="noBillersYet">You Don\'t Have Any Billers Added For This Month Yet! Click Add A Biller Above To Add One Now!</string>
     <string name="dateDue">Date Due:</string>
     <string name="paidOn">Paid On:</string>
     <string name="paymentAmount">Payment Amount:</string>
-    <string name="datelastPaid">Date Last Paid:</string>
     <string name="payments">Payments</string>
     <string name="deleteBiller">Delete Biller</string>
     <string name="visitWebsite">Visit Website</string>
-    <string name="enterIncomeInfo">Enter Your Income Info Calculate Your DTI</string>
-    <string name="emailAddressInvalid">Email Address Is Invalid</string>
     <string name="dateLastPaid">Date Last Paid:</string>
     <string name="open1">Open</string>
     <string name="closed1">Closed</string>
     <string name="password1">Password</string>
-    <string name="aa">Give Us Just A Moment To Get Things Setup…</string>
-    <string name="bb">Where\'d We Put That Logo…</string>
-    <string name="cc">There It Is!</string>
-    <string name="dd">Just Need To Grab A Couple More Things…</string>
-    <string name="ee">There We Go! Let\'s Get Started</string>
-    <string name="hey_there_welcome_to_bill_tracker">Hey There! Welcome To Bill Tracker</string>
-    <string name="ba">Crunching The Numbers…</string>
-    <string name="cd">Almost Done…</string>
     <string name="weekly">Weekly</string>
     <string name="biweekly">Bi-Weekly</string>
     <string name="monthly">Monthly</string>
-    <string name="noDataFound">No Bills Data Was Found</string>
+    <string name="noDataFound">No bills data was found</string>
     <string name="autoLoan">Auto Loan</string>
     <string name="creditCard">Credit Card</string>
     <string name="entertainment">Entertainment</string>
@@ -548,21 +324,18 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="mortgage">Mortgage</string>
     <string name="personalLoans">Personal Loans</string>
     <string name="utilities">Utilities</string>
-    <string name="billCategory">Bill Category</string>
-    <string name="dtiNotCalculated">DTI Could Not Be Calculated</string>
+    <string name="dtiNotCalculated">DTI could not be calculated</string>
     <string name="disposableIncome">Disposable Income</string>
-    <string name="bills">Bills</string>
-    <string name="yourDebtToIncomeRatioIs">Your Debt To Income Ratio Is:</string>
-    <string name="dtiFactors">DTI Factors</string>
+    <string name="bills">Bills:</string>
+    <string name="yourDebtToIncomeRatioIs">Your debt to income ratio is:</string>
     <string name="sStats">\'s Stats</string>
     <string name="morning">Morning</string>
     <string name="afternoon">Afternoon</string>
     <string name="evening">Evening</string>
-    <string name="add_a_new_biller">Add A New Biller</string>
-    <string name="undo">UNDO</string>
+    <string name="add_a_new_biller">Add a new biller"</string>
     <string name="good">Good</string>
-    <string name="noBillsDue">No Bills Are Due!</string>
-    <string name="noUpcomingBills">You Don\'t Have Any Upcoming Bills</string>
+    <string name="noBillsDue">No bills are due!</string>
+    <string name="noUpcomingBills">You don\'t have any upcoming bills</string>
     <string name="ok">OK</string>
     <string name="today">Today</string>
     <string name="laterThisWeek">Later This Week</string>
@@ -572,12 +345,7 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="daysAgo">days ago</string>
     <string name="remaining">Remaining</string>
     <string name="total">Total</string>
-    <string name="dueIn">Due in</string>
-    <string name="days">days</string>'
     <string name="paid">Paid</string>
-    <string name="paymentFor">Payment For</string>
-    <string name="markedAsPaid">marked as paid</string>
-    <string name="unmarkedAsPaid">unmarked as paid</string>
     <string name="billTracker">Bill Tracker</string>
     <string name="billTrackerNotificationChannel">Bill Tracker App Notification Channel</string>
     <string name="yourBillFor">Your Bill For</string>
@@ -587,33 +355,16 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="isDueInThreeDays">Is Due In 3 Days</string>
     <string name="billDue">Bill Due</string>
     <string name="selectDate">Select Date</string>
-    <string name="justThisOne">Just This One</string>
-    <string name="changeDueDate">Change Due Date</string>
-    <string name="changeAll">Change All</string>
     <string name="cancel">Cancel</string>
-    <string name="changeAllOccurrences">Would You Like To Change The Due Date For All Future Occurrences Of This Bill?</string>
-    <string name="areYouSure">Are you sure you would like to unmark this bill as paid</string>
-    <string name="areYouSureYouWantToMarkThisBillAsPaid">Are you sure you would like to mark this bill as paid</string>
     <string name="justThisOccurence">Just This Occurrence</string>
-    <string name="update">Update</string>
     <string name="updateAllFutureBills">Update All Future Bills</string>
-    <string name="updateAll">Update All</string>
-    <string name="updatePaymentAmountForAll">Would you like to update the payment amount for all occurrences of this bill?</string>
     <string name="changeAmount">Change Amount</string>
-    <string name="pleaseEnterYourPaymentAmount">Please Enter Your Payment Amount</string>
-    <string name="visit_biller_website">Visit Biller Website</string>
-    <string name="due_date">Due Date:</string>
-    <string name="amount_due">Amount Due:</string>
-    <string name="date_paid">Date Paid:</string>
-    <string name="edit_biller">Edit Biller</string>
+    <string name="pleaseEnterYourPaymentAmount">Please enter your payment amount</string>
     <string name="mark_as_paid">Mark As Paid</string>
     <string name="daily">Daily</string>
     <string name="quarterly">Quarterly</string>
     <string name="yearly">Yearly</string>
-    <string name="utility">Utility</string>
-    <string name="emailAddressUpdated">Your email address has been updated successfully and a verification email has been sent. Please click the link in the email to verify your email address. Be sure to check your spam folder.</string>
     <string name="anErrorHasOccurred">An error has occurred. Please try again.</string>
-    <string name="informationUpdated">Your information has been updated successfully!</string>
     <string name="passwordResetLinkSent">A password reset link has been sent to your email inbox. Please follow the instructions in the email to reset your password.</string>
     <string name="emailSent">Email Sent</string>
     <string name="emailNotRegistered">That email address is not registered</string>
@@ -622,7 +373,6 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="emailNotVerified">Email Address Not Verified</string>
     <string name="verificationEmailSent">A verification email has been sent!</string>
     <string name="biometricsAreDisabled">Biometrics have been disabled. You can change this in your profile\'s settings.</string>
-    <string name="biometricsDisabled">Biometrics Disabled</string>
     <string name="willYouEnableBiometrics">Would you like to enable biometric authentication?</string>
     <string name="enableBiometrics1">Enable Biometrics</string>
     <string name="notRightNow">Not Right Now</string>
@@ -630,109 +380,31 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="biometricsNotSupported">Biometrics Are Not Supported On Your Device</string>
     <string name="enableAfterLoggingIn">You can enable biometrics in the settings menu after logging in.</string>
     <string name="biometricAuthentication">Biometric Authentication</string>
-    <string name="welcomeBack">Welcome Back</string>
-    <string name="not">Not</string>
-    <string name="clickRegister">Click The Register Button To Get Started</string>
     <string name="confirmDeletion">Are you sure you would like to delete this biller and all associated payment history?</string>
-    <string name="billerWasDeletedSuccessfully">Biller was deleted successfully!.</string>
-    <string name="dontDelete">"Don't Delete"</string>
-    <string name="allPayments">All Payments</string>
-    <string name="thisWeek">This Week</string>
-    <string name="thisMonth">This Month</string>
-    <string name="lastMonth">Last Month</string>
-    <string name="thisYear">This Year</string>
-    <string name="lastYear">Last Year</string>
-    <string name="twoYearsAgo">Two Years Ago</string>
+    <string name="billerWasDeletedSuccessfully">Biller was deleted successfully!</string>
     <string name="allBillers">All Billers</string>
-    <string name="all">All</string>
-    <string name="emailAlreadyRegistered">The email you entered is already registered.</string>
     <string name="accountCreatedSuccessfullyMessage">Your account has been created successfully and a verification email has been sent. Please click the link in the email to verify your email address. Be sure to check your spam folder.</string>
-    <string name="accountCreatedSuccessfully">Account Created Successfully</string>
-    <string name="openEmail">Open Email</string>
-    <string name="confirmUserDeletion">Are you sure you would like to delete your user profile and all data associated with it? This action cannot be undone.</string>
-    <string name="confirmDeletion1">Confirm Deletion</string>
     <string name="confirm">Confirm</string>
     <string name="profileDeletedSuccessfully">Your profile was deleted successfully</string>
-    <string name="confirmLogout">Confirm Logout</string>
-    <string name="areYouSureYouWantToLogout">Are You Sure You Would Like To Logout From Bill Tracker?</string>
-    <string name="youHaveLoggedOutSuccessfully">You Have Logged Out Successfully</string>
     <string name="supportGreeting">Hello and welcome to our customer assistance chat. We hope you\'re having a fantastic day and look forward to having the opportunity to serve you!
         Please describe in detail what you need assistance with and one of our agents will reach out to you as soon as possible.</string>
-    <string name="customerService">Customer Service</string>
     <string name="agent">Agent:</string>
     <string name="supportTicketWasClosedByAgent">Support ticket was closed by agent</string>
-    <string name="acceptedOn">Accepted On:</string>
-    <string name="hey">Hey</string>
-    <string name="currency">Currency</string>
-    <string name="getting_everything_ready">Getting Everything Ready</string>
-    <string name="gathering_your_data">Gathering Your Data…</string>
-    <string name="enterIncomeAgain">Enter Income:</string>
-    <string name="trophyCase">My Trophy Case</string>
-    <string name="welcomeAboard">Welcome Aboard!</string>
-    <string name="thatWasEasy">That Was Easy</string>
-    <string name="bestIconEver">Best…Icon…Ever</string>
-    <string name="gettingTheHangOfIt">Getting The Hang Of It! 💪</string>
-    <string name="journeyman">Journeyman</string>
-    <string name="hiImNew">Hi, I\'m New 🙋🏽</string>
-    <string name="gettingThoseRepsIn">Getting Those Reps In</string>
-    <string name="earlierThanEarly">Earlier Than Early</string>
-    <string name="youAddedYourFirstBillerOnBillTracker">You Added Your First Biller on Bill Tracker!</string>
-    <string name="madeFirstPayment">You Made Your First Payment</string>
-    <string name="addedFirstCustomBiller">You Added Your First Custom Biller Icon</string>
-    <string name="added10Billers">You\'ve Added 10 Billers</string>
-    <string name="completed10payments">You\'ve Completed 10 Payments</string>
-    <string name="firstTimeLoggingIn">You Logged In For The First Time</string>
-    <string name="thirtyPayments">You\'ve Completed 30 Payments! Whoot Whoot!</string>
-    <string name="use_default_icon">Use Default Icon</string>
-    <string name="image_selector_button">Image Selector Button</string>
     <string name="back_button">Back Button</string>
-    <string name="achievement_unlocked">Achievement Unlocked!</string>
-    <string name="you_ve_unlocked_the_first_trophy">You\'ve Unlocked The First Trophy!</string>
-    <string name="share_button">Share Button</string>
     <string name="close_button">Close Button</string>
-    <string name="trophy_image">Trophy Image</string>
-    <string name="select_image_button">Select Image Button</string>
     <string name="upload_complete">Upload Complete!</string>
     <string name="administrator_control_panel">Administrator Control Panel</string>
     <string name="biller_data">Biller Data</string>
     <string name="ums">UMS</string>
     <string name="open_tickets_1">Open Tickets (1)</string>
-    <string name="my_trophy_case">My Trophy Case</string>
-    <string name="first_trophy">First Trophy</string>
-    <string name="second_trophy">Second Trophy</string>
-    <string name="third_trophy">Third Trophy</string>
-    <string name="fourth_trophy">Fourth Trophy</string>
-    <string name="first_medal">First Medal</string>
-    <string name="second_medal">Second Medal</string>
-    <string name="third_medal">Third medal</string>
-    <string name="fourth_medal">Fourth Medal</string>
-    <string name="early_bird_trophy">Early Bird Trophy</string>
-    <string name="tenth_trophy">Tenth Trophy</string>
-    <string name="twelfth_trophy">Twelfth Trophy</string>
-    <string name="eleventh_trophy">Eleventh Trophy</string>
-    <string name="thirteenth_trophy">Thirteenth Trophy</string>
-    <string name="trophy_description_box">Trophy Description Box</string>
-    <string name="close_trophy">Close Trophy</string>
-    <string name="share_trophy">Share Trophy</string>
-    <string name="screenshot_with_instructions">Screenshot With Instructions</string>
-    <string name="back_arrow">Back Arrow</string>
-    <string name="forward_arrow">Forward Arrow</string>
-    <string name="dot">Dot</string>
     <string name="icon">Icon</string>
-    <string name="biometric_icon">Biometric Icon</string>
-    <string name="drawer_toggle">Drawer Toggle</string>
-    <string name="help_icon">Help Icon</string>
-    <string name="settings_icon">Settings Icon</string>
-    <string name="close_income">Close Income</string>
     <string name="_24_567_67">$24,567.67</string>
     <string name="paid_icon">Paid Icon</string>
-    <string name="fingerprint_icon">Fingerprint Icon</string>
     <string name="select">Select</string>
     <string name="customer_service_icon">Customer Service Icon</string>
     <string name="no_results">No Results</string>
     <string name="march_26_2023_09_35_pm">March 26, 2023 09:35 PM</string>
     <string name="payment_history">Payment History</string>
-    <string name="check_mark">Check Mark</string>
     <string name="consolidated_communications">Consolidated Communications</string>
     <string name="paid_on_12_7_2022">Paid on 12/7/2022</string>
     <string name="_152_77">$152.77</string>
@@ -740,102 +412,43 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="customer_name">Customer Name:</string>
     <string name="hello_i_m_having_a_difficult_time_getting_my_bills_added_to_the_app_can_you_offer_any_suggestions_on_how_to_get_them_added_more_easily">Hello. I\'m having a difficult time getting my bills added to the app. Can you offer any suggestions on how to get them added more easily?</string>
     <string name="march_26_2023_09_40_pm">March 26, 2023 09:40 PM</string>
-    <string name="string_navhome">"    @string/navHome"</string>
-    <string name="string_navviewbillers">"    @string/navViewBillers"</string>
-    <string name="string_navpaymenthistory">"    @string/navPaymentHistory"</string>
-    <string name="string_navinsights">"    @string/navInsights"</string>
-    <string name="select_image">Select Image</string>
-    <string name="biller_icon">biller icon</string>
     <string name="xfinity">Xfinity</string>
     <string name="_2_7_2023">2/7/2023</string>
     <string name="_27_47">$27.47</string>
     <string name="email_example_com">email@example.com</string>
-    <string name="agent_unassigned">Agent: Unassigned</string>
     <string name="open_ticket">Open Ticket</string>
     <string name="email">Email:</string>
-    <string name="unread_messages">Unread Messages:</string>
     <string name="unassigned">Unassigned</string>
     <string name="notes">Notes:</string>
     <string name="self_assign">Self Assign</string>
-    <string name="send_response">Send Response</string>
     <string name="mark_resolved">Mark Resolved</string>
-    <string name="youve_made_50_payments">You\'ve Made 50 payments!</string>
-    <string name="you_paid_a_bill_at_least_14_days_early">You Paid a Bill At Least 14 Days Early</string>
-    <string name="unstoppable">Unstoppable</string>
-    <string name="username_or_password_too_short">Username or Password Too Short</string>
-    <string name="statue">Statue</string>
-    <string name="plant">Plant</string>
-    <string name="ijustearnedthe">I Just Earned The </string>
-    <string name="badgeonbilltracker"> Badge On Bill Tracker!</string>
-    <string name="googleSignInFailed">Google Sign-In Failed</string>
     <string name="facebook_app_id">223148510311094</string>
-    <string name="fb_login_protocol_scheme">fb223148510311094</string>
     <string name="facebook_client_token">a5a2a8a9c13289fbbeaccd95c4323a92</string>
-    <string name="billerNameCantBeBlank">Biller Name Can\'t Be Blank</string>
     <string name="save">Save</string>
-    <string name="loginWithFacebookError">Login With Facebook Error</string>
-    <string name="my_achievements">My Achievements</string>
     <string name="payments_remaining">Payments Remaining:</string>
-    <string name="continuous">Continuous</string>
-    <string name="set_payments_until_paid_off">Set Payments Until Paid Off?</string>
-    <string name="number_of_payments">Number of Payments:</string>
     <string name="paid_in_full">Paid In Full</string>
     <string name="final_payment">Final Payment!</string>
     <string name="create_a_new_budget">Create A New Budget</string>
-    <string name="automotive">Automotive</string>
-    <string name="groceries">Groceries</string>
-    <string name="beauty">Beauty</string>
-    <string name="clothing">Clothing</string>
-    <string name="restaurants">Restaurants</string>
-    <string name="health">Health</string>
-    <string name="other">Other</string>
-    <string name="transaction_titled">Transaction Titled: </string>
     <string name="has_been_removed"> Has Been Removed</string>
     <string name="create_a_budget">Create A Budget</string>
     <string name="pay_amount">Pay Amount:</string>
     <string name="pay_frequency">Pay Frequency:</string>
-    <string name="savings_amount">Savings Amount:</string>
     <string name="weekly_bills_average">Weekly Bills Average:</string>
     <string name="weekly_disposable_income">Weekly Disposable Income:</string>
-    <string name="percent_values_are_a_percentage_of_your_disposable_income">Percent Values Are A Percentage of Your Disposable Income</string>
-    <string name="create_a_budget_for_me">Create A Budget For Me:</string>
-    <string name="automotive_budget">Automotive Budget:</string>
-    <string name="beauty_budget">Beauty Budget:</string>
-    <string name="clothing_budget">Clothing Budget:</string>
-    <string name="entertainment_budget">Entertainment Budget:</string>
-    <string name="groceries_budget">Groceries Budget:</string>
-    <string name="health_budget">Health Budget:</string>
-    <string name="restaurants_budget">Restaurants Budget:</string>
-    <string name="other_budget">Other Budget:</string>
     <string name="budget_start_date">Budget Start Date:</string>
     <string name="budget_end_date">Budget End Date:</string>
     <string name="apply_budget">Apply Budget</string>
     <string name="all_fields_must_be_filled_in">All Fields Must Be Filled In</string>
-    <string name="re_create_this_budget_for_me">Re-Create This Budget For Me:</string>
     <string name="current_budget">Current Budget</string>
-    <string name="apply_changes">Apply Changes</string>
     <string name="you_don_t_have_a_budget_set_for_the_current_date">You Don\'t Have A Budget Set For The Current Date</string>
     <string name="transactions">Transactions</string>
     <string name="budget_remaining">Budget Remaining:</string>
     <string name="budget_not_set">Budget Not Set</string>
     <string name="total_spent">Total Spent:</string>
     <string name="spending">Spending</string>
-    <string name="date">Date:</string>
-    <string name="cost">Cost:</string>
-    <string name="description">Description:</string>
     <string name="add_expense">Add Expense</string>
-    <string name="your_budget_has_been_updated_successfully">Your Budget Has Been Updated Successfully</string>
-    <string name="use_default_values">Use Default Values:</string>
-    <string name="percent_values_cannot_exceed_100_percent">Percent Values Cannot Exceed 100 Percent</string>
-    <string name="savings_amount_exceeds_available_funds">Savings Amount Exceeds Available Funds</string>
-    <string name="logging_you_in_as">Logging You In As</string>
-    <string name="forgot_password">Forgot Password</string>
-    <string name="current_balance">Current Balance:</string>
-    <string name="estimated_apr">Estimated APR:</string>
-    <string name="finishing_up">Finishing Up</string>
-    <string name="creating_user_profile">Creating User Profile</string>
-    <string name="you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller">You Don\'t Have Any Bills Added For This Month Yet. Click The Plus Sign Above To Add A Biller!</string>
-    <string name="past_due">Past Due</string>
+    <string name="percent_values_cannot_exceed_100_percent">Percent values cannot exceed 100 percent</string>
+    <string name="savings_amount_exceeds_available_funds">Savings amount exceeds available funds</string>
     <string name="amount_remaining">Amount Remaining:</string>
     <string name="partial_payment_made">Partial Payment Made:</string>
     <string name="amount_paid">Amount Paid:</string>
@@ -843,41 +456,253 @@ If you have any questions about the app or this Agreement, please contact suppor
     <string name="escrow_amount">Escrow Amount:</string>
     <string name="estimated_balance">Estimated Balance:</string>
     <string name="view_details">View Details</string>
-    <string name="total_payments_remaining">Total Payments Remaining:</string>
     <string name="hide_details">Hide Details</string>
     <string name="total_amount_remaining">Total Amount Remaining:</string>
-    <string name="percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted">Percent Values Are A Percentage of Your Disposable Income After Savings is Deducted</string>
+    <string name="percent_values_are_a_percentage_of_your_disposable_income_after_savings_is_deducted">Percent values are a percentage of your weekly disposable income after savings is deducted</string>
     <string name="income">Income:</string>
     <string name="disposable_income">Disposable Income:</string>
     <string name="savings_allocation">Savings Allocation:</string>
-    <string name="spending_allocation">Spending Allocation:</string>
-    <string name="edit_budget">Edit Budget</string>
-    <string name="weekly_savings_amount">Weekly Savings Amount:</string>
     <string name="edit">Edit</string>
     <string name="estimated_interest_paid">Estimated Interest Paid:</string>
-    <string name="partial_payment">Partial Payment</string>
-    <string name="spending_categories">Spending Categories</string>
-    <string name="noDataAvailable">No Data Available</string>
-    <string name="noBudgetDataWasFound">No Budget Data Was Found</string>
+    <string name="noBudgetDataWasFound">No budget data was found</string>
     <string name="remove">Remove</string>
     <string name="changePartialPayment">Change Partial Payment</string>
-    <string name="would_you_like_to_change_your_partial_payment_or_remove_it">Would You Like To Remove Your Partial Payment or Change The Amount?</string>
-    <string name="change_partial_payment_amount">Change Partial Payment Amount</string>
-    <string name="please_enter_the_new_partial_payment_amount">Please Enter The New Partial Payment Amount</string>
-    <string name="spent">Spent</string>
+    <string name="would_you_like_to_change_your_partial_payment_or_remove_it">Would you like to remove your partial payment or change the amount?</string>
     <string name="total_budget">Total Budget</string>
     <string name="no_payments_reported">No Payments Reported</string>
-    <string name="select_a_date">Select A Date:</string>
-    <string name="no_transactions_were_found_for_the_selected_time_frame">No Transactions Were Found For The Selected Time Frame</string>
+    <string name="no_transactions_were_found_for_the_selected_time_frame">No transactions were found for the selected time frame</string>
     <string name="expenses_icon">Expenses Icon</string>
     <string name="bills_icon">Bills Icon</string>
     <string name="budget_icon">Budget Icon</string>
-    <string name="budget">Budget</string>
     <string name="not_found_icon">Not Found Icon</string>
-    <string name="m19_14_12_94c0_04_0_3_0_06_0_61_0_06_0_94c0_0_32_0_02_0_64_0_07_0_94l2_03_1_58c0_18_0_14_0_23_0_41_0_12_0_61l_1_92_3_32c_0_12_0_22_0_37_0_29_0_59_0_22l_2_39_0_96c_0_5_0_38_1_03_0_7_1_62_0_94l14_4_2_81c_0_04_0_24_0_24_0_41_0_48_0_41h_3_84c_0_24_0_0_43_0_17_0_47_0_41l9_25_5_35c8_66_5_59_8_12_5_92_7_63_6_29l5_24_5_33c_0_22_0_08_0_47_0_0_59_0_22l2_74_8_87c2_62_9_08_2_66_9_34_2_86_9_48l2_03_1_58c4_84_11_36_4_8_11_69_4_8_12s0_02_0_64_0_07_0_94l_2_03_1_58c_0_18_0_14_0_23_0_41_0_12_0_61l1_92_3_32c0_12_0_22_0_37_0_29_0_59_0_22l2_39_0_96c0_5_0_38_1_03_0_7_1_62_0_94l0_36_2_54c0_05_0_24_0_24_0_41_0_48_0_41h3_84c0_24_0_0_44_0_17_0_47_0_41l0_36_2_54c0_59_0_24_1_13_0_56_1_62_0_94l2_39_0_96c0_22_0_08_0_47_0_0_59_0_22l1_92_3_32c0_12_0_22_0_07_0_47_0_12_0_61l19_14_12_94zm12_15_6c_1_98_0_3_6_1_62_3_6_3_6s1_62_3_6_3_6_3_6s3_6_1_62_3_6_3_6s13_98_15_6_12_15_6z" translatable="false">M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94L14.4,2.81c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z</string>
-    <string name="delete">Delete</string>
     <string name="logo">logo</string>
     <string name="pay_next_bill_button">Pay Next Bill Button</string>
     <string name="arrow">arrow</string>
-    <string name="notifications_are_currently_turned_off_change_this_in_the_settings_menu_to_receive_notifications_when_your_bills_are_due">Notifications Are Currently Turned Off. Change This In The Settings Menu To Receive Notifications When Your Bills Are Due</string>
+    <string name="isDueInTwoDays">Is Due In Two Days</string>
+    <string name="wasDue">Was Due</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="balance_forward">Balance Forward:</string>
+    <string name="payment_date">Payment Date:</string>
+    <string name="other_amount">Other Amount</string>
+    <string name="total_due">Total Due</string>
+    <string name="how_much_did_you_pay">How Much Did You Pay?</string>
+    <string name="balance_forward1">Balance Forward</string>
+    <string name="change_payments_remaining">Change Payments Remaining</string>
+    <string name="payment_confirmation">Payment Confirmation</string>
+    <string name="payment_number">Payment Number:</string>
+    <string name="bi_monthly">Bi-Monthly</string>
+    <string name="due_this_period">Due This Period:</string>
+    <string name="payment_id">"Payment Id: "</string>
+    <string name="total_amount_due">Total Amount Due:</string>
+    <string name="website1">Website</string>
+    <string name="mark_as_unpaid">Mark As Unpaid</string>
+    <string name="create_a_new_biller_file">Create A New Biller File</string>
+    <string name="change_icon">Change Icon</string>
+    <string name="biller_name">Biller Name</string>
+    <string name="email1">Email</string>
+    <string name="agree_to_terms">By continuing, you agree to the Bill Tracker <font color='#2598F4'>Terms and Conditions</font></string>
+    <string name="already_registered">Already Registered? <font color='#FF0B64AB'>Login</font></string>
+    <string name="not_registered_yet">Not registered yet? <font color='#FF0B64AB'>Create an account</font></string>
+    <string name="forgot_password">Forgot password? <font color='#FF0B64AB'>Recover password</font></string>
+    <string name="name1">Name</string>
+    <string name="close">Close</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="at_least_5_characters">At least 5 characters</string>
+    <string name="uppercase_letter">Uppercase letter</string>
+    <string name="lowercase_letter">Lowercase Letter</string>
+    <string name="number">Number</string>
+    <string name="default_web_client_id" translatable="false">408067372841-m9g2kdu5u7j4jl7p790cc2rajgtle762.apps.googleusercontent.com</string>
+    <string name="account_created_successfully">Account Created Successfully</string>
+    <string name="analysis">Analysis</string>
+    <string name="_10" translatable="false">10%</string>
+    <string name="category_name">Category Name</string>
+    <string name="future_budget">Future Budget</string>
+    <string name="previous_budget">Previous Budget</string>
+    <string name="no_budget_categories_assigned">No budget categories have been assigned</string>
+    <string name="a_percent_value_is_required_for_every_category">A percent value is required for every category.</string>
+    <string name="percent_values_cannot_equal_more_than_100_when_combined">Percent values cannot equal more than 100 when combined.</string>
+    <string name="add_a_spending_category">Add A Spending Category</string>
+    <string name="create_a_budget_for_me">Create A Budget For Me</string>
+    <string name="spent_this_period">Spent This Period:</string>
+    <string name="spending_per_category">Spending Per Category</string>
+    <string name="shopping">Shopping</string>
+    <string name="m123" translatable="false">M17.81,4.47c-0.08,0 -0.16,-0.02 -0.23,-0.06C15.66,3.42 14,3 12.01,3c-1.98,0 -3.86,0.47 -5.57,1.41 -0.24,0.13 -0.54,0.04 -0.68,-0.2 -0.13,-0.24 -0.04,-0.55 0.2,-0.68C7.82,2.52 9.86,2 12.01,2c2.13,0 3.99,0.47 6.03,1.52 0.25,0.13 0.34,0.43 0.21,0.67 -0.09,0.18 -0.26,0.28 -0.44,0.28zM3.5,9.72c-0.1,0 -0.2,-0.03 -0.29,-0.09 -0.23,-0.16 -0.28,-0.47 -0.12,-0.7 0.99,-1.4 2.25,-2.5 3.75,-3.27C9.98,4.04 14,4.03 17.15,5.65c1.5,0.77 2.76,1.86 3.75,3.25 0.16,0.22 0.11,0.54 -0.12,0.7 -0.23,0.16 -0.54,0.11 -0.7,-0.12 -0.9,-1.26 -2.04,-2.25 -3.39,-2.94 -2.87,-1.47 -6.54,-1.47 -9.4,0.01 -1.36,0.7 -2.5,1.7 -3.4,2.96 -0.08,0.14 -0.23,0.21 -0.39,0.21zM9.75,21.79c-0.13,0 -0.26,-0.05 -0.35,-0.15 -0.87,-0.87 -1.34,-1.43 -2.01,-2.64 -0.69,-1.23 -1.05,-2.73 -1.05,-4.34 0,-2.97 2.54,-5.39 5.66,-5.39s5.66,2.42 5.66,5.39c0,0.28 -0.22,0.5 -0.5,0.5s-0.5,-0.22 -0.5,-0.5c0,-2.42 -2.09,-4.39 -4.66,-4.39 -2.57,0 -4.66,1.97 -4.66,4.39 0,1.44 0.32,2.77 0.93,3.85 0.64,1.15 1.08,1.64 1.85,2.42 0.19,0.2 0.19,0.51 0,0.71 -0.11,0.1 -0.24,0.15 -0.37,0.15zM16.92,19.94c-1.19,0 -2.24,-0.3 -3.1,-0.89 -1.49,-1.01 -2.38,-2.65 -2.38,-4.39 0,-0.28 0.22,-0.5 0.5,-0.5s0.5,0.22 0.5,0.5c0,1.41 0.72,2.74 1.94,3.56 0.71,0.48 1.54,0.71 2.54,0.71 0.24,0 0.64,-0.03 1.04,-0.1 0.27,-0.05 0.53,0.13 0.58,0.41 0.05,0.27 -0.13,0.53 -0.41,0.58 -0.57,0.11 -1.07,0.12 -1.21,0.12zM14.91,22c-0.04,0 -0.09,-0.01 -0.13,-0.02 -1.59,-0.44 -2.63,-1.03 -3.72,-2.1 -1.4,-1.39 -2.17,-3.24 -2.17,-5.22 0,-1.62 1.38,-2.94 3.08,-2.94 1.7,0 3.08,1.32 3.08,2.94 0,1.07 0.93,1.94 2.08,1.94s2.08,-0.87 2.08,-1.94c0,-3.77 -3.25,-6.83 -7.25,-6.83 -2.84,0 -5.44,1.58 -6.61,4.03 -0.39,0.81 -0.59,1.76 -0.59,2.8 0,0.78 0.07,2.01 0.67,3.61 0.1,0.26 -0.03,0.55 -0.29,0.64 -0.26,0.1 -0.55,-0.04 -0.64,-0.29 -0.49,-1.31 -0.73,-2.61 -0.73,-3.96 0,-1.2 0.23,-2.29 0.68,-3.24 1.33,-2.79 4.28,-4.6 7.51,-4.6 4.55,0 8.25,3.51 8.25,7.83 0,1.62 -1.38,2.94 -3.08,2.94s-3.08,-1.32 -3.08,-2.94c0,-1.07 -0.93,-1.94 -2.08,-1.94s-2.08,0.87 -2.08,1.94c0,1.71 0.66,3.31 1.87,4.51 0.95,0.94 1.86,1.46 3.27,1.85 0.27,0.07 0.42,0.35 0.35,0.61 -0.05,0.23 -0.26,0.38 -0.47,0.38z</string>
+    <string name="delete_transaction">Delete Transaction</string>
+    <string name="edit_transaction">Edit Transaction</string>
+    <string name="edit_expense">Edit Expense</string>
+    <string name="view_thread" translatable="false">View Thread</string>
+    <string name="no_notes_have_been_added" translatable="false">No notes have been added.</string>
+    <string name="submit_new_notes" translatable="false">Submit New Notes</string>
+    <string name="customer_support">Customer Support</string>
+    <string name="support_ticket_was_re_established_by_agent">Support ticket was re-established by agent</string>
+    <string name="you_haven_t_added_any_billers_yet_tap_here_or_the_plus_sign_above_to_add_your_first_biller">You haven\'t added any billers yet. Tap here or the plus sign above to add your first biller!</string>
+    <string name="one_time">One Time</string>
+    <string name="use_default_image">Use Default Image</string>
+    <string name="payment_amount">Payment Amount</string>
+    <string name="escrow_per_payment">Escrow Per Payment</string>
+    <string name="payments_remaining1">Payments Remaining</string>
+    <string name="balance_remaining">Balance Remaining</string>
+    <string name="pay">"Pay "</string>
+    <string name="starting_on">" starting on "</string>
+    <string name="category1">Category</string>
+    <string name="how_often">How Often?</string>
+    <string name="edit_biller">Edit Biller</string>
+    <string name="this_bill_is_paid_off">This bill is paid off</string>
+    <string name="no_bill_payments_are_due_this_month">No bill payments are due this month</string>
+    <string name="user_profile_updated_successfully">User profile updated successfully</string>
+    <string name="re_establish_ticket">Re-establish ticket</string>
+    <string name="payment_date1">Payment Date</string>
+    <string name="weekly_savings">Weekly Savings:</string>
+    <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">Your email address has been updated successfully and a verification email has been sent. Please click the verification link in the email in order to login using your new email address.</string>
+    <string name="user_registration_failed">User Registration Failed</string>
+    <string name="sign_in_failed_please_try_again">Sign-In Failed. Please try again</string>
+    <string name="biller_name_can_t_be_blank">Biller name can\'t be blank</string>
+    <string name="biller_name_is_already_in_use">Biller name is already in use</string>
+    <string name="website_can_t_be_blank">Website can\'t be blank</string>
+    <string name="please_enter_a_valid_web_address">Please enter a valid web address</string>
+    <string name="payment_amount_can_t_be_blank">Payment amount can\'t be blank</string>
+    <string name="payment_date_can_t_be_blank">Payment date can\'t be blank</string>
+    <string name="payment_amount_must_be_greater_than_zero">Payment amount must be greater than zero</string>
+    <string name="add_category">Add Category</string>
+    <string name="submit_changes">Submit Changes</string>
+    <string name="hide_calendar">Hide Calendar</string>
+    <string name="show_calendar">Show Calendar</string>
+    <string name="name_must_be_at_least_3_characters_long">Name must be at least 3 characters long</string>
+    <string name="stay_signed_in">Stay Signed In</string>
+    <string name="revoke_access">Revoke Access</string>
+    <string name="you_re_currently_sharing_your_data_with_the_following_users">You\'re currently sharing your data with the following users:</string>
+    <string name="account_sharing">Account Sharing</string>
+    <string name="you_aren_t_currently_sharing_data_with_anyone">You aren\'t currently sharing data with anyone</string>
+    <string name="add_a_partner">Add A Partner</string>
+    <string name="send_request">Send Request</string>
+    <string name="cancel_request">Cancel Request</string>
+    <string name="remove_partner">Remove Partner</string>
+    <string name="share_your_bills_and_expenses_with_someone">Share your bills and expenses with someone</string>
+    <string name="enter_the_email_address_of_the_user_you_would_like_to_share_your_data_with_if_a_match_exists_the_user_will_be_notified_and_asked_to_authorize_the_sharing_of_their_data_with_you_once_authorized_you_and_the_partner_will_be_able_to_view_and_edit_all_bills_payments_and_expenses_associated_with_each_other_s_accounts">Enter the email address of the user you would like to share your data with. If a match exists, the user will be notified and asked to authorize the sharing of their data with you. Once authorized, you and the partner will be able to view and edit all bills, payments, and expenses associated with each other\'s accounts.</string>
+    <string name="_1">1</string>
+    <string name="loading">Loading…</string>
+    <string name="view_calendar">View Calendar</string>
+    <string name="request_pending">Request pending</string>
+    <string name="grant_access">Grant Access</string>
+    <string name="active">Active</string>
+    <string name="requested_by_user">Requested By User</string>
+    <string name="awaiting_partner_approval">Awaiting Partner Approval</string>
+    <string name="you_must_register_first">You Must Register First</string>
+    <string name="when_did_you_pay_this_bill">When Did You Pay This Bill?</string>
+    <string name="remaining_payments_can_t_be_blank">Remaining payments can\'t be blank</string>
+    <string name="when_is_this_bill_due">When Is This Bill Due?</string>
+    <string name="enter_how_many_payments_are_remaining_to_update_your_biller">Enter how many payments are remaining to update your biller</string>
+    <string name="update_biller">Update Biller</string>
+    <string name="bill_marked_as_paid_successfully">Bill marked as paid successfully</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="are_you_sure_you_would_like_to_logout">Are you sure you would like to logout?</string>
+    <string name="username_is_unavailable">Username is unavailable</string>
+    <string name="searching_database">Searching Database…</string>
+    <string name="password_is_invalid">Password is invalid</string>
+    <string name="username_is_invalid">Username is invalid</string>
+    <string name="user_was_not_found">User was not found!</string>
+    <string name="email_cannot_be_blank">Email cannot be blank.</string>
+    <string name="description_">Description</string>
+    <string name="expense_date">Expense Date</string>
+    <string name="expense_amount">Expense Amount</string>
+    <string name="just_this_one">Just This One</string>
+    <string name="change_all_payments">Change All Payments?</string>
+    <string name="would_you_like_to_apply_this_new_due_date_to_all_occurrences_of_this_bill">Would you like to apply this new due date to all occurrences of this bill?</string>
+    <string name="change_all">Change All</string>
+    <string name="when_did_this_expense_occur">When Did This Expense Occur?</string>
+    <string name="expense_description_cannot_be_blank">Expense description cannot be blank</string>
+    <string name="expense_amount_must_be_greater_than_0">Expense amount must be greater than 0</string>
+    <string name="expense_was_saved_successfully">Expense was saved successfully</string>
+    <string name="biller_was_updated_successfully">Biller was updated successfully.</string>
+    <string name="biller_update_failed">Biller update failed.</string>
+    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">Email is not yet registered. Please click \"Create an account\" to get started</string>
+    <string name="my_income">My Income</string>
+    <string name="enter_your_income_details_to_calculate_your_dti">Enter your income details to calculate your DTI</string>
+    <string name="income_amount">Income Amount</string>
+    <string name="pay_frequency_">Pay Frequency</string>
+    <string name="payments_remaining_">Payments Remaining</string>
+    <string name="categories">Categories</string>
+    <string name="select_image_from_device">Select Image From Device</string>
+    <string name="select_a_new_due_date">Select A New Due Date</string>
+    <string name="date_range">Date Range</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="billers">Billers</string>
+    <string name="no_billers_were_found">No Billers Were Found</string>
+    <string name="loading_">Loading…</string>
+    <string name="enter_your_email_address_to_receive_a_password_reset_email">Enter your email address to receive a password reset email.</string>
+    <string name="please_enter_a_few_details_to_create_an_account_and_start_managing_your_bills">Please enter a few details to create an account and start managing your bills!</string>
+    <string name="partner_email_address">Partner Email Address</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="select_a_date1">Select A Date</string>
+    <string name="password11">Password</string>
+    <string name="total_billers_added">Total Billers Added:</string>
+    <string name="billers_paid_in_full">Billers Paid In Full:</string>
+    <string name="last_payment_amount">Last Payment Amount:</string>
+    <string name="show_paid_off_billers">Show paid off billers</string>
+    <string name="weekly_bills_average1">Weekly Bills Average:</string>
+    <string name="weekly_savings1">Weekly Savings:</string>
+    <string name="weekly_disposable_income1">Weekly Disposable Income:</string>
+    <string name="bi_weekly_bills_average">Bi-Weekly Bills Average:</string>
+    <string name="bi_weekly_savings">Bi-Weekly Savings:</string>
+    <string name="bi_weekly_disposable_income">Bi-Weekly Disposable Income:</string>
+    <string name="monthly_bills_average">Monthly Bills Average:</string>
+    <string name="monthly_savings">Monthly Savings:</string>
+    <string name="monthly_disposable_income">Monthly Disposable Income:</string>
+    <string name="no_payments_reported1">No payments reported</string>
+    <string name="no_data_available">No Data Available</string>
+    <string name="bill_marked_as_unpaid_successfully">Bill marked as unpaid successfully</string>
+    <string name="remaining_this_period">Remaining This Period:</string>
+    <string name="when_is_this_payment_due">When Is This Payment Due?</string>
+    <string name="payment_due_date_cannot_be_before_the_biller_due_date_of">"Due date cannot be before the biller due date: "</string>
+    <string name="sign_in_with_google">Sign In With Google</string>
+    <string name="or">Or</string>
+    <string name="amount_remaining_this_period">Amount Remaining This Period:</string>
+    <string name="login_failed_please_try_again">Login failed. Please try again.</string>
+    <string name="weekly_spending">Weekly Spending</string>
+    <string name="daily_spending">Daily Spending</string>
+    <string name="monthly_spending">Monthly Spending</string>
+    <string name="there_is_no_spending_data_available_for_this_period">There is no spending data available for this period.</string>
+    <string name="you_have_added_your_first_biller_and_created_a_budget_now_you_re_ready_to_track_your_bills_and_expenses_using_bill_tracker_s_suite_of_financial_management_tools_feel_free_to_reach_out_to_us_with_any_compliments_or_concerns_via_the_contact_us_link_in_the_menu_and_good_luck_on_your_path_towards_financial_freedom_happy_tracking">You have added your first biller and created a budget. Now you\'re ready to track your bills and expenses using Bill Tracker\'s suite of financial management tools. Feel free to reach out to us with any compliments or concerns via the Contact Us link in the menu and good luck on your path towards financial freedom. Happy tracking!</string>
+    <string name="get_started">Get Started</string>
+    <string name="welcome_to_bill_tracker_our_goal_is_to_help_you_to_manage_your_finances_and_grow_your_wealth_let_s_begin_by_adding_your_first_biller_click_the_button_below_to_add_a_biller_now">Welcome to Bill Tracker. Our goal is to help you to manage your finances and grow your wealth! Let\'s begin by adding your first biller. Click the button below to add a biller now!</string>
+    <string name="skip">Skip</string>
+    <string name="don_t_ask_again">Don\'t Ask Again</string>
+    <string name="create_your_budget">Create Your Budget</string>
+    <string name="a_good_budget_is_a_great_way_to_ensure_you_re_saving_enough_for_life_s_surpises_and_will_be_prepared_to_provide_for_those_you_care_most_about_no_matter_what_changes_may_come_create_a_budget_now_by_clicking_the_button_below">A good budget is a great way to ensure you\'re saving enough for life\'s surpises, and will be prepared to provide for those you care most about no matter what changes may come. Create a budget now by clicking the button below.</string>
+    <string name="ready_to_track_your_bills">Ready To Track Your Bills?</string>
+    <string name="changes_to_email_are_not_allowed_when_signed_in_via_google">Changes to email are not allowed when signed in via Google</string>
+    <string name="delete" translatable="false">\"Delete\"</string>
+    <string name="select_email_app">Select Email App:</string>
+    <string name="nothing_due_this_month">Nothing Due\n\nThis Month</string>
+    <string name="remaining3">Remaining\n</string>
+    <string name="total3">\n\nTotal\n</string>
+    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"If you are sure you would like to delete your account, please type "</string>
+    <string name="in_the_box_below_this_action_cannot_be_undone">" in the box below. This action cannot be undone."</string>
+    <string name="please_enter">"Please enter "</string>
+    <string name="to_proceed">" to proceed"</string>
+    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">If you are sure you would like to delete your account, please enter your password to confirm. This action cannot be undone.</string>
+    <string name="edit_budget">Edit Budget</string>
+    <string name="clothing">Clothing</string>
+    <string name="gas">Gas</string>
+    <string name="groceries">Groceries</string>
+    <string name="personal_care">Personal Care</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="change_amount_due">Change Amount Due</string>
+    <string name="update">Update</string>
+    <string name="your_biometric_preferences_have_been_updated">Your Biometric Preferences Have Been Updated</string>
+    <string name="name_can_t_be_blank">Name can\'t be blank</string>
+    <string name="username_can_t_be_blank">Username can\'t be blank</string>
+    <string name="password_can_t_be_blank">Password can\'t be blank</string>
+    <string name="partial_payment_amount">Partial Payment Amount</string>
+    <string name="budget">Budget</string>
+    <string name="undo">Undo</string>
+    <string name="remove_category">Remove Category</string>
+    <string name="are_you_sure_you_want_to_remove_this_category">Are you sure you want to remove this category?</string>
+    <string name="partner_has_been_requested_successfully">Partner Has Been Requested Successfully</string>
+    <string name="select_a_date">Select a Date</string>
+    <string name="select_a_new_start_date">Select A New Start Date</string>
+    <string name="select_a_new_end_date">Select A New End Date</string>
+    <string name="you_have_a_sharing_request_from">"You have a sharing request from "</string>
+    <string name="click_here_to_view_it">. Click here to view it.</string>
 </resources>

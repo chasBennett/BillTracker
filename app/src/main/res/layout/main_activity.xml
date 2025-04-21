@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="visible"
@@ -12,316 +10,395 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
-        android:id="@+id/trophyContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:elevation="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-
     <include
+        android:id="@+id/toolbar"
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="10dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:id="@+id/scroll"
+        android:id="@+id/mainScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:duplicateParentState="true"
         android:nestedScrollingEnabled="true"
         android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintBottom_toTopOf="@+id/include9"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
-            android:id="@+id/hideForNavDrawer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible"
-            tools:ignore="UselessParent">
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/toolbar"
-                android:orientation="vertical"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
+                android:layout_height="wrap_content"
+                android:background="@color/blueAndBlack"
+                android:minHeight="350dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/admin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:elevation="10dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="start"
+                    android:text="@string/welcomeToBillTracker"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/topDetect3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
 
                 <LinearLayout
-                    android:id="@+id/onScrollContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_marginTop="25dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:elevation="10dp"
-                    android:orientation="vertical"
-                    android:paddingBottom="15dp"
-                    app:layout_constraintBottom_toTopOf="@+id/scroll"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:minHeight="250dp"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/admin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:gravity="start"
-                        android:text="@string/administratorConsole"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:translationX="600dp"
-                        android:visibility="visible" />
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/linearLayout3"
+                    <LinearLayout
+                        android:id="@+id/lineChartLoading"
                         android:layout_width="match_parent"
-                        android:layout_height="350dp"
-                        android:nestedScrollingEnabled="true"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
                         android:orientation="vertical"
-                        android:translationX="-000dp"
-                        android:visibility="visible"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <com.github.mikephil.charting.charts.LineChart
-                            android:id="@+id/lineChart"
-                            android:layout_width="0dp"
-                            android:layout_height="171dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="30dp"
-                            android:layout_marginEnd="20dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-
-                        <TextView
-                            android:id="@+id/backMonth"
-                            android:layout_width="120dp"
-                            android:layout_height="50dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginBottom="20dp"
-                            app:drawableStartCompat="@drawable/ic_baseline_chevron_left_24"
-                            app:drawableTint="@color/blackAndWhite"
-                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/lineChart"
-                            tools:layout_conversion_absoluteHeight="50dp"
-                            tools:layout_conversion_absoluteWidth="103dp" />
-
-                        <TextView
-                            android:id="@+id/selectedMonth"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/august"
-                            android:textColor="@color/blackAndWhite"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
-                            app:layout_constraintEnd_toStartOf="@+id/forgotPasswordHeader"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toEndOf="@+id/backMonth"
-                            app:layout_constraintTop_toBottomOf="@+id/lineChart" />
-
-
-                        <TextView
-                            android:id="@+id/forgotPasswordHeader"
-                            android:layout_width="120dp"
-                            android:layout_height="50dp"
-                            android:layout_marginEnd="8dp"
-                            app:drawableEndCompat="@drawable/ic_baseline_chevron_right_24"
-                            app:drawableTint="@color/blackAndWhite"
-                            app:layout_constraintBottom_toTopOf="@+id/linearLayout27"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/lineChart"
-                            tools:layout_conversion_absoluteHeight="50dp"
-                            tools:layout_conversion_absoluteWidth="103dp" />
-
-                        <LinearLayout
-                            android:id="@+id/linearLayout27"
-                            android:layout_width="0dp"
-                            android:layout_height="20dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="80dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="5dp"
-                            android:orientation="horizontal"
-                            app:layout_constraintBottom_toTopOf="@+id/progressBar8"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/lineChart">
-
-                            <TextView
-                                android:id="@+id/tvRemaining"
-                                android:layout_width="0dp"
-                                android:layout_height="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:layout_weight="1"
-                                android:gravity="start"
-                                android:textColor="@color/blackAndWhite"
-                                tools:layout_conversion_absoluteHeight="19dp"
-                                tools:layout_conversion_absoluteWidth="206dp" />
-
-                            <TextView
-                                android:id="@+id/tvTotal"
-                                android:layout_width="0dp"
-                                android:layout_height="20dp"
-                                android:layout_marginStart="20dp"
-                                android:layout_weight="1"
-                                android:gravity="end"
-                                android:textColor="@color/blackAndWhite"
-                                tools:layout_conversion_absoluteHeight="19dp"
-                                tools:layout_conversion_absoluteWidth="206dp" />
-                        </LinearLayout>
+                        android:visibility="visible">
 
                         <ProgressBar
-                            android:id="@+id/progressBar8"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                            android:layout_width="0dp"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginBottom="4dp"
-                            android:indeterminate="false"
-                            android:max="100"
-                            android:progress="45"
-                            android:progressTint="@color/blueGrey"
-                            android:scaleY="3"
-                            android:visibility="visible"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.498"
-                            app:layout_constraintStart_toStartOf="parent"
-                            tools:layout_conversion_absoluteHeight="16dp"
-                            tools:layout_conversion_absoluteWidth="382dp" />
+                            android:layout_gravity="center"
+                            android:layout_marginVertical="100dp"
+                            android:indeterminateTint="@color/white"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/billsList1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="30dp"
-                android:nestedScrollingEnabled="true"
-                android:orientation="vertical"
-                android:translationY="1dp">
-
-                <LinearLayout
-                    android:id="@+id/todayList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:orientation="vertical" />
-
-                <LinearLayout
-                    android:id="@+id/laterThisWeekList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:orientation="vertical">
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/laterThisMonthList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:orientation="vertical">
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/earlierThisMonthList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:orientation="vertical">
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/noResults"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    android:visibility="gone"
-                    tools:ignore="UseCompoundDrawables">
-
-                    <ImageView
-                        android:id="@+id/imageView5"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="50dp"
-                        android:contentDescription="@string/no_results"
-                        app:srcCompat="@drawable/noun_not_found_2503986"
-                        app:tint="@color/grey" />
-
-                    <TextView
-                        android:id="@+id/textView16"
+                    <LinearLayout
+                        android:id="@+id/pieChartLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="50dp"
-                        android:gravity="center"
-                        android:text="@string/you_don_t_have_any_bills_added_for_this_month_yet_click_the_plus_sign_above_to_add_a_biller"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="16sp" />
+                        android:baselineAligned="false"
+                        android:minHeight="250dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/mainPieChart"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_margin="15dp"
+                                android:gravity="center_vertical" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:id="@+id/pieChartLabels"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="15dp"
+                            android:gravity="center_vertical"
+                            android:hapticFeedbackEnabled="true"
+                            android:minWidth="20dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/noBillsFound"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="60dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/you_haven_t_added_any_billers_yet_tap_here_or_the_plus_sign_above_to_add_your_first_biller"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold|italic"
+                        android:visibility="gone"
+                        app:drawableBottomCompat="@drawable/add_bill_icon"
+                        app:drawableTint="@color/white" />
+
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+            <View
+                android:id="@+id/scrollDetect"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="-40dp"
+                android:background="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
-    <include
-        layout="@layout/nav_tray"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:id="@+id/lineChartBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/border_styles_no_outline"
+                android:elevation="10dp"
+                android:orientation="vertical"
+                android:paddingBottom="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/backMonth"
+                        android:layout_width="120dp"
+                        android:layout_height="50dp"
+                        android:hapticFeedbackEnabled="true"
+                        android:paddingStart="10dp"
+                        app:drawableStartCompat="@drawable/ic_baseline_chevron_left_24"
+                        app:drawableTint="@color/blackAndWhite"
+                        tools:ignore="RtlSymmetry"
+                        tools:layout_conversion_absoluteHeight="50dp"
+                        tools:layout_conversion_absoluteWidth="103dp" />
+
+                    <TextView
+                        android:id="@+id/selectedMonth"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/loading"
+                        android:textColor="@color/blackAndWhite"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/forgotPasswordHeader"
+                        android:layout_width="120dp"
+                        android:layout_height="50dp"
+                        android:hapticFeedbackEnabled="true"
+                        android:paddingEnd="10dp"
+                        app:drawableEndCompat="@drawable/ic_baseline_chevron_right_24"
+                        app:drawableTint="@color/blackAndWhite"
+                        tools:ignore="RtlSymmetry"
+                        tools:layout_conversion_absoluteHeight="50dp"
+                        tools:layout_conversion_absoluteWidth="103dp" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressBar8"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="4dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="45"
+                    android:progressTint="@color/primary"
+                    android:scaleY="3"
+                    android:visibility="visible"
+                    tools:layout_conversion_absoluteHeight="16dp"
+                    tools:layout_conversion_absoluteWidth="382dp" />
+
+                <LinearLayout
+                    android:id="@+id/calendarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="20dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:visibility="gone">
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/showCalendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="42dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:drawablePadding="15dp"
+                    android:gravity="center"
+                    android:hapticFeedbackEnabled="true"
+                    android:paddingHorizontal="20dp"
+                    android:text="@string/view_calendar"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    app:drawableStartCompat="@drawable/ic_baseline_keyboard_arrow_down_24"
+                    app:drawableTint="@color/blackAndWhite" />
+            </LinearLayout>
+
+                    <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:elevation="10dp"
+                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lineChartBox">
+
+                    <LinearLayout
+                        android:id="@+id/todayList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginVertical="5dp"
+                        android:background="@drawable/border_styles_no_outline"
+                        android:elevation="10dp"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="UselessParent">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/todayListRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/laterThisWeekList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginVertical="5dp"
+                        android:background="@drawable/border_styles_no_outline"
+                        android:elevation="10dp"
+                        android:orientation="vertical"
+                        android:padding="6dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="UselessParent">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/laterThisWeekListRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/laterThisMonthList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginVertical="5dp"
+                        android:background="@drawable/border_styles_no_outline"
+                        android:elevation="10dp"
+                        android:orientation="vertical"
+                        android:padding="6dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="UselessParent">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/laterThisMonthListRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/earlierThisMonthList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginVertical="5dp"
+                        android:background="@drawable/border_styles_no_outline"
+                        android:elevation="10dp"
+                        android:orientation="vertical"
+                        android:padding="6dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="UselessParent">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/earlierThisMonthListRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/noResults"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
+                            android:layout_marginVertical="5dp"
+                            android:background="@drawable/border_styles_no_outline"
+                            android:elevation="10dp"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:visibility="visible"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_marginTop="50dp"
+                                android:contentDescription="@string/no_results"
+                                app:srcCompat="@drawable/noun_not_found_2503986"
+                                app:tint="@color/grey" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="50dp"
+                                android:gravity="center"
+                                android:text="@string/no_bill_payments_are_due_this_month"
+                                android:textColor="@color/blackAndWhite"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+    </ScrollView>
 
     <include
         layout="@layout/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -335,37 +412,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/paymentConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/button"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/popupMessage"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:duplicateParentState="true"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/undoButton"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:duplicateParentState="true"
-            android:gravity="center"
-            android:text="@string/undo"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

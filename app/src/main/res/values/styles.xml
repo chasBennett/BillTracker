@@ -1,101 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="MyTimePickerStyle" parent="ThemeOverlay.MaterialComponents.TimePicker">
-        <item name="colorAccent">@color/quantum_bluegrey500</item>
-        <item name="android:colorPrimary">@color/black</item>
-        <item name="colorSecondary">@color/quantum_grey900</item>
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/quantum_grey500</item>
-    </style>
-
-    <style name="MyTheme" parent = "@android:style/Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-    </style>
-
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@color/group</item>
-    </style>
-
-    <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
-        <item name="background">@color/group</item>
-    </style>
-
-    <style name="AppTheme1" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="background">@color/group</item>
-    </style>
-
-    <style name="AppTheme2" parent="Theme.AppCompat.DayNight.DarkActionBar">
-        <item name="background">@color/group</item>
-    </style>
-
-    <style name="progressBarStyle" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminateTintMode">@color/blue</item>
-    </style>
-
-    <style name="MyDatePickerStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/quantum_bluegrey500</item>
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@color/quantum_grey900</item>
-        <item name="android:textColorSecondary">#FDFDFB</item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
-    </style>
-
-    <style name="MyDialogStyle" parent="ThemeOverlay.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/quantum_bluegrey500</item>
-        <item name="colorPrimary">@color/grey</item>
-        <item name="titleTextColor">@color/grey</item>
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
+    <style name="MyDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:textColor">@color/accent</item>
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:background">@color/tiles</item>
-        <item name="android:textColorSecondary">@color/grey</item>
+        <item name="android:textColorPrimary">@color/billsapp_background</item>
+        <item name="android:colorAccent">@color/grey</item>
+        <item name="android:textSize">14sp</item>
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
     </style>
 
     <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/lightblue</item>
+        <item name="android:textColor">@color/blackAndWhite</item>
     </style>
 
     <style name="NeutralButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">#707171</item>
+        <item name="android:textColor">@color/grey</item>
     </style>
 
     <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/quantum_bluegrey500</item>
+        <item name="android:textColorPrimary">@color/accent</item>
     </style>
 
     <style name="TextButton" parent="Widget.Material3.Button">
         <item name="android:textColor">@color/white</item>
         <item name="strokeWidth">1dp</item>
-        <item name="android:height">58dp</item>
-        <item name="strokeColor">@color/buttonStroke</item>
-        <item name="android:textSize">14sp</item>
-        <item name="cornerRadius">30dp</item>
-        <item name="android:defaultHeight">58dp</item>
         <item name="android:layout_height">58dp</item>
-        <item name="android:backgroundTint">@color/toolbar</item>
+        <item name="strokeColor">@color/lightGrey</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:backgroundTint">@color/primary</item>
+    </style>
+
+    <style name="MyPopupMenu" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
     </style>
 
     <style name="LoginButton" parent="Widget.Material3.Button">
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">14sp</item>
-        <item name="cornerRadius">8dp</item>
-        <item name="android:defaultHeight">58dp</item>
+        <item name="strokeWidth">1dp</item>
         <item name="android:layout_height">58dp</item>
-        <item name="android:backgroundTint">@color/toolbar</item>
+        <item name="strokeColor">@color/lightGrey</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:backgroundTint">@color/primary</item>
     </style>
 
     <style name="DarkSwitch" parent="Theme.AppCompat.DayNight">
-        <item name="colorControlActivated">@color/quantum_bluegrey500</item>
-        <item name="colorSwitchThumbNormal">@color/quantum_grey400</item>
-        <item name="android:colorForeground">@color/quantum_grey700</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorSwitchThumbNormal">@color/grey</item>
+        <item name="trackColorInactive">@color/grey</item>
+        <item name="android:colorForeground">#C3C2C2</item>
     </style>
+
+    <style name="TextInputEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="hintTextColor">@color/grey</item>
+        <item name="colorControlNormal">@color/whiteAndBlack</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorControlHighlight">@color/whiteAndBlack</item>
+    </style>
+
 </resources>

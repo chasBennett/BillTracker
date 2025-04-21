@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- Devices running Android 13 (API level 33) or higher -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission
         android:name="android.permission.USE_EXACT_ALARM"
@@ -15,36 +19,44 @@
 
     <queries>
         <intent>
-            <action
-                android:name="android.intent.action.VIEW" />
-            <data
-                android:scheme="mailto" />
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="mailto" />
         </intent>
     </queries>
 
     <application
+
         android:enableOnBackInvokedCallback="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/billsapp"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/billsapp_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BillTracker"
+        android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
-        tools:ignore="HardcodedDebugMode"
         tools:targetApi="tiramisu">
+
         <activity
-            android:name=".Budget"
-            android:windowSoftInputMode="adjustResize"
+            android:name=".activities.ShareAccount"
             android:exported="false" />
         <activity
-            android:name=".CreateBudget"
-            android:windowSoftInputMode="adjustResize"
+            android:name=".activities.ViewBudget"
             android:exported="false" />
         <activity
-            android:name=".Spending"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
+            android:name=".activities.AddBiller"
+            android:exported="false"
+            android:hardwareAccelerated="true" />
+        <activity
+            android:name=".activities.CreateBudget"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.Spending"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -53,103 +65,86 @@
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
 
-        <activity
-            android:name=".AwardCase"
-            android:exported="false" />
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7376638390241452~2472177486" />
 
         <activity
-            android:name=".TermsAndConditions"
-            android:exported="false" />
-        <activity
-            android:name=".Support"
+            android:name=".activities.Support"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".MyStats"
+            android:name=".activities.MyStats"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:hardwareAccelerated="true" />
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Administrator"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
+            android:name=".activities.Administrator"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <receiver
-            android:name=".NotificationReceiver"
+            android:name=".tools.NotificationReceiver"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedReceiver" />
 
         <activity
-            android:name=".BillerAdded"
-            android:exported="false"
-            android:parentActivityName=".AddBiller"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".PayBill"
+            android:name=".activities.PayBill"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:parentActivityName=".MainActivity2"
+            android:parentActivityName=".activities.MainActivity2"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".PaymentHistory"
+            android:name=".activities.PaymentHistory"
             android:exported="false"
             android:hardwareAccelerated="true"
-            android:parentActivityName=".MainActivity2"
+            android:parentActivityName=".activities.MainActivity2"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".EditBiller"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ViewBillers"
+            android:name=".activities.ViewBillers"
             android:exported="false"
             android:hardwareAccelerated="true"
-            android:parentActivityName=".MainActivity2"
+            android:parentActivityName=".activities.MainActivity2"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".AddBiller"
-            android:exported="false"
-            android:hardwareAccelerated="true"
-            android:parentActivityName=".MainActivity2"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ForgotPassword"
+            android:name=".activities.ForgotPassword"
             android:exported="false"
             android:label="@string/title_activity_forgot_password"
-            android:parentActivityName=".Logon"
+            android:parentActivityName=".activities.Login"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".MainActivity2"
+            android:name=".activities.MainActivity2"
             android:exported="false"
             android:hardwareAccelerated="true"
             android:label="@string/title_activity_main2"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Settings"
+            android:name=".activities.Settings"
             android:exported="false"
-            android:parentActivityName=".MainActivity2"
+            android:parentActivityName=".activities.MainActivity2"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".About"
+            android:name=".activities.NotificationSettings"
             android:exported="false"
-            android:parentActivityName=".Settings"
+            android:parentActivityName=".activities.Settings"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".EditProfile"
+            android:name=".activities.EditProfile"
             android:exported="false"
-            android:parentActivityName=".Settings"
+            android:parentActivityName=".activities.Settings"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Logon"
+            android:name=".activities.Register"
+            android:exported="false"
+            android:parentActivityName=".activities.Login"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activities.Login"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:theme="@style/Fullscreen"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/registerScroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".activities.Register">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/registerBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:contentDescription="@string/logo"
+                    app:srcCompat="@drawable/logo_long" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/welcomeToBillTracker"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="20dp"
+                    android:paddingHorizontal="5dp"
+                    android:text="@string/please_enter_a_few_details_to_create_an_account_and_start_managing_your_bills"
+                    android:textSize="14sp"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/registerError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="1dp"
+                    android:gravity="center|top|center_vertical"
+                    android:textColor="@color/primary"
+                    android:visibility="visible" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="@string/name1"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintEnabled="true"
+                    app:startIconDrawable="@drawable/name"
+                    app:startIconScaleType="centerInside"
+                    app:startIconTint="@color/neutralGray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/registerName"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/border_stroke"
+                        android:drawableStart="@drawable/pad"
+                        android:drawablePadding="5dp"
+                        android:drawableTint="@color/white"
+                        android:gravity="center_vertical"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:maxLength="50"
+                        android:textColorHint="@color/grey"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="@string/email1"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintEnabled="true"
+                    app:startIconDrawable="@drawable/email_icon"
+                    app:startIconScaleType="centerInside"
+                    app:startIconTint="@color/neutralGray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/registerEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/border_stroke"
+                        android:drawableStart="@drawable/pad"
+                        android:drawablePadding="5dp"
+                        android:drawableTint="@color/white"
+                        android:gravity="center_vertical"
+                        android:importantForAutofill="no"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="50"
+                        android:textColorHint="@color/grey"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="@string/password1"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintEnabled="true"
+                    app:startIconDrawable="@drawable/padlock"
+                    app:startIconScaleType="centerInside"
+                    app:startIconTint="@color/neutralGray">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/registerPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/border_stroke"
+                        android:drawableStart="@drawable/pad"
+                        android:drawablePadding="5dp"
+                        android:drawableTint="@color/white"
+                        android:gravity="center_vertical"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName"
+                        android:maxLength="50"
+                        android:textColorHint="@color/grey"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:id="@+id/passwordRequirements"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/passwordLength"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="3dp"
+                        android:text="@string/at_least_5_characters"
+                        android:textColor="@color/lightGrey" />
+
+                    <TextView
+                        android:id="@+id/uppercaseLetter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="3dp"
+                        android:text="@string/uppercase_letter"
+                        android:textColor="@color/lightGrey" />
+
+                    <TextView
+                        android:id="@+id/lowercaseLetter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="3dp"
+                        android:text="@string/lowercase_letter"
+                        android:textColor="@color/lightGrey" />
+
+                    <TextView
+                        android:id="@+id/number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="3dp"
+                        android:text="@string/number"
+                        android:textColor="@color/lightGrey" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/viewTerms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginTop="25dp"
+                    android:text="@string/agree_to_terms"
+                    android:textStyle="italic" />
+
+                <Button
+                    android:id="@+id/registerButton"
+                    style="@style/LoginButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="30dp"
+                    android:elevation="5dp"
+                    android:text="@string/register"
+                    app:strokeWidth="1dp" />
+
+                <TextView
+                    android:id="@+id/alreadyRegisteredButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:padding="10dp"
+                    android:text="@string/already_registered"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/termsView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="20dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:context=".TermsAndConditions">
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="30dp"
+                    android:contentDescription="@string/logo"
+                    app:srcCompat="@drawable/logo_long" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="@string/terms_and_conditions"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/printTerms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="30dp"
+                    android:text="" />
+
+                <Button
+                    android:id="@+id/btnCloseTerms"
+                    style="@style/LoginButton"
+                    android:layout_width="250dp"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/close" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

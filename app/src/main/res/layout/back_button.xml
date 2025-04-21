@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:minHeight="65dp"
+    android:minWidth="65dp"
+    android:clickable="true"
+    android:hapticFeedbackEnabled="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/back"
+    android:layout_width="65dp"
+    android:layout_height="65dp"
+    android:contentDescription="@string/back_button"
+    android:gravity="start"
+    android:padding="17dp"
+    app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+    app:tint="@color/blackAndWhite"/>
+
+</LinearLayout>

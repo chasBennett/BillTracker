@@ -5,35 +5,36 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="20dp"
-        android:text="@string/select_a_date"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="15dp"
+        android:text="@string/select_a_date1"
+        android:textSize="18sp"
+        android:textStyle="bold|italic" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
         android:orientation="horizontal">
 
         <NumberPicker
             android:id="@+id/picker_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp">
-
-        </NumberPicker>
+            android:layout_marginEnd="20dp"
+            android:scaleX=".92"
+            android:scaleY=".92" />
 
         <NumberPicker
             android:id="@+id/picker_year"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </NumberPicker>
+            android:layout_height="wrap_content"
+            android:scaleX=".92"
+            android:scaleY=".92" />
 
     </LinearLayout>
 </LinearLayout>

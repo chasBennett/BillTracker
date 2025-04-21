@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparentBlack"
+    android:clickable="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        android:background="@drawable/border_styles_no_outline"
+        android:clickable="true"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:paddingVertical="25dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
+                android:gravity="center"
+                android:text="@string/date_range"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="15dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/start_date"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/startDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="10dp"
+                        android:drawablePadding="10dp"
+                        android:gravity="center|start"
+                        android:paddingHorizontal="10dp"
+                        app:drawableStartCompat="@drawable/calendar_icon"
+                        app:drawableTint="@color/neutralGray" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/end_date"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/endDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="10dp"
+                        android:drawablePadding="10dp"
+                        android:gravity="center|start"
+                        android:paddingHorizontal="10dp"
+                        app:drawableStartCompat="@drawable/calendar_icon"
+                        app:drawableTint="@color/neutralGray" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="25dp"
+                android:gravity="center"
+                android:text="@string/billers"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/billersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_billers_were_found" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="25dp">
+
+                <TextView
+                    android:id="@+id/negativeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    android:text="@string/cancel"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/positiveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    android:text="@string/submit"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -2,39 +2,42 @@
     <!-- Base application theme. -->
     <style name="Theme.BillTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#0960A3</item>
-        <item name="colorPrimaryVariant">#0960A3</item>
-        <item name="colorOnPrimary">@color/offset</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/accent</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="editTextBackground">@color/white</item>
-        <item name="android:textColor">#353535</item>
+        <item name="android:textColor">@color/blackAndWhite</item>
         <item name="itemTextColor">@color/white</item>
-        <item name ="android:windowBackground">@color/background</item>
+        <item name="android:textColorHint">@color/lightGrey</item>
+        <item name="hintTextColor">@color/lightGrey</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="android:colorAccent">@color/primary</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#0960A3</item>
-        <item name="colorSecondaryVariant">@color/offset</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/white</item>
         <item name="colorButtonNormal">@color/black</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/toolbar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:statusBarColor">@color/white</item>
         <!-- Customize your theme here. -->
         <item name="alertDialogTheme">@style/MyDialogStyle</item>
-        <item name="colorError">@color/black</item>
-        <item name="colorControlHighlight">@android:color/transparent</item>
         <item name="buttonStyle">@style/TextButton</item>
+        <item name="popupMenuStyle">@style/MyPopupMenu</item>
     </style>
-
-    <style name="Theme.BillTracker.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.BillTracker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="Fullscreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="alertDialogTheme">@style/MyDialogStyle</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:colorAccent">@color/primary</item>
+        <item name="colorControlActivated">@color/primary</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="buttonStyle">@style/TextButton</item>
+        <item name="editTextStyle">@style/TextInputEditTextStyle</item>
     </style>
+    <!-- Base application theme. -->
 </resources>

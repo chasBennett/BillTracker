@@ -2,69 +2,59 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/payBill"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".PayBill">
+    tools:context=".activities.PayBill">
 
-    <ScrollView
-        android:id="@+id/scrollView9"
+    <include
+        android:id="@+id/include2"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        layout="@layout/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/include2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_styles"
-            android:backgroundTint="@color/offset"
+            android:baselineAligned="false"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/backPayBillLayout"
-                android:layout_width="117dp"
-                android:layout_height="62dp"
-                android:orientation="horizontal"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:id="@+id/backPayBill"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:contentDescription="@string/back_button"
-                    app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-                    app:tint="@color/blackAndWhite" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/billerName"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/billerName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:textColor="@color/blackAndWhite"
-                    android:textSize="30sp" />
-
-            </LinearLayout>
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/blackAndWhite"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="150dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
@@ -72,31 +62,37 @@
                     android:id="@+id/paidIcon"
                     android:layout_width="126dp"
                     android:layout_height="117dp"
+                    android:layout_marginTop="-30dp"
+                    android:layout_marginEnd="-30dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/paid_icon"
+                    android:elevation="5dp"
                     android:maxWidth="120dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/payBillIcon"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.545"
-                    app:srcCompat="@drawable/_citypng_com_rectangular_green_paid_stamp_icon___800x797" />
+                    app:layout_constraintVertical_bias="0.454"
+                    app:srcCompat="@drawable/green_paid_stamp_removebg_preview" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/payBillIcon"
                     android:layout_width="132dp"
-                    android:layout_height="138dp"
+                    android:layout_height="132dp"
                     android:layout_gravity="center"
-                    android:adjustViewBounds="true"
+                    android:adjustViewBounds="false"
+                    android:scaleType="fitCenter"
                     android:visibility="visible"
+                    app:contentPadding="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
                     app:shapeAppearanceOverlay="@style/Circular"
-                    tools:srcCompat="@drawable/invoice" />
+                    app:tint="@color/neutralGray"
+                    tools:srcCompat="@drawable/invoices_icon_30" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -106,14 +102,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
-                android:elevation="10dp"
+                android:background="@drawable/border_styles_no_outline"
+                android:drawablePadding="10dp"
+                android:elevation="5dp"
+                android:gravity="center_vertical"
                 android:padding="10dp"
                 android:text="@string/visitBillerWebsite"
-                android:textColor="@color/fingerprint"
-                android:textSize="16sp" />
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:drawableStartCompat="@drawable/baseline_web_24"
+                app:drawableTint="@color/neutralGray" />
 
             <View
-                android:id="@+id/divider8"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="15dp"
@@ -121,76 +121,83 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/dueDateLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".4"
-                    android:gravity="center"
-                    android:text="@string/dueDate"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-                <TextView
-                    android:id="@+id/paymentDueDate1"
-                    android:layout_width="0dp"
-                    android:layout_height="67dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_weight=".6"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp"
-                    app:drawableEndCompat="@drawable/ic_baseline_edit_calendar_24"
-                    app:drawableTint="?attr/colorError" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/divider9"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-            <LinearLayout
-                android:id="@+id/partialPaymentLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/partialPaymentLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:layout_weight=".4"
                         android:gravity="center"
-                        android:text="@string/partial_payment_made"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        android:text="@string/dueDate"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/displayPartialPayment"
+                        android:id="@+id/paymentDueDate1"
                         android:layout_width="0dp"
                         android:layout_height="67dp"
                         android:layout_marginEnd="20dp"
                         android:layout_weight=".6"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp"
-                        app:drawableEndCompat="@drawable/ic_baseline_edit_note_24" />
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/calendar_icon"
+                        app:drawableTint="@color/grayAndWhite" />
+
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/divider32"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/partialPaymentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="67dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/partial_payment_made"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/displayPartialPayment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/ic_baseline_edit_note_24"
+                        app:drawableTint="@color/grayAndWhite" />
+                </LinearLayout>
+
+                <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_weight="1"
@@ -201,76 +208,170 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/amountDueLabel"
-                    android:layout_width="00dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight=".4"
-                    android:gravity="center"
-                    android:text="@string/amountDue"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-                <TextView
-                    android:id="@+id/paymentAmountDue"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="67dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_weight=".6"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp"
-                    app:drawableEndCompat="@drawable/ic_baseline_edit_note_24"
-                    app:drawableTint="?attr/colorError" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/amountDueThisPeriodLabel"
+                        android:layout_width="00dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/amount_remaining_this_period"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/dueThisPeriod"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/dollar_sign_icon"
+                        app:drawableTint="@color/grayAndWhite" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
             </LinearLayout>
 
-            <View
-                android:id="@+id/divider10"
+            <LinearLayout
+                android:id="@+id/balForwardBox"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="00dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/balance_forward"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/balForward"
+                        android:layout_width="0dp"
+                        android:layout_height="67dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/totalAmountDueBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/amountDueLabel"
+                        android:layout_width="00dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/total_amount_due"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/paymentAmountDue"
+                        android:layout_width="0dp"
+                        android:layout_height="67dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/datePaidLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/datePaidLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".4"
-                    android:gravity="center"
-                    android:text="@string/datePaid"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-                <TextView
-                    android:id="@+id/paymentDatePaid"
-                    android:layout_width="0dp"
-                    android:layout_height="67dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_weight=".6"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16sp"
-                    app:drawableEndCompat="@drawable/ic_baseline_edit_calendar_24"
-                    app:drawableTint="?attr/colorError" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-            <View
-                android:id="@+id/divider11"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:gravity="center"
+                        android:text="@string/datePaid"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/paymentDatePaid"
+                        android:layout_width="0dp"
+                        android:layout_height="67dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_weight=".6"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/calendar_icon"
+                        app:drawableTint="@color/grayAndWhite" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/paymentsRemainingLayout2"
@@ -286,14 +387,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/paymentsRemainingLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight=".4"
                         android:gravity="center"
                         android:text="@string/payments_remaining"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/displayPaymentsRemaining"
@@ -303,11 +404,12 @@
                         android:layout_weight=".6"
                         android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textSize="16sp" />
+                        android:textSize="14sp"
+                        app:drawableEndCompat="@drawable/ic_baseline_edit_note_24"
+                        app:drawableTint="@color/grayAndWhite" />
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_weight="1"
@@ -318,9 +420,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
+                android:baselineAligned="false"
                 android:orientation="horizontal">
 
                 <Button
@@ -330,6 +433,8 @@
                     android:layout_height="50dp"
                     android:layout_margin="15dp"
                     android:layout_weight="1"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null"
                     android:text="@string/editBiller" />
 
                 <Button
@@ -339,15 +444,23 @@
                     android:layout_height="50dp"
                     android:layout_margin="15dp"
                     android:layout_weight="1"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null"
                     android:text="@string/history" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="15dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_weight=".25" />
 
                 <Button
                     android:id="@+id/payButton"
@@ -355,46 +468,22 @@
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center"
-                    android:layout_margin="15dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_weight=".5"
+                    android:elevation="5dp"
+                    android:stateListAnimator="@null"
                     android:text="@string/markAsPaid" />
 
-                <Button
-                    android:id="@+id/btnPartialPayment"
-                    style="@style/TextButton"
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_margin="15dp"
-                    android:layout_weight="1"
-                    android:text="@string/partial_payment" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_weight=".25" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/pb10"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha=".6"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ProgressBar
-            android:id="@+id/progressBar30"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".About">
+    tools:context=".activities.NotificationSettings">
 
     <LinearLayout
         android:id="@+id/notificationInstruction1"
@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView72"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
@@ -27,10 +26,10 @@
             android:layout_marginEnd="30dp"
             android:gravity="center"
             android:text="@string/a"
-            android:textSize="18sp" />
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView82"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="40dp"
@@ -43,28 +42,27 @@
             android:layout_height="350dp"
             android:layout_gravity="center"
             android:background="@drawable/border"
+            android:backgroundTint="@color/grey"
             android:elevation="20dp"
             android:orientation="vertical"
             android:padding="3dp">
 
             <ImageView
-                android:id="@+id/imageView102"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/turnonnotifications"
+                app:srcCompat="@drawable/allow_notifications"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btnNotification1"
+            style="@style/TextButton"
             android:layout_width="200dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
             android:layout_margin="30dp"
-            android:background="@drawable/border_styles"
             android:text="@string/continueNow"
-            android:textColor="@color/white"
-            app:backgroundTint="@color/fingerprint" />
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <ScrollView
@@ -75,7 +73,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="InconsistentLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -83,28 +82,30 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="start"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="80dp"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:text="@string/c"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/blackAndWhite" />
+                android:textColor="@color/blackAndWhite"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textView9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_margin="20dp"
                 android:gravity="center"
                 android:text="@string/d"
-                android:textColor="@color/blackAndWhite" />
+                android:textAlignment="center"
+                android:textColor="@color/blackAndWhite"
+                android:textSize="14sp"
+                android:textStyle="italic" />
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="139dp"
                 android:layout_height="294dp"
                 android:layout_gravity="center"
@@ -118,11 +119,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
+                android:drawablePadding="10dp"
+                android:gravity="center_vertical"
                 android:text="@string/e"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:visibility="gone"
                 app:drawableStartCompat="@drawable/ic_baseline_notifications_active_24"
-                app:drawableTint="@color/toolbar" />
+                app:drawableTint="@color/primary" />
 
             <TextView
                 android:id="@+id/notificationsOff"
@@ -130,51 +134,49 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
+                android:drawablePadding="10dp"
+                android:gravity="center_vertical"
                 android:text="@string/f"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:visibility="gone"
                 app:drawableStartCompat="@drawable/ic_baseline_notifications_off_24"
-                app:drawableTint="@color/toolbar" />
+                app:drawableTint="@color/primary" />
 
             <Button
                 android:id="@+id/notificationsToggle"
                 style="@style/TextButton"
                 android:layout_width="250dp"
-                android:layout_height="58dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"
+                android:layout_marginVertical="30dp"
                 android:text="@string/g" />
 
         </LinearLayout>
     </ScrollView>
 
-    <ProgressBar
+    <include
         android:id="@+id/progressBar10"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        layout="@layout/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/aboutBack"
-        android:layout_width="113dp"
-        android:layout_height="54dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:id="@+id/backAbout"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:contentDescription="@string/h"
+            android:layout_width="60dp"
+            android:layout_height="65dp"
+            android:contentDescription="@string/back_button"
+            android:gravity="start"
+            android:hapticFeedbackEnabled="true"
+            android:padding="17dp"
             app:srcCompat="@drawable/ic_baseline_arrow_back_24"
             app:tint="@color/blackAndWhite" />
 

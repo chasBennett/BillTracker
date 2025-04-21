@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_square">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:padding="15dp"
+        app:srcCompat="@drawable/profile_icon"
+        app:tint="@color/neutralGray" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp">
+
+        <TextView
+            android:id="@+id/sharedUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/shareStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/request_pending" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnApprove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/grant_access"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnRevokeAccess"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/revoke_access"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnCancelRequest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel_request"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnRemovePartner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_partner"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

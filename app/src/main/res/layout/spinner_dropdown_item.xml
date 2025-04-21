@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_styles_no_outline">
+
+    <ImageView
+        android:id="@+id/dropDownImage"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginHorizontal="10dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/addbill1" />
+
+    <TextView
+        android:id="@+id/dropdownText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+</LinearLayout>

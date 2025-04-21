@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addExpenseParent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparentBlack"
+    android:clickable="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        android:background="@drawable/border_styles_no_outline"
+        android:clickable="true"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|fill_horizontal|fill_vertical"
+            android:elevation="10dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="25dp"
+            android:translationZ="10dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/logo_long" />
+
+            <TextView
+                android:id="@+id/addExpenseHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
+                android:gravity="center"
+                android:text="@string/add_expense"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/description_"
+                android:translationZ="5dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/expenseDescription"
+                    style="@style/Widget.AppCompat.AutoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:background="@drawable/border_stroke"
+                    android:drawableStart="@drawable/description_icon"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/neutralGray"
+                    android:gravity="bottom"
+                    android:inputType="textCapWords"
+                    android:padding="13dp"
+                    android:textSize="14sp"
+                    android:translationZ="5dp"
+                    tools:ignore="LabelFor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/border_stroke">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="8dp"
+                    app:srcCompat="@drawable/category"
+                    app:tint="@color/neutralGray" />
+
+                <Spinner
+                    android:id="@+id/expenseCategory"
+                    style="@android:style/Widget.Material.Light.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:hint="@string/expense_amount"
+                android:translationZ="5dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/expenseAmount"
+                    style="@style/Widget.AppCompat.AutoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:background="@drawable/border_stroke"
+                    android:drawableStart="@drawable/dollar_sign_icon"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/neutralGray"
+                    android:gravity="bottom"
+                    android:inputType="textCapWords"
+                    android:padding="13dp"
+                    android:textSize="14sp"
+                    android:translationZ="5dp"
+                    tools:ignore="LabelFor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <TextView
+                android:id="@+id/expenseDate"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/border_stroke"
+                android:drawablePadding="10dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="15dp"
+                android:text="@string/expense_date"
+                android:textSize="14sp"
+                app:drawableStartCompat="@drawable/calendar_icon"
+                app:drawableTint="@color/neutralGray" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/submitExpense"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    android:text="@string/submit"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/cancelExpense"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="15dp"
+                    android:text="@string/cancel"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

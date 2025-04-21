@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/categoryName"
+        style="@style/Widget.AppCompat.AutoCompleteTextView"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/border_stroke"
+        android:gravity="center"
+        android:hint="@string/category_name"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        android:translationZ="3dp" />
+
+    <EditText
+        android:id="@+id/categoryPercentage"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:background="@drawable/border_stroke"
+        android:gravity="center"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/_10"
+        android:textSize="14sp"
+        android:translationZ="2dp" />
+
+    <ImageView
+        android:id="@+id/removeCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:tint="@color/red"
+        app:srcCompat="@drawable/baseline_remove_circle_24"
+        android:contentDescription="TODO"
+        tools:ignore="ContentDescription,HardcodedText" />
+</LinearLayout>

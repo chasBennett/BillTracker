@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="false"
+    android:layout_gravity="bottom"
+    android:elevation="10dp"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:elevation="10dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/billsTab"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="bottom"
             android:orientation="vertical"
             android:padding="5dp"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/imageView13"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:padding="5dp"
-                app:srcCompat="@drawable/newbillsicon"
-                android:contentDescription="@string/bills_icon" />
+                android:id="@+id/billsDot"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/baseline_keyboard_arrow_up_24" />
 
-            <TextView
-                android:id="@+id/textView8"
+            <ImageView
+                android:id="@+id/billsIcon"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/bills"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:layout_height="35dp"
+                android:contentDescription="@string/bills_icon"
+                android:padding="7dp"
+                app:srcCompat="@drawable/invoice"
+                app:tint="@color/blackAndWhite" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -47,27 +59,28 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="bottom"
             android:orientation="vertical"
             android:padding="5dp"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/imageView133"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:padding="5dp"
-                app:srcCompat="@drawable/expenses_icon_24_removebg_preview"
-                app:tint="@color/white"
-                android:contentDescription="@string/expenses_icon" />
+                android:id="@+id/spendingDot"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/baseline_keyboard_arrow_up_24" />
 
-            <TextView
-                android:id="@+id/textView83"
+            <ImageView
+                android:id="@+id/expensesIcon"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/spending"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:layout_height="35dp"
+                android:contentDescription="@string/expenses_icon"
+                android:padding="4dp"
+                app:srcCompat="@drawable/spending_icon"
+                app:tint="@color/blackAndWhite" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -75,28 +88,29 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="bottom"
             android:orientation="vertical"
             android:padding="5dp"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/imageView134"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:padding="5dp"
-                android:translationZ="1dp"
-                app:srcCompat="@drawable/budget_icon_10_removebg_preview"
-                app:tint="@color/white"
-                android:contentDescription="@string/budget_icon" />
+                android:id="@+id/budgetDot"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/baseline_keyboard_arrow_up_24" />
 
-            <TextView
-                android:id="@+id/textView84"
+            <ImageView
+                android:id="@+id/budgetIcon"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/budget"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:layout_height="32dp"
+                android:contentDescription="@string/budget_icon"
+                android:padding="3dp"
+                android:translationZ="1dp"
+                app:srcCompat="@drawable/budget_icon"
+                app:tint="@color/blackAndWhite" />
+
         </LinearLayout>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

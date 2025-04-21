@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addPartnerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginBottom="50dp"
+    android:background="@color/whiteAndBlack"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/closeAddPartner"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:importantForAccessibility="no"
+            android:padding="15dp"
+            app:srcCompat="@drawable/ic_baseline_close_24"
+            app:tint="@color/blackAndWhite" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/add_a_partner"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="@string/enter_the_email_address_of_the_user_you_would_like_to_share_your_data_with_if_a_match_exists_the_user_will_be_notified_and_asked_to_authorize_the_sharing_of_their_data_with_you_once_authorized_you_and_the_partner_will_be_able_to_view_and_edit_all_bills_payments_and_expenses_associated_with_each_other_s_accounts" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
+        android:hint="@string/partner_email_address"
+        android:theme="@style/TextInputEditTextStyle"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:cursorColor="@color/neutralGray"
+        app:hintEnabled="true"
+        app:hintTextColor="@color/grey"
+        app:startIconDrawable="@drawable/email_icon"
+        app:startIconScaleType="centerInside"
+        app:startIconTint="@color/neutralGray">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/partnerEmail"
+            style="@style/Widget.AppCompat.AutoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/border_stroke"
+            android:drawableStart="@drawable/pad"
+            android:drawablePadding="5dp"
+            android:drawableTint="@color/white"
+            android:gravity="bottom"
+            android:hyphenationFrequency="normal"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:maxLength="50"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColorHint="@color/grey"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/partnerError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/user_was_not_found"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/sendRequest"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_margin="20dp"
+        android:text="@string/send_request"
+        android:textColor="@color/white" />
+</LinearLayout>

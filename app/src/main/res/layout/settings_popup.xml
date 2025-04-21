@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:layout_margin="20dp"
+    android:background="@drawable/border_stroke">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:translationZ="5dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iVLogo"
+            app:layout_constraintVertical_bias="0.84000003">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/nav_header_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/blackAndWhite" />
+
+            <TextView
+                android:id="@+id/tvUserName2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_header_subtitle"
+                android:textColor="@color/blackAndWhite" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navHome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:text="@string/navHome"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/home_icon"
+            app:drawableTint="@color/blackAndWhite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navViewBillers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:text="@string/navViewBillers"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/billers"
+            app:drawableTint="@color/blackAndWhite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navPaymentHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:paddingHorizontal="40dp"
+            android:text="@string/navPaymentHistory"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/payment_history_icon"
+            app:drawableTint="@color/blackAndWhite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navAnalysis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:paddingHorizontal="40dp"
+            android:text="@string/analysis"
+            android:textColor="@color/blackAndWhite"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/ic_baseline_insights_24"
+            app:drawableTint="@color/blackAndWhite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:paddingHorizontal="40dp"
+            android:text="@string/settings"
+            android:textColor="@color/blackAndWhite"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/settings_icon"
+            app:drawableTint="@color/blackAndWhite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/navHelp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:drawablePadding="10dp"
+                android:padding="10dp"
+                android:paddingHorizontal="40dp"
+                android:text="@string/contact_us"
+                android:textColor="@color/blackAndWhite"
+                android:textSize="16sp"
+                app:drawableStartCompat="@drawable/help_icon"
+                app:drawableTint="@color/blackAndWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ticketCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:paddingStart="7dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="7dp"
+                android:paddingBottom="2dp"
+                android:text="@string/two"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:backgroundTint="@color/red"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:id="@+id/navLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:drawablePadding="10dp"
+            android:padding="10dp"
+            android:paddingHorizontal="40dp"
+            android:text="@string/logout"
+            android:textColor="@color/blackAndWhite"
+            android:textSize="16sp"
+            app:drawableStartCompat="@drawable/logout_icon"
+            app:drawableTint="@color/blackAndWhite" />
+
+    </LinearLayout>
+</ScrollView>

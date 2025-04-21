@@ -5,19 +5,16 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/status1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@drawable/border_styles"
-        android:backgroundTint="@color/transparentRed"
+        android:background="@drawable/circle"
+        android:backgroundTint="@color/red"
         android:gravity="center"
         android:paddingStart="10dp"
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
-        android:text="@string/past_due"
-        android:textColor="@color/lightRed"
         android:textSize="10sp"
         tools:ignore="SmallSp" />
 

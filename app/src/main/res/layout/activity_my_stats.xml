@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:animateLayoutChanges="true"
     android:layout_height="match_parent"
-    tools:context=".MyStats">
+    tools:context=".activities.MyStats">
+
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView5"
@@ -27,16 +28,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include6" />
-
     <ScrollView
         android:id="@+id/statScroll"
         android:layout_width="0dp"
@@ -44,7 +35,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view">
+        app:layout_constraintTop_toBottomOf="@+id/include6">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,30 +45,29 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="20dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/textView56"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="30dp"
-                    android:text="@string/billPaymentsByCategory"
-                    android:textSize="26sp"
-                    android:textStyle="bold" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:elevation="10dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="5dp"
                     android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginVertical="30dp"
+                        android:text="@string/billPaymentsByCategory"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:id="@+id/addBillerLayout"
@@ -87,7 +77,6 @@
                         android:visibility="gone">
 
                         <TextView
-                            android:id="@+id/textView58"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
@@ -96,7 +85,7 @@
                             android:layout_marginBottom="30dp"
                             android:gravity="center"
                             android:text="@string/startTracking"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/btnAddBiller1"
@@ -105,7 +94,10 @@
                             android:layout_height="50dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="80dp"
-                            android:text="@string/addABiller" />
+                            android:elevation="5dp"
+                            android:stateListAnimator="@null"
+                            android:text="@string/addABiller"
+                            android:translationZ="5dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -118,7 +110,7 @@
                         <com.github.mikephil.charting.charts.PieChart
                             android:id="@+id/pieChart"
                             android:layout_width="match_parent"
-                            android:layout_height="260dp">
+                            android:layout_height="160dp">
 
                         </com.github.mikephil.charting.charts.PieChart>
 
@@ -127,54 +119,54 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_margin="30dp"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:paddingVertical="5dp">
 
                             <TextView
-                                android:id="@+id/textView57"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical|end"
                                 android:layout_marginEnd="10dp"
                                 android:text="@string/month"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
+                            <TextView
+                                android:id="@+id/myStatsMonthSpinner"
+                                android:layout_width="0dp"
                                 android:layout_height="40dp"
-                                android:layout_gravity="center"
-                                android:background="@drawable/edit_text"
-                                android:elevation="10dp"
-                                android:orientation="vertical">
+                                android:layout_marginHorizontal="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/border_stroke"
+                                android:elevation="3dp"
+                                android:gravity="center_vertical"
+                                android:minWidth="150dp"
+                                android:paddingHorizontal="10dp"
+                                app:drawableEndCompat="@drawable/ic_baseline_keyboard_arrow_down_24"
+                                app:drawableTint="@color/grayAndWhite" />
 
-                                <Spinner
-                                    android:id="@+id/spinner5"
-                                    android:layout_width="170dp"
-                                    android:layout_height="40dp" />
-                            </LinearLayout>
                         </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textView561"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
-                    android:layout_marginBottom="30dp"
-                    android:text="@string/dti"
-                    android:textSize="26sp"
-                    android:textStyle="bold" />
-
                 <LinearLayout
-                    android:id="@+id/dtiLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/border_styles"
-                    android:backgroundTint="@color/group"
-                    android:elevation="20dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="10dp"
                     android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginVertical="30dp"
+                        android:text="@string/dti"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:id="@+id/dtiChartLayout"
@@ -207,7 +199,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
                             android:text="@string/fairRating"
-                            android:textSize="16sp" />
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/textView65"
@@ -219,12 +212,15 @@
 
                         <Button
                             android:id="@+id/btnChangeIncome"
-                            style="@style/TextButton"
+                            style="@style/LoginButton"
                             android:layout_width="250dp"
                             android:layout_height="50dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="30dp"
-                            android:text="@string/changeIncome" />
+                            android:elevation="5dp"
+                            android:stateListAnimator="@null"
+                            android:text="@string/changeIncome"
+                            android:translationZ="5dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -235,7 +231,6 @@
                         android:visibility="visible">
 
                         <TextView
-                            android:id="@+id/textView67"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
@@ -244,137 +239,44 @@
                             android:layout_marginBottom="20dp"
                             android:gravity="center"
                             android:text="@string/enterIncome"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:visibility="visible" />
 
                         <Button
                             android:id="@+id/btnEnterIncome"
-                            style="@style/TextButton"
+                            style="@style/LoginButton"
                             android:layout_width="250dp"
                             android:layout_height="50dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="80dp"
+                            android:elevation="5dp"
+                            android:stateListAnimator="@null"
                             android:text="@string/enterIncomeinfo"
+                            android:translationZ="5dp"
                             android:visibility="visible" />
-
-                        <LinearLayout
-                            android:id="@+id/addIncomeBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="85dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="85dp"
-                            android:background="@drawable/border"
-                            android:backgroundTint="@color/tray"
-                            android:elevation="10dp"
-                            android:orientation="vertical"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="35dp"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:id="@+id/closeIncome"
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:layout_gravity="end"
-                                android:layout_marginEnd="15dp"
-                                android:contentDescription="@string/close_income"
-                                android:padding="10dp"
-                                app:srcCompat="@drawable/ic_baseline_close_24" />
-
-                            <TextView
-                                android:id="@+id/textView4"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="20dp"
-                                android:text="@string/enterIncome"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/textView69"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginTop="20dp"
-                                android:layout_marginBottom="3dp"
-                                android:text="@string/incomeAmount" />
-
-                            <EditText
-                                android:id="@+id/dtiIncomeAmount"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:background="@drawable/edit_text"
-                                android:importantForAutofill="no"
-                                android:inputType="numberDecimal"
-                                android:maxLength="12"
-                                android:paddingStart="10dp"
-                                android:paddingEnd="10dp"
-                                tools:ignore="LabelFor" />
-
-                            <TextView
-                                android:id="@+id/textView73"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginTop="20dp"
-                                android:layout_marginBottom="3dp"
-                                android:text="@string/howOften" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:background="@drawable/edit_text"
-                                android:orientation="vertical">
-
-                                <Spinner
-                                    android:id="@+id/dtiPayFrequency"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="40dp" />
-                            </LinearLayout>
-
-                            <Button
-                                android:id="@+id/btnSubmitPay"
-                                style="@style/TextButton"
-                                android:layout_width="250dp"
-                                android:layout_height="50dp"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="30dp"
-                                android:layout_marginBottom="30dp"
-                                android:text="@string/calculateMyDti" />
-                        </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/stats"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
             <LinearLayout
-                android:id="@+id/statsView"
+                android:id="@+id/statsBox"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="20dp"
-                android:background="@drawable/border_styles"
-                android:backgroundTint="@color/group"
+                android:layout_margin="10dp"
+                android:background="@drawable/border_styles_no_outline"
                 android:elevation="10dp"
                 android:orientation="vertical"
                 android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/statsLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stats"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/statIcon"
@@ -384,16 +286,15 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:scaleType="centerInside"
+                    android:scaleType="fitCenter"
                     android:visibility="visible"
-                    app:contentPadding="15dp"
+                    app:contentPadding="20dp"
                     app:shapeAppearanceOverlay="@style/Circular"
-                    app:srcCompat="@drawable/kisspng_statistics_icon_ppt_element_5aa15ffeaab9b8_8839433215205253106993"
+                    app:srcCompat="@drawable/statistics_removebg_preview"
                     app:strokeColor="@color/grey"
                     app:strokeWidth="3dp" />
 
                 <LinearLayout
-                    android:id="@+id/statsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -405,14 +306,14 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView33"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:text="@string/totalAmountPaid"
-                            android:textSize="18sp" />
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/totalAmountPaid"
@@ -420,7 +321,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/_24_567_67"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -430,45 +331,46 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView32"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:text="@string/totalPaymentsMade"
-                            android:textSize="18sp" />
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/totalPaymentsMade"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/totalBillersAddedLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView31"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
-                            android:text="@string/totalBillersAdded"
-                            android:textSize="18sp" />
+                            android:text="@string/total_billers_added"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/totalBillersAdded"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -479,58 +381,109 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView37"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:text="@string/nextPaymentDueOn"
-                            android:textSize="18sp" />
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/nextPaymentDue"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/paidInFullLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:text="@string/billers_paid_in_full"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/totalBillersPaidOff"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/lastPaymentAmountLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:text="@string/last_payment_amount"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/lastPaymentAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/border_styles_no_outline"
+                android:orientation="vertical"
+                android:padding="15dp"
+                android:elevation="10dp">
 
                 <TextView
-                    android:id="@+id/textView52"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
                     android:text="@string/viewStatsFor"
-                    android:textSize="28sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
-            </LinearLayout>
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/bubbles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="50dp"
+                    app:flexWrap="wrap" >
 
-            <LinearLayout
-                android:id="@+id/bubbles"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="vertical">
-
+                </com.google.android.flexbox.FlexboxLayout>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
     <include
-        layout="@layout/nav_tray"
+        layout="@layout/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -538,30 +491,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/pb9"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha=".6"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-        <ProgressBar
-            android:id="@+id/progressBar29"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

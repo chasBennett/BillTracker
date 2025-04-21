@@ -3,367 +3,401 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:orientation="vertical"
-    tools:context=".Settings">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/sett"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/tray"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
-        android:padding="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".activities.Settings">
 
         <LinearLayout
-            android:id="@+id/backSettingsLayout"
-            android:layout_width="106dp"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:id="@+id/backSettings"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:contentDescription="@string/back_button"
-                android:gravity="start"
-                app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-                app:tint="@color/blackAndWhite" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/labelSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="10dp"
-            android:paddingStart="5dp"
-            android:paddingTop="30dp"
-            android:paddingEnd="15dp"
-            android:text="@string/settings"
-            android:textAlignment="viewStart"
-            android:textColor="@color/blackAndWhite"
-            android:textSize="34sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/llUserProfileEdit"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginTop="40dp"
-            android:baselineAligned="false"
-            android:clickable="true"
-            android:elevation="10dp"
-            android:hapticFeedbackEnabled="true"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <ImageView
-                android:id="@+id/userIcon"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight=".2"
-                android:contentDescription="@string/icon"
-                android:duplicateParentState="true"
-                android:foregroundTint="@color/blue"
-                android:padding="15dp"
-                app:srcCompat="@drawable/newprofileiconblack"
-                app:tint="@color/blackAndWhite"
-                tools:ignore="ImageContrastCheck" />
-
-            <LinearLayout
-                android:id="@+id/subProfile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight=".6"
-                android:duplicateParentState="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/replaceWithUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:duplicateParentState="true"
-                    android:padding="2dp"
-                    android:text="@string/usersName"
-                    android:textColor="@color/blackAndWhite"
-                    android:textColorHint="@color/white"
-                    android:textColorLink="@color/white"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/editProfileLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:duplicateParentState="true"
-                    android:gravity="start|center_vertical"
-                    android:padding="2dp"
-                    android:text="@string/editProfile"
-                    android:textColor="@color/blackAndWhite"
-                    tools:ignore="TouchTargetSizeCheck" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/arrow1"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_weight=".2"
-                android:contentDescription="@string/select"
-                android:duplicateParentState="true"
-                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:id="@+id/llAbout"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="15dp"
-            android:clickable="true"
-            android:elevation="10dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:hapticFeedbackEnabled="true"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <LinearLayout
-                android:id="@+id/SubAbout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight=".8"
-                android:duplicateParentState="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textAbout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:duplicateParentState="true"
-                    android:focusable="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/notificationSettings"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/blackAndWhite"
-                    android:textSize="20sp"
-                    tools:ignore="RtlSymmetry,TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/labelAbout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:duplicateParentState="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/turnOnPushNotifications"
-                    android:textColor="@color/blackAndWhite"
-                    tools:ignore="NestedWeights" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/arrow3"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_weight=".2"
-                android:contentDescription="@string/select"
-                android:duplicateParentState="true"
-                android:foregroundTint="?android:attr/textColor"
-                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider20"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:id="@+id/llDeleteAccount"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="15dp"
-            android:clickable="true"
-            android:elevation="10dp"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:hapticFeedbackEnabled="true"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <LinearLayout
-                android:id="@+id/subDelete"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight=".8"
-                android:duplicateParentState="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/labelDeleteAccount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:duplicateParentState="true"
-                    android:focusable="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="15dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/deleteYourAccount"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/blackAndWhite"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/labelRemoveAccountSubtext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:duplicateParentState="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/permanentlyRemoveYourData"
-                    android:textColor="@color/blackAndWhite" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/arrow2"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_weight=".2"
-                android:contentDescription="@string/select"
-                android:duplicateParentState="true"
-                android:foregroundTint="?android:attr/textColor"
-                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider21"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:id="@+id/llLogout"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="20dp"
-            android:clickable="true"
-            android:elevation="10dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:hapticFeedbackEnabled="true"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <LinearLayout
-                android:id="@+id/llSubLogout"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight=".8"
-                android:duplicateParentState="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textLogout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:duplicateParentState="true"
-                    android:focusable="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="15dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/logout"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/blackAndWhite"
-                    android:textSize="20sp"
-                    tools:ignore="RtlSymmetry,TouchTargetSizeCheck" />
-
-                <TextView
-                    android:id="@+id/labelLogout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:duplicateParentState="true"
-                    android:paddingStart="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="20dp"
-                    android:text="@string/logoutSecurely"
-                    android:textColor="@color/blackAndWhite"
-                    tools:ignore="NestedWeights" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/arrow4"
-                android:layout_width="0dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_weight=".2"
-                android:contentDescription="@string/select"
-                android:duplicateParentState="true"
-                android:foregroundTint="?android:attr/textColor"
-                app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
-                app:tint="@color/blackAndWhite" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/pb1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha=".6"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/sett"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ProgressBar
-            android:id="@+id/progressBar15"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent">
+
+            <include
+                android:id="@+id/backButton"
+                layout="@layout/back_button" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                android:paddingStart="5dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:text="@string/settings"
+                android:textAlignment="viewStart"
+                android:textColor="@color/blackAndWhite"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/llUserProfileEdit"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:baselineAligned="false"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:hapticFeedbackEnabled="true"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/icon"
+                    android:duplicateParentState="true"
+                    android:foregroundTint="@color/primary"
+                    android:padding="15dp"
+                    app:srcCompat="@drawable/profile_icon"
+                    app:tint="@color/blackAndWhite"
+                    tools:ignore="ImageContrastCheck" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".6"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/replaceWithUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:padding="2dp"
+                        android:text="@string/usersName"
+                        android:textColor="@color/blackAndWhite"
+                        android:textColorHint="@color/white"
+                        android:textColorLink="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:gravity="start|center_vertical"
+                        android:padding="2dp"
+                        android:text="@string/editProfile"
+                        android:textColor="@color/blackAndWhite"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/select"
+                    android:duplicateParentState="true"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                    app:tint="@color/blackAndWhite" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/llAbout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:hapticFeedbackEnabled="true"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".8"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:duplicateParentState="true"
+                        android:focusable="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/notificationSettings"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:ignore="RtlSymmetry,TouchTargetSizeCheck" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:duplicateParentState="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/turnOnPushNotifications"
+                        android:textColor="@color/blackAndWhite"
+                        tools:ignore="NestedWeights" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/select"
+                    android:duplicateParentState="true"
+                    android:foregroundTint="?android:attr/textColor"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                    app:tint="@color/blackAndWhite" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/llShareAccount"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="20dp"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:hapticFeedbackEnabled="true"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".8"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:duplicateParentState="true"
+                        android:focusable="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/account_sharing"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/share_your_bills_and_expenses_with_someone"
+                        android:textColor="@color/blackAndWhite" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/select"
+                    android:duplicateParentState="true"
+                    android:foregroundTint="?android:attr/textColor"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                    app:tint="@color/blackAndWhite" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/llDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:hapticFeedbackEnabled="true"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".8"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:duplicateParentState="true"
+                        android:focusable="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/deleteYourAccount"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/permanentlyRemoveYourData"
+                        android:textColor="@color/blackAndWhite" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/select"
+                    android:duplicateParentState="true"
+                    android:foregroundTint="?android:attr/textColor"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                    app:tint="@color/blackAndWhite" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:id="@+id/llLogout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="20dp"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:hapticFeedbackEnabled="true"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight=".8"
+                    android:duplicateParentState="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:duplicateParentState="true"
+                        android:focusable="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="15dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/logout"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:ignore="RtlSymmetry,TouchTargetSizeCheck" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:duplicateParentState="true"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:text="@string/logoutSecurely"
+                        android:textColor="@color/blackAndWhite"
+                        tools:ignore="NestedWeights" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_weight=".2"
+                    android:contentDescription="@string/select"
+                    android:duplicateParentState="true"
+                    android:foregroundTint="?android:attr/textColor"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24"
+                    app:tint="@color/blackAndWhite" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include
+        android:id="@+id/progress2"
+        layout="@layout/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,23 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:animateLayoutChanges="true"
-        tools:context=".EditProfile"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:alpha="1"
+        android:background="@color/tabsSemiTransparent"
+        android:elevation="6dp"
+        android:translationZ="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/border_styles_no_outline"
+            android:orientation="vertical"
+            android:padding="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/emailAddressUpdatedSuccessfully"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address" />
+
+            <Button
+                style="@style/LoginButton"
+                android:layout_width="200dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="@string/ok" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        tools:context=".activities.EditProfile">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/group"
                 android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/circle"
+                    android:backgroundTint="@color/whiteAndBlack"
+                    android:importantForAccessibility="no"
+                    android:padding="5dp"
+                    android:translationZ="6dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/editProfileIcon"
+                    app:layout_constraintEnd_toEndOf="@+id/editProfileIcon"
+                    app:srcCompat="@drawable/baseline_image_search_24"
+                    app:tint="@color/grey" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/editProfileIcon"
@@ -26,29 +95,38 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="80dp"
                     android:adjustViewBounds="true"
-                    android:background="@color/whiteAndGray"
+                    android:background="@color/whiteAndBlack"
                     android:padding="5dp"
                     android:scaleType="fitStart"
-                    android:translationZ="1dp"
+                    android:translationZ="3dp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:shapeAppearanceOverlay="@style/Circular"
-                    app:strokeColor="@color/buttonStroke"
-                    app:strokeWidth="3dp"
-                    app:tint="@color/toolbar"
-                    tools:srcCompat="@drawable/daco_3157628" />
+                    app:shapeAppearanceOverlay="@style/Circular" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="19dp"
+                    android:text="@string/use_default_image"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/forgotPasswordHeader"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editProfileIcon" />
 
                 <TextView
                     android:id="@+id/forgotPasswordHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="30dp"
                     android:text="@string/editProfile"
                     android:textColor="@color/blackAndWhite"
-                    android:textSize="34sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -56,237 +134,197 @@
                     app:layout_constraintTop_toBottomOf="@+id/editProfileIcon" />
 
                 <LinearLayout
+                    android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_margin="20dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginBottom="40dp"
                     android:elevation="10dp"
                     android:orientation="vertical"
-                    android:padding="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/forgotPasswordHeader"
                     app:layout_constraintVertical_bias="0.0">
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/googleSignInError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:text="@string/username_is_unavailable"
+                        android:textColor="@color/primary"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/usernameError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:text="@string/username_is_unavailable"
+                        android:textColor="@color/primary"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="5dp"
-                        android:orientation="horizontal">
+                        android:layout_marginBottom="15dp"
+                        android:hint="@string/emailAddress"
+                        android:translationZ="5dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp">
 
-                        <TextView
-                            android:id="@+id/textView11"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/emailAddress"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/userNameTooShort"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end|bottom"
-                            android:text="@string/usernameTooShort"
-                            android:textColor="@color/grey"
-                            android:visibility="gone" />
-                    </LinearLayout>
-
-                    <EditText
-                        android:id="@+id/etEditUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@drawable/edit_text"
-                        android:gravity="center"
-                        android:importantForAutofill="no"
-                        android:inputType="textEmailAddress"
-                        android:maxLength="30"
-                        android:singleLine="true"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="16sp"
-                        tools:ignore="LabelFor" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView19"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etEditUsername"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_weight=".3"
-                            android:text="@string/password"
-                            android:textSize="16sp" />
+                            android:layout_height="55dp"
+                            android:background="@drawable/border_stroke"
+                            android:drawableStart="@drawable/email_icon"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="@color/neutralGray"
+                            android:gravity="bottom"
+                            android:importantForAutofill="no"
+                            android:inputType="textWebEditText"
+                            android:padding="7dp"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <EditText
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/editPasswordLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="15dp"
+                        android:hint="@string/password11"
+                        android:translationZ="5dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEditPassword"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_weight=".7"
-                            android:background="@drawable/edit_text"
-                            android:gravity="center"
+                            android:layout_height="55dp"
+                            android:background="@drawable/border_stroke"
+                            android:drawableStart="@drawable/padlock"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="@color/neutralGray"
+                            android:gravity="bottom"
                             android:importantForAutofill="no"
-                            android:inputType="textPassword"
-                            android:maxLength="30"
-                            android:singleLine="true"
-                            android:textColor="@color/blackAndWhite"
-                            android:textSize="16sp"
-                            android:visibility="visible"
-                            tools:ignore="LabelFor" />
-
-                        <LinearLayout
-                            android:id="@+id/passRequirements"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginTop="15dp"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                            <TextView
-                                android:id="@+id/passwordTooShort"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".7"
-                                android:text="@string/not6"
-                                android:textColor="@color/grey"
-                                android:visibility="visible" />
-
-                            <TextView
-                                android:id="@+id/noUppercase"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".7"
-                                android:text="@string/noUpper"
-                                android:textColor="@color/grey"
-                                android:visibility="visible" />
-
-                            <TextView
-                                android:id="@+id/noLowercase"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".7"
-                                android:text="@string/noLower"
-                                android:textColor="@color/grey"
-                                android:visibility="visible" />
-
-                            <TextView
-                                android:id="@+id/noNumber"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".7"
-                                android:text="@string/notNumber"
-                                android:textColor="@color/grey"
-                                android:visibility="visible" />
-                        </LinearLayout>
-
-
-                    </LinearLayout>
+                            android:inputType="textWebEditText"
+                            android:padding="7dp"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <LinearLayout
-                        android:id="@+id/hideError"
-                        android:layout_width="match_parent"
+                        android:id="@+id/passRequirements"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginBottom="15dp"
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                        <LinearLayout
-                            android:id="@+id/linearLayout47"
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:id="@+id/passwordTooShort"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
-                            android:layout_marginBottom="5dp"
-                            android:orientation="horizontal">
+                            android:layout_weight=".7"
+                            android:text="@string/not6"
+                            android:textColor="@color/grey"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
 
-                            <TextView
-                                android:id="@+id/textView191"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/reEnterPassword"
-                                android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/noUppercase"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".7"
+                            android:text="@string/noUpper"
+                            android:textColor="@color/grey"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
 
-                            <TextView
-                                android:id="@+id/textView25"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end"
-                                android:layout_weight="1"
-                                android:gravity="end"
-                                android:text="@string/passwords_dont_match"
-                                android:textColor="@color/grey"
-                                android:visibility="visible" />
+                        <TextView
+                            android:id="@+id/noLowercase"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".7"
+                            android:text="@string/noLower"
+                            android:textColor="@color/grey"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
 
-                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/noNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".7"
+                            android:text="@string/notNumber"
+                            android:textColor="@color/grey"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
-                        <EditText
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/matchPasswordLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="15dp"
+                        android:hint="@string/reEnterPassword"
+                        android:translationZ="5dp"
+                        android:visibility="gone"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEditPassword1"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:background="@drawable/edit_text"
-                            android:gravity="center"
-                            android:hint="@string/enterPasswordAgain"
+                            android:layout_height="55dp"
+                            android:background="@drawable/border_stroke"
+                            android:drawableStart="@drawable/padlock"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="@color/neutralGray"
+                            android:gravity="bottom"
                             android:importantForAutofill="no"
-                            android:inputType="textPassword"
-                            android:maxLength="30"
-                            android:singleLine="true"
-                            android:textColor="@color/blackAndWhite"
+                            android:inputType="textWebEditText"
+                            android:padding="7dp"
+                            android:textCursorDrawable="@null"
                             android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout42"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
-                        android:layout_marginBottom="5dp"
-                        android:orientation="horizontal">
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="15dp"
+                        android:hint="@string/name1"
+                        android:translationZ="5dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp">
 
-                        <TextView
-                            android:id="@+id/showWebsite"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/name"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/nameTooShort"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end|bottom"
-                            android:text="@string/nameTooShort"
-                            android:textColor="@color/blueGrey"
-                            android:visibility="gone" />
-
-                    </LinearLayout>
-
-                    <EditText
-                        android:id="@+id/etEditName"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:background="@drawable/edit_text"
-                        android:gravity="center"
-                        android:importantForAutofill="no"
-                        android:inputType="textCapWords"
-                        android:maxLength="30"
-                        android:singleLine="true"
-                        android:textColor="@color/blackAndWhite"
-                        android:textSize="16sp" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etEditName"
+                            android:layout_width="match_parent"
+                            android:layout_height="55dp"
+                            android:background="@drawable/border_stroke"
+                            android:drawableStart="@drawable/name"
+                            android:drawablePadding="8dp"
+                            android:drawableTint="@color/neutralGray"
+                            android:gravity="bottom"
+                            android:importantForAutofill="no"
+                            android:inputType="textWebEditText"
+                            android:padding="7dp"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/biometricSwitch2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
+                        android:layout_marginTop="5dp"
                         android:layout_marginBottom="10dp"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
@@ -302,25 +340,32 @@
                         android:layout_gravity="end"
                         android:gravity="center"
                         android:text="@string/biometricsNotSupported"
-                        android:textColor="@color/places_autocomplete_search_hint"
+                        android:textColor="@color/grey"
                         app:drawableStartCompat="@drawable/warning"
-                        app:drawableTint="@color/places_autocomplete_error_message" />
+                        app:drawableTint="@color/grey" />
 
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayout25"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
-                    android:background="@color/toolbar"
+                    android:background="@color/blueAndBlack"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="17dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/logo_long"
+                        app:tint="@color/white" />
+                </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/pb6"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:alpha=".6"
@@ -334,7 +379,6 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ProgressBar
-                        android:id="@+id/progressBar26"
                         style="?android:attr/progressBarStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -344,35 +388,36 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/backEditProfile"
-                    android:layout_width="70dp"
-                    android:layout_height="65dp"
-                    android:contentDescription="@string/back_button"
-                    android:padding="15dp"
+                <include
+                    android:id="@+id/backButton"
+                    layout="@layout/back_button"
                     app:layout_constraintEnd_toEndOf="@+id/btnSubmitUser"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_arrow_back_24"
                     app:tint="@color/white" />
 
-                <TextView
+                <Button
                     android:id="@+id/btnSubmitUser"
-                    android:layout_width="100dp"
-                    android:layout_height="65dp"
-                    android:layout_gravity="center_vertical"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/border_styles"
+                    android:backgroundTint="@color/primary"
                     android:gravity="center"
-                    android:padding="10dp"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="5dp"
                     android:text="@string/save"
-                    android:textColor="@color/grey"
-                    android:textSize="20sp"
-                    android:translationZ="5dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:translationZ="10dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
