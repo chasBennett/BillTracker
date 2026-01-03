@@ -1,13 +1,6 @@
 package com.example.billstracker.tools;
 
-import static android.content.ContentValues.TAG;
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static android.widget.LinearLayout.SHOW_DIVIDER_MIDDLE;
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.expenses;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,10 +13,8 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
-import android.os.CancellationSignal;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,15 +31,10 @@ import android.widget.TextView;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.widget.NestedScrollView;
-import androidx.credentials.ClearCredentialStateRequest;
-import androidx.credentials.CredentialManager;
-import androidx.credentials.CredentialManagerCallback;
-import androidx.credentials.exceptions.ClearCredentialException;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.bumptech.glide.Glide;
@@ -58,17 +44,14 @@ import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.custom_objects.Payment;
-import com.example.billstracker.custom_objects.Payments;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public interface Tools {
 
@@ -76,17 +59,6 @@ public interface Tools {
     static boolean isDarkMode (Context context) {
         int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
-    }
-    static Payment getPayment (int paymentId) {
-
-        if (payments.getPayments() != null && !payments.getPayments().isEmpty()) {
-            for (Payment payment : payments.getPayments()) {
-                if (payment.getPaymentId() == paymentId) {
-                    return payment;
-                }
-            }
-        }
-        return null;
     }
 
     static void fixToolbar (Activity activity, boolean blueBackground, boolean iconFound) {
@@ -207,7 +179,6 @@ public interface Tools {
     static void openEmailApp (Context context) {
         List<Intent> emailAppLauncherIntents = new ArrayList<>();
 
-        //Intent that only email apps can handle:
         Intent emailAppIntent = new Intent(Intent.ACTION_SENDTO);
         emailAppIntent.setData(Uri.parse("mailto:"));
         emailAppIntent.putExtra(Intent.EXTRA_EMAIL, "");
@@ -215,14 +186,12 @@ public interface Tools {
 
         PackageManager packageManager = context.getPackageManager();
 
-        //All installed apps that can handle email intent:
         List<ResolveInfo> emailApps = packageManager.queryIntentActivities(emailAppIntent, PackageManager.MATCH_ALL);
 
         for (ResolveInfo resolveInfo : emailApps) {
             emailAppLauncherIntents.add(packageManager.getLaunchIntentForPackage(resolveInfo.activityInfo.packageName));
         }
 
-        //Create chooser
         context.startActivity(Intent.createChooser(new Intent(), context.getString(R.string.select_email_app)).putExtra(Intent.EXTRA_INITIAL_INTENTS, emailAppLauncherIntents.toArray(new Parcelable[0])));
         context.startActivity(new Intent(context, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
     }
@@ -344,14 +313,12 @@ public interface Tools {
         activity.getOnBackPressedDispatcher().onBackPressed();
     }
     static Budget getBudget (Context context, LocalDate selectedDate) {
-        if (thisUser == null) {
-            UserData.load(context);
+        if (Repo.getInstance().getUser(context) == null) {
+            Repo.getInstance().loadLocalData(context);
         }
-        if (thisUser.getBudgets() == null) {
-            thisUser.setBudgets(new ArrayList<>());
-        }
-        if (thisUser.getBudgets() != null && !thisUser.getBudgets().isEmpty()) {
-            for (Budget budget : thisUser.getBudgets()) {
+
+        if (Repo.getInstance().getUser(context).getBudgets() != null && !Repo.getInstance().getUser(context).getBudgets().isEmpty()) {
+            for (Budget budget : Repo.getInstance().getUser(context).getBudgets()) {
                 if (budget.getStartDate() <= DateFormat.makeLong(selectedDate) && budget.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                     return budget;
                 }
@@ -371,28 +338,28 @@ public interface Tools {
         }
     }
 
-    static void billPaidOff (Payment payment) {
-        if (bills != null && bills.getBills() != null) {
+    static void billPaidOff (Context context, Payment payment) {
+        if (Repo.getInstance().getBills() != null) {
             Bill biller = null;
-            for (Bill bill: bills.getBills()) {
+            for (Bill bill: Repo.getInstance().getBills()) {
                 if (bill.getBillerName().equals(payment.getBillerName())) {
                     bill.setPaymentsRemaining(0);
                     biller = bill;
                     break;
                 }
             }
-            if (biller != null && payments != null && payments.getPayments() != null) {
+            if (biller != null && Repo.getInstance().getPayments() != null) {
                 ArrayList <Payment> remove = new ArrayList<>();
-                for (Payment payments: payments.getPayments()) {
+                for (Payment payments: Repo.getInstance().getPayments()) {
                     if (payments.getBillerName().equals(biller.getBillerName()) && !payments.isPaid() && payments.isDateChanged()) {
                         remove.add(payments);
                     }
                 }
                 if (!remove.isEmpty()) {
-                    payments.getPayments().removeAll(remove);
+                    Repo.getInstance().getPayments().removeAll(remove);
                 }
             }
-            UserData.save();
+            Repo.getInstance().save(context);
         }
     }
 
@@ -421,9 +388,9 @@ public interface Tools {
 
     static double getBillsAmount (int frequency, LocalDate selectedDate) {
         double billsAmount = 0;
-        if (payments != null) {
-            if (payments.getPayments() != null) {
-                for (Payment payment : payments.getPayments()) {
+        if (Repo.getInstance().getPayments() != null) {
+            if (Repo.getInstance().getPayments() != null) {
+                for (Payment payment : Repo.getInstance().getPayments()) {
                     switch (frequency) {
                         case 0:
                             if (payment.getDueDate() == DateFormat.makeLong(selectedDate)) {
@@ -442,12 +409,6 @@ public interface Tools {
                 }
                 return billsAmount;
             }
-            else {
-                payments.setPayments(new ArrayList<>());
-            }
-        }
-        else {
-            payments = new Payments(new ArrayList<>());
         }
         return billsAmount;
     }
@@ -517,7 +478,7 @@ public interface Tools {
 
             boolean darkMode = Tools.isDarkMode(context);
 
-            ArrayList<Integer> icons = Data.getIcons();
+            ArrayList<Integer> icons = DataTools.getIcons();
 
             view.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.grey, context.getTheme())));
             if (darkMode) {
@@ -540,56 +501,34 @@ public interface Tools {
         }
     }
 
-    static void signOut(Activity activity) {
-        // Firebase sign out
-        FirebaseAuth.getInstance().signOut();
-
-        // When a user signs out, clear the current user credential state from all credential providers.
-        Prefs.setSignedInWithGoogle(activity, false);
-        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
-        CredentialManager manager = CredentialManager.create(activity);
-        manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
-            @Override
-            public void onResult(Void unused) {
-                Prefs.setSignedIn(activity, false);
-                activity.startActivity(new Intent(activity, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
-            }
-
-            @Override
-            public void onError(@NonNull ClearCredentialException e) {
-                Log.e(TAG, "Couldn't clear user credentials: " + e);
-            }
-        });
-    }
-
 
     static void removePartnerData (String partnerId) {
         ArrayList <Bill> removeBills = new ArrayList<>();
-        if (bills != null && bills.getBills() != null) {
-            for (Bill bill: bills.getBills()) {
+        if (Repo.getInstance().getBills() != null) {
+            for (Bill bill: Repo.getInstance().getBills()) {
                 if (bill.getOwner().equals(partnerId)) {
                     removeBills.add(bill);
                 }
             }
-            bills.getBills().removeAll(removeBills);
+            Repo.getInstance().getBills().removeAll(removeBills);
         }
         ArrayList <Payment> removePayments = new ArrayList<>();
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment payment: payments.getPayments()) {
+        if (Repo.getInstance().getPayments() != null) {
+            for (Payment payment: Repo.getInstance().getPayments()) {
                 if (payment.getOwner().equals(partnerId)) {
                     removePayments.add(payment);
                 }
             }
-            payments.getPayments().removeAll(removePayments);
+            Repo.getInstance().getPayments().removeAll(removePayments);
         }
         ArrayList <Expense> removeExpense = new ArrayList<>();
-        if (expenses != null && expenses.getExpenses() != null) {
-            for (Expense expense: expenses.getExpenses()) {
+        if (Repo.getInstance().getExpenses() != null) {
+            for (Expense expense: Repo.getInstance().getExpenses()) {
                 if (expense.getOwner().equals(partnerId)) {
                     removeExpense.add(expense);
                 }
             }
-            expenses.getExpenses().removeAll(removeExpense);
+            Repo.getInstance().getExpenses().removeAll(removeExpense);
         }
     }
     interface ItemSelectedListener {

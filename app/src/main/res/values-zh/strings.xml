@@ -348,7 +348,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="noTicketsWereFound">没有找到门票</string>
     <string name="registeredBillers">注册记账人</string>
     <string name="clickBillerTile">单击账单磁贴以查看更多信息</string>
-    <string name="stms">支持工单管理系统（STMS）</string>
     <string name="customerService1">客户服务：</string>
     <string name="helloUser">用户您好，感谢您联系我们。我们很高兴今天有机会为您服务！请详细描述您的问题，以便我们为您提供帮助！</string>
     <string name="overallStats">整体数据</string>
@@ -396,13 +395,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="total">全部的</string>
     <string name="paid">有薪酬的</string>
     <string name="billTracker">账单追踪器</string>
-    <string name="billTrackerNotificationChannel">账单追踪应用程序通知渠道</string>
-    <string name="yourBillFor">你的帐单</string>
-    <string name="at">在</string>
-    <string name="isDueToday">今天到期</string>
-    <string name="isDueTomorrow">明天到期</string>
-    <string name="isDueInThreeDays">3 天内到期</string>
-    <string name="billDue">账单到期</string>
     <string name="selectDate">选择日期</string>
     <string name="cancel">取消</string>
     <string name="justThisOccurence">就这一次</string>
@@ -416,7 +408,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="anErrorHasOccurred">发生了错误。请再试一次。</string>
     <string name="passwordResetLinkSent">密码重置链接已发送到您的电子邮件收件箱。请按照电子邮件中的说明重置您的密码。</string>
     <string name="emailSent">邮件已发送</string>
-    <string name="emailNotRegistered">该电子邮件地址未注册</string>
     <string name="emailNotFound">电子邮件找不到</string>
     <string name="verifyEmail">您的电子邮件地址尚未经过验证。请单击我们发送的电子邮件中的链接进行验证。请务必检查您的垃圾邮件文件夹。</string>
     <string name="emailNotVerified">电子邮件地址未验证</string>
@@ -443,9 +434,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="close_button">关闭按钮</string>
     <string name="upload_complete">上传完成！</string>
     <string name="administrator_control_panel">管理员控制面板</string>
-    <string name="biller_data">账单数据</string>
-    <string name="ums">综合管理系统</string>
-    <string name="open_tickets_1">公开门票 (1)</string>
     <string name="icon">图标</string>
     <string name="_24_567_67">24,567.67 美元</string>
     <string name="paid_icon">付费图标</string>
@@ -527,9 +515,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="logo">标识</string>
     <string name="pay_next_bill_button">支付下一个账单按钮</string>
     <string name="arrow">箭</string>
-    <string name="isDueInTwoDays">两天后到期</string>
-    <string name="wasDue">过期了</string>
-    <string name="yesterday">昨天</string>
     <string name="balance_forward">结转余额：</string>
     <string name="payment_date">付款日期：</string>
     <string name="other_amount">其他金额</string>
@@ -564,7 +549,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="category_name">分类名称</string>
     <string name="future_budget">未来预算</string>
     <string name="previous_budget">先前的预算</string>
-    <string name="no_budget_categories_assigned">未分配预算类别</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">百分比值合并后不能等于 100。</string>
     <string name="a_percent_value_is_required_for_every_category">每个类别都需要一个百分比值。</string>
     <string name="add_a_spending_category">添加支出类别</string>
@@ -597,7 +581,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="weekly_savings">每周节省：</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">" 您的电子邮件地址已成功更新，并且验证电子邮件已发送。请点击电子邮件中的验证链接，以便使用您的新电子邮件地址登录。"</string>
     <string name="user_registration_failed">用户注册失败</string>
-    <string name="sign_in_failed_please_try_again">登录失败。请再试一次</string>
     <string name="biller_name_can_t_be_blank">收款人姓名不能为空</string>
     <string name="biller_name_is_already_in_use">帐单名称已被使用</string>
     <string name="website_can_t_be_blank">网站不能为空</string>
@@ -630,14 +613,12 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="active">积极的</string>
     <string name="requested_by_user">用户请求</string>
     <string name="awaiting_partner_approval">等待合作伙伴批准</string>
-    <string name="you_must_register_first">您必须先注册</string>
     <string name="when_did_you_pay_this_bill">您什么时候支付这张账单？</string>
     <string name="remaining_payments_can_t_be_blank">剩余付款不能为空</string>
     <string name="when_is_this_bill_due">该账单何时到期？</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">输入剩余付款次数以更新您的收款人</string>
     <string name="update_biller">更新账单</string>
     <string name="bill_marked_as_paid_successfully">账单标记为已成功付款</string>
-    <string name="delete_account">删除帐号</string>
     <string name="are_you_sure_you_would_like_to_logout">您确实要退出吗？</string>
     <string name="username_is_unavailable">用户名不可用</string>
     <string name="searching_database">正在搜索数据库…</string>
@@ -656,9 +637,7 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="expense_description_cannot_be_blank">费用描述不能为空</string>
     <string name="expense_amount_must_be_greater_than_0">费用金额必须大于 0</string>
     <string name="expense_was_saved_successfully">费用已成功保存</string>
-    <string name="biller_was_updated_successfully">Biller 已成功更新。</string>
     <string name="biller_update_failed">帐单更新失败。</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">电子邮件尚未注册。请点击“创建账户”开始</string>
     <string name="my_income">我的收入</string>
     <string name="enter_your_income_details_to_calculate_your_dti">输入您的收入详情以计算您的 DTI</string>
     <string name="income_amount">收入金额</string>
@@ -701,7 +680,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="sign_in_with_google">与Google登录</string>
     <string name="or">或者</string>
     <string name="amount_remaining_this_period">剩下此期间的金额：</string>
-    <string name="login_failed_please_try_again">登录失败。请重试。</string>
     <string name="weekly_spending">每周支出</string>
     <string name="daily_spending">每日支出</string>
     <string name="monthly_spending">每月支出</string>
@@ -719,11 +697,6 @@ Bill Tracker 可随时将本协议转让给任何一方，恕不另行通知。�
     <string name="nothing_due_this_month">没有任何时间\ n \ n \ n</string>
     <string name="remaining3">剩下的\ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">“如果您确定要删除帐户，请输入”</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">“在下面的框中。这一动作无法撤消。”</string>
-    <string name="please_enter">“请输入”</string>
-    <string name="to_proceed">“继续”</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">如果您确定要删除帐户，请输入密码以确认。该动作不能撤消。</string>
     <string name="edit_budget">编辑预算</string>
     <string name="clothing">衣服</string>
     <string name="gas">气体</string>

@@ -351,7 +351,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="noTicketsWereFound">Nessun biglietto trovato</string>
     <string name="registeredBillers">Fatturatori registrati</string>
     <string name="clickBillerTile">Fare clic su un riquadro dell\'emittente della fattura per visualizzare ulteriori informazioni</string>
-    <string name="stms">Sistema di gestione dei ticket di supporto (STMS)</string>
     <string name="customerService1">Assistenza clienti:</string>
     <string name="helloUser">Ciao utente e grazie per averci contattato. Siamo felicissimi dell\'opportunità di servirti oggi! Descrivi dettagliatamente il tuo problema in modo che possiamo aiutarti!</string>
     <string name="overallStats">Statistiche complessive</string>
@@ -400,13 +399,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     '
     <string name="paid">Pagato</string>
     <string name="billTracker">Rilevatore di fatture</string>
-    <string name="billTrackerNotificationChannel">Canale di notifica dell\'app Bill Tracker</string>
-    <string name="yourBillFor">Il tuo conto per</string>
-    <string name="at">A</string>
-    <string name="isDueToday">È in scadenza oggi</string>
-    <string name="isDueTomorrow">È in scadenza domani</string>
-    <string name="isDueInThreeDays">È dovuto in 3 giorni</string>
-    <string name="billDue">Fattura in scadenza</string>
     <string name="selectDate">Seleziona Data</string>
     <string name="cancel">Annulla</string>
     <string name="justThisOccurence">Proprio questa ricorrenza</string>
@@ -420,7 +412,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="anErrorHasOccurred">C\'è stato un errore. Per favore riprova.</string>
     <string name="passwordResetLinkSent">Un link per reimpostare la password è stato inviato alla tua casella di posta elettronica. Si prega di seguire le istruzioni nell\'e-mail per reimpostare la password.</string>
     <string name="emailSent">Email inviata</string>
-    <string name="emailNotRegistered">Quell\'indirizzo email non è registrato</string>
     <string name="emailNotFound">Email non trovata</string>
     <string name="verifyEmail">Il tuo indirizzo email non è stato ancora verificato. Fare clic sul collegamento nell\'e-mail che abbiamo inviato per verificarlo. Assicurati di controllare la tua cartella spam.</string>
     <string name="emailNotVerified">Indirizzo e-mail non verificato</string>
@@ -447,9 +438,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="close_button">Pulsante Chiudi</string>
     <string name="upload_complete">Caricamento completato!</string>
     <string name="administrator_control_panel">Pannello di controllo dell\'amministratore</string>
-    <string name="biller_data">Dati dell\'emittente della fattura</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">Biglietti Aperti (1)</string>
     <string name="icon">Icona</string>
     <string name="_24_567_67">$ 24.567,67</string>
     <string name="paid_icon">Icona a pagamento</string>
@@ -531,9 +519,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="logo">logo</string>
     <string name="pay_next_bill_button">Pulsante Paga fattura successiva</string>
     <string name="arrow">freccia</string>
-    <string name="isDueInTwoDays">È dovuto in due giorni</string>
-    <string name="wasDue">Era dovuto</string>
-    <string name="yesterday">Ieri</string>
     <string name="balance_forward">Saldo in avanti:</string>
     <string name="payment_date">Data di pagamento:</string>
     <string name="other_amount">Altro Importo</string>
@@ -568,7 +553,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="category_name">Nome della categoria</string>
     <string name="future_budget">Bilancio futuro</string>
     <string name="previous_budget">Bilancio precedente</string>
-    <string name="no_budget_categories_assigned">Nessuna categoria di budget assegnata</string>
     <string name="a_percent_value_is_required_for_every_category">Per ogni categoria è richiesto un valore percentuale.</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">I valori percentuali non possono essere superiori a 100 se combinati.</string>
     <string name="add_a_spending_category">Aggiungi una categoria di spesa</string>
@@ -601,7 +585,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="weekly_savings">Risparmio settimanale:</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">Il tuo indirizzo email è stato aggiornato correttamente ed è stata inviata un\'email di verifica. Fai clic sul collegamento di verifica nell\'e-mail per accedere utilizzando il tuo nuovo indirizzo e-mail.</string>
     <string name="user_registration_failed">Registrazione utente non riuscita</string>
-    <string name="sign_in_failed_please_try_again">Accesso fallito. Per favore riprova</string>
     <string name="biller_name_can_t_be_blank">Il nome dell\'emittente della fattura non può essere vuoto</string>
     <string name="biller_name_is_already_in_use">Il nome dell\'emittente della fattura è già in uso</string>
     <string name="website_can_t_be_blank">Il sito web non può essere vuoto</string>
@@ -633,14 +616,12 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="active">Attivo</string>
     <string name="requested_by_user">Richiesto dall"utente</string>
     <string name="awaiting_partner_approval">In attesa dell"approvazione del partner</string>
-    <string name="you_must_register_first">Devi registrarti prima</string>
     <string name="when_did_you_pay_this_bill">Quando hai pagato questa fattura?</string>
     <string name="remaining_payments_can_t_be_blank">I pagamenti rimanenti non possono essere vuoti</string>
     <string name="when_is_this_bill_due">Quando è in scadenza questo conto?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">Inserisci quanti pagamenti rimangono per aggiornare il tuo Biller</string>
     <string name="update_biller">Aggiorna Biller</string>
     <string name="bill_marked_as_paid_successfully">Bill segnato come pagato con successo</string>
-    <string name="delete_account">Elimina account</string>
     <string name="are_you_sure_you_would_like_to_logout">Sei sicuro di voler logout?</string>
     <string name="username_is_unavailable">Il nome utente non è disponibile</string>
     <string name="searching_database">Ricerca del database …</string>
@@ -659,9 +640,7 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="expense_description_cannot_be_blank">La descrizione delle spese non può essere vuota</string>
     <string name="expense_amount_must_be_greater_than_0">L"importo delle spese deve essere maggiore di 0</string>
     <string name="expense_was_saved_successfully">La spesa è stata salvata con successo</string>
-    <string name="biller_was_updated_successfully">Biller è stato aggiornato con successo.</string>
     <string name="biller_update_failed">Biller Aggiornamento non riuscito.</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">L"e -mail non è ancora registrata. Fare clic su \ "Crea un account \" per iniziare</string>
     <string name="my_income">Il mio reddito</string>
     <string name="enter_your_income_details_to_calculate_your_dti">Inserisci i tuoi dettagli di reddito per calcolare il tuo DTI</string>
     <string name="income_amount">Importo del reddito</string>
@@ -705,7 +684,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="sign_in_with_google">Accedi con Google</string>
     <string name="or">O</string>
     <string name="amount_remaining_this_period">Importo rimasto in questo periodo:</string>
-    <string name="login_failed_please_try_again">Accesso non riuscito. Per favore riprova.</string>
     <string name="weekly_spending">Spesa settimanale</string>
     <string name="daily_spending">Spesa quotidiana</string>
     <string name="monthly_spending">Spesa mensile</string>
@@ -723,11 +701,6 @@ In caso di domande sull\'app o sul presente Contratto, contattare support@billtr
     <string name="nothing_due_this_month">Niente dovuto \ n \ nchis mese</string>
     <string name="remaining3">Rimanendo \ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"Se sei sicuro che desideri eliminare il tuo account, digita"</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">"Nella casella sottostante. Questa azione non può essere annullata."</string>
-    <string name="please_enter">"Inserisci"</string>
-    <string name="to_proceed">"procedere"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">Se sei sicuro che desideri eliminare il tuo account, inserisci la tua password per confermare. Questa azione non può essere annullata.</string>
     <string name="edit_budget">Modifica budget</string>
     <string name="clothing">Vestiario</string>
     <string name="gas">Gas</string>

@@ -49,7 +49,7 @@ public interface Google {
                     Log.e(TAG, e.getMessage());
                 }
                 Log.e(TAG, "Credential retrieval failed");
-                callback.onComplete(false, null);
+                callback.onComplete(false, null,null);
             }
         });
     }
@@ -59,21 +59,21 @@ public interface Google {
         if (credential != null) {
             if (credential instanceof PublicKeyCredential) {
                 String responseJson = ((PublicKeyCredential) credential).getAuthenticationResponseJson();
-                callback.onComplete(false, null);
+                callback.onComplete(false, null,null);
             } else if (credential instanceof PasswordCredential) {
                 String username = ((PasswordCredential) credential).getId();
                 String password = ((PasswordCredential) credential).getPassword();
-                callback.onComplete(false, null);
+                callback.onComplete(false, null,null);
             } else if (credential instanceof CustomCredential && credential.getType().equals(TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
                 firebaseAuthWithGoogle(activity, GoogleIdTokenCredential.createFrom(credential.getData()).getIdToken(), callback);
             } else {
                 // Catch any unrecognized credential type here.
                 Log.e(TAG, "Unexpected type of credential");
-                callback.onComplete(false, null);
+                callback.onComplete(false, null,null);
             }
         }
         else {
-            callback.onComplete(false, null);
+            callback.onComplete(false, null,null);
         }
     }
 
@@ -84,20 +84,20 @@ public interface Google {
                 checkForExistingUser(activity, (wasSuccessful, user) -> {
                     if (wasSuccessful) {
                         Log.d(TAG, "signInWithCredential:success");
-                        callback.onComplete(true, user);
+                        callback.onComplete(true, user, idToken);
                     }
                     else {
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        callback.onComplete(false, null);
+                        callback.onComplete(false, null, null);
                     }
                 });
             } else {
                 Log.w(TAG, "signInWithCredential:failure", task.getException());
-                callback.onComplete(false, null);
+                callback.onComplete(false, null, null);
             }
         });
     }
     interface GoogleLoginCallback {
-        void onComplete (boolean wasSuccessful, FirebaseUser user);
+        void onComplete (boolean wasSuccessful, FirebaseUser user, String idToken);
     }
 }

@@ -22,6 +22,10 @@
         <item name="android:fitsSystemWindows">true</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="Theme.EditProfile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/blueAndBlack</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 
     <!-- Base application theme. -->
 </resources>

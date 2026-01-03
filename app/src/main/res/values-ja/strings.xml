@@ -351,7 +351,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="noTicketsWereFound">チケットが見つかりませんでした</string>
     <string name="registeredBillers">登録請求者</string>
     <string name="clickBillerTile">詳細情報を表示するには、請求者タイルをクリックしてください</string>
-    <string name="stms">サポートチケット管理システム (STMS)</string>
     <string name="customerService1">顧客サービス：</string>
     <string name="helloUser">こんにちは。お問い合わせいただきありがとうございます。本日はお客様のお役にたてる機会をいただき、大変うれしく思っております。サポートさせていただきますので、問題を詳しく説明してください。</string>
     <string name="overallStats">全体的な統計</string>
@@ -400,13 +399,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     '
     <string name="paid">有料</string>
     <string name="billTracker">ビルトラッカー</string>
-    <string name="billTrackerNotificationChannel">請求書トラッカー アプリの通知チャネル</string>
-    <string name="yourBillFor">あなたの請求書</string>
-    <string name="at">で</string>
-    <string name="isDueToday">今日が期限です</string>
-    <string name="isDueTomorrow">明日が期限です</string>
-    <string name="isDueInThreeDays">期限は 3 日後です</string>
-    <string name="billDue">請求期限</string>
     <string name="selectDate">日付を選択してください</string>
     <string name="cancel">キャンセル</string>
     <string name="justThisOccurence">まさにこの出来事</string>
@@ -420,7 +412,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="anErrorHasOccurred">エラーが発生しました。もう一度試してください。</string>
     <string name="passwordResetLinkSent">パスワードのリセットリンクが電子メールの受信箱に送信されました。メールに記載された手順に従ってパスワードをリセットしてください。</string>
     <string name="emailSent">メール送信済み</string>
-    <string name="emailNotRegistered">そのメールアドレスは登録されていません</string>
     <string name="emailNotFound">メールが見つかりません</string>
     <string name="verifyEmail">あなたのメールアドレスはまだ認証されていません。送信したメール内のリンクをクリックして確認してください。必ずスパムフォルダーをご確認ください。</string>
     <string name="emailNotVerified">メールアドレスが認証されていません</string>
@@ -447,9 +438,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="close_button">閉じるボタン</string>
     <string name="upload_complete">アップロード完了！</string>
     <string name="administrator_control_panel">管理者コントロールパネル</string>
-    <string name="biller_data">請求者データ</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">オープンチケット (1)</string>
     <string name="icon">アイコン</string>
     <string name="_24_567_67">$24,567.67</string>
     <string name="paid_icon">有料アイコン</string>
@@ -531,9 +519,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="logo">ロゴ</string>
     <string name="pay_next_bill_button">次の請求書を支払うボタン</string>
     <string name="arrow">矢印</string>
-    <string name="isDueInTwoDays">期限は 2 日後です</string>
-    <string name="wasDue">期限があった</string>
-    <string name="yesterday">昨日</string>
     <string name="balance_forward">バランスフォワード:</string>
     <string name="payment_date">支払期日：</string>
     <string name="other_amount">その他の金額</string>
@@ -569,7 +554,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="category_name">種別名</string>
     <string name="future_budget">今後の予算</string>
     <string name="previous_budget">前回の予算</string>
-    <string name="no_budget_categories_assigned">" 予算カテゴリが割り当てられていません"</string>
     <string name="a_percent_value_is_required_for_every_category">カテゴリごとにパーセント値が必要です。</string>
     <string name="add_a_spending_category">支出カテゴリを追加する</string>
     <string name="create_a_budget_for_me">" 私のために予算を作成してください"</string>
@@ -601,7 +585,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="weekly_savings">" 毎週の節約:"</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">メールアドレスが正常に更新され、確認メールが送信されました。新しいメール アドレスを使用してログインするには、メール内の確認リンクをクリックしてください。</string>
     <string name="user_registration_failed">ユーザー登録に失敗しました</string>
-    <string name="sign_in_failed_please_try_again">サインインに失敗しました。もう一度試してください</string>
     <string name="biller_name_can_t_be_blank">請求者名を空白にすることはできません</string>
     <string name="biller_name_is_already_in_use">請求者名はすでに使用されています</string>
     <string name="website_can_t_be_blank">ウェブサイトを空白にすることはできません</string>
@@ -634,14 +617,12 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="active">アクティブ</string>
     <string name="requested_by_user">ユーザーからのリクエスト</string>
     <string name="awaiting_partner_approval">パートナーの承認待ち</string>
-    <string name="you_must_register_first">まずは登録してください</string>
     <string name="when_did_you_pay_this_bill">この請求書はいつ支払いましたか?</string>
     <string name="remaining_payments_can_t_be_blank">残りの支払いは空白にできません</string>
     <string name="when_is_this_bill_due">この請求書の支払い期限はいつですか?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">請求元を更新するには、残りの支払い回数を入力してください</string>
     <string name="update_biller">請求者を更新</string>
     <string name="bill_marked_as_paid_successfully">請求書は支払い済みとしてマークされました</string>
-    <string name="delete_account">アカウントを削除する</string>
     <string name="are_you_sure_you_would_like_to_logout">本当にログアウトしますか?</string>
     <string name="username_is_unavailable">ユーザー名は使用できません</string>
     <string name="searching_database">データベースを検索しています…</string>
@@ -660,9 +641,7 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="expense_description_cannot_be_blank">経費の説明は空欄にできません</string>
     <string name="expense_amount_must_be_greater_than_0">経費金額は 0 より大きくなければなりません</string>
     <string name="expense_was_saved_successfully">経費は正常に保存されました</string>
-    <string name="biller_was_updated_successfully">請求者が正常に更新されました。</string>
     <string name="biller_update_failed">請求者の更新に失敗しました。</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">メールアドレスはまだ登録されていません。開始するには「アカウントを作成」をクリックしてください</string>
     <string name="my_income">私の収入</string>
     <string name="enter_your_income_details_to_calculate_your_dti">収入の詳細を入力して DTI を計算します</string>
     <string name="income_amount">収入金額</string>
@@ -705,7 +684,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="sign_in_with_google">Googleにサインインします</string>
     <string name="or">または</string>
     <string name="amount_remaining_this_period">この期間の残りの金額：</string>
-    <string name="login_failed_please_try_again">ログインに失敗しました。もう一度やり直してください。</string>
     <string name="weekly_spending">毎週支出</string>
     <string name="daily_spending">毎日の支出</string>
     <string name="monthly_spending">毎月の支出</string>
@@ -723,11 +701,6 @@ Bill Tracker は、お客様に通知することなく、いつでも本契約�
     <string name="nothing_due_this_month">今月は何もありません</string>
     <string name="remaining3">残りの\ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">「アカウントを削除したい場合は、入力してください」</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">「下の箱で。このアクションを元に戻すことはできません。」</string>
-    <string name="please_enter">「入力してください」</string>
-    <string name="to_proceed">「続行する」</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">アカウントを削除したい場合は、パスワードを入力して確認してください。このアクションを元に戻すことはできません。</string>
     <string name="edit_budget">予算を編集します</string>
     <string name="clothing">服</string>
     <string name="gas">ガス</string>

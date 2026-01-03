@@ -1,15 +1,5 @@
 package com.example.billstracker.custom_objects;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-
-import com.example.billstracker.tools.BillerManager;
-import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.UserData;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-
 public class Bill {
 
     private String billerName;
@@ -26,9 +16,10 @@ public class Bill {
     private double balance;
     private double escrow;
     private String owner;
+    private boolean autoPay;
 
     public Bill(String billerName, double amountDue, long dueDate, long dateLastPaid, String billsId, boolean recurring, int frequency, String website, int category, String icon, int paymentsRemaining,
-                double balance, double escrow, String owner) {
+                double balance, double escrow, String owner, boolean autoPay) {
 
         setBillerName(billerName);
         setWebsite(website);
@@ -44,6 +35,7 @@ public class Bill {
         setBalance(balance);
         setEscrow(escrow);
         setOwner(owner);
+        setAutoPay(autoPay);
     }
 
     public Bill() {
@@ -159,117 +151,10 @@ public class Bill {
     public void setOwner (String owner) {
         this.owner = owner;
     }
-    public void updateBiller (String newBillerName, double newAmountDue, long newDueDate, long newDateLastPaid, String newBillsId, boolean newRecurring, int newFrequency, String newWebsite, int newCategory,
-                              String newIcon, int newPaymentsRemaining, double newBalance, double newEscrow, String newOwner, FirebaseTools.FirebaseCallback callback) {
-        if (bills != null && bills.getBills() != null) {
-            setAmountDue(newAmountDue);
-            setDateLastPaid(newDateLastPaid);
-            setBillsId(newBillsId);
-            setRecurring(newRecurring);
-            setFrequency(newFrequency);
-            setWebsite(newWebsite);
-            setCategory(newCategory);
-            setIcon(newIcon);
-            setPaymentsRemaining(newPaymentsRemaining);
-            setBalance(newBalance);
-            setEscrow(newEscrow);
-            setOwner(newOwner);
-            if (!newBillerName.equals(billerName) || newDueDate != dueDate) {
-                if (!newBillerName.equals(billerName)) {
-                    if (payments != null && payments.getPayments() != null) {
-                        for (Payment payment : payments.getPayments()) {
-                            if (payment.getBillerName().equals(billerName)) {
-                                payment.setBillerName(newBillerName);
-                            }
-                        }
-                    }
-                    bills.getBills().remove(this);
-                    FirebaseFirestore.getInstance().collection("users").document(getOwner()).collection("bills").document(getBillerName()).delete().addOnCompleteListener(task -> {
-                        if (task.isComplete() && task.isSuccessful()) {
-                            setBillerName(newBillerName);
-                            bills.getBills().add(this);
-                            UserData.save();
-                            BillerManager.refreshPayments();
-                            callback.isSuccessful(true);
-                        } else {
-                            callback.isSuccessful(false);
-                        }
-                    });
-                }
-                if (newDueDate != dueDate) {
-                    BillerManager.deleteFuturePayments(billerName, newDueDate, isSuccessful -> {
-                        if (isSuccessful) {
-                            setDueDate(newDueDate);
-                            UserData.save();
-                            BillerManager.refreshPayments();
-                            callback.isSuccessful(true);
-                        }
-                        else {
-                            callback.isSuccessful(false);
-                        }
-                    });
-                }
-            }
-            else {
-                BillerManager.refreshPayments();
-                UserData.save();
-                callback.isSuccessful(true);
-            }
-        }
-        else {
-            callback.isSuccessful(false);
-        }
+    public boolean getAutoPay() {
+        return autoPay;
     }
-    public void deleteBiller (FirebaseTools.FirebaseCallback callback) {
-        if (owner != null && billerName != null) {
-            bills.getBills().remove(this);
-            FirebaseFirestore.getInstance().collection("users").document(owner).collection("bills").document(billerName).delete().addOnCompleteListener(task -> {
-                if (task.isSuccessful() && task.isComplete()) {
-                    ArrayList<Payment> remove = new ArrayList<>();
-                    for (Payment payment : payments.getPayments()) {
-                        if (payment.getBillerName().equals(billerName)) {
-                            remove.add(payment);
-                        }
-                    }
-                    if (!remove.isEmpty()) {
-                        for (Payment payment : remove) {
-                            payment.deletePayment(false, isSuccessful -> {
-                            });
-                        }
-                    }
-                    callback.isSuccessful(true);
-                }
-                else {
-                    callback.isSuccessful(false);
-                }
-            });
-        }
-        else {
-            callback.isSuccessful(false);
-        }
-    }
-    public void updateAmountDue (double newAmountDue) {
-        setAmountDue(newAmountDue);
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment payment: payments.getPayments()) {
-                if (payment.getBillerName().equals(billerName) && !payment.isPaid()) {
-                    payment.setPaymentAmount(newAmountDue);
-                }
-            }
-        }
-        UserData.save();
-    }
-    public void changeDueDate (long newDueDate, OnSuccessCallback callback) {
-        setDueDate(newDueDate);
-        for (Payment payment: payments.getPayments()) {
-            if (payment.getBillerName().equals(billerName) && payment.isPaid() && payment.getDueDate() >= newDueDate || payment.getBillerName().equals(billerName) && payment.isDateChanged() && payment.getDueDate() >= newDueDate) {
-                payment.deletePayment(false, isSuccessful -> {});
-            }
-        }
-        UserData.save();
-        callback.isSuccessful(true);
-    }
-    public interface OnSuccessCallback {
-        void isSuccessful(boolean isSuccessful);
+    public void setAutoPay (boolean autoPay) {
+        this.autoPay = autoPay;
     }
 }

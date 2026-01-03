@@ -1,12 +1,5 @@
 package com.example.billstracker.custom_objects;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-
-import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.UserData;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.Serializable;
 
 public class Payment implements Serializable {
@@ -132,55 +125,6 @@ public class Payment implements Serializable {
         this.owner = owner;
     }
 
-    public void changePaymentDueDate(long newDueDate, boolean changeAll, FirebaseTools.FirebaseCallback callback) {
-        if (changeAll) {
-            for (Bill bill : bills.getBills()) {
-                if (bill.getBillerName().equals(billerName)) {
-                    bill.changeDueDate(newDueDate, callback::isSuccessful);
-                }
-            }
-        }
-        else {
-            for (Payment payment: payments.getPayments()) {
-                if (payment.getPaymentId() == paymentId) {
-                    payment.setDateChanged(true);
-                    payment.setDueDate(newDueDate);
-                    break;
-                }
-            }
-            UserData.save();
-            callback.isSuccessful(true);
-        }
-    }
-
-    public void deletePayment (boolean addPaymentToBiller, OnSuccessCallback callback) {
-
-            FirebaseFirestore.getInstance().collection("users").document(getOwner()).collection("payments").document(String.valueOf(paymentId)).delete().addOnCompleteListener(task -> {
-                if (task.isComplete() && task.isSuccessful()) {
-                    for (Bill bill : bills.getBills()) {
-                        if (bill.getBillerName().equals(billerName)) {
-                            if (addPaymentToBiller) {
-                                bill.setPaymentsRemaining(bill.getPaymentsRemaining() + 1);
-                            }
-                            long highest = 0;
-                            for (Payment pay : payments.getPayments()) {
-                                if (pay.getBillerName().equals(billerName) && pay.isPaid() && pay.getDatePaid() > highest) {
-                                    highest = pay.getDatePaid();
-                                }
-                            }
-                            bill.setDateLastPaid(highest);
-                            break;
-                        }
-                    }
-                    payments.getPayments().remove(this);
-                    UserData.save();
-                    callback.isSuccessful(true);
-                }
-                else {
-                    callback.isSuccessful(false);
-                }
-            });
-    }
     public interface OnSuccessCallback {
         void isSuccessful(boolean isSuccessful);
     }

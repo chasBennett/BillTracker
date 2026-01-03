@@ -351,7 +351,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="noTicketsWereFound">Es wurden keine Tickets gefunden</string>
     <string name="registeredBillers">Registrierte Rechnungssteller</string>
     <string name="clickBillerTile">Klicken Sie auf eine Rechnungskachel, um weitere Informationen anzuzeigen</string>
-    <string name="stms">Support-Ticket-Management-System (STMS)</string>
     <string name="customerService1">Kundendienst:</string>
     <string name="helloUser">Hallo Benutzer und vielen Dank, dass Sie sich an uns gewandt haben. Wir freuen uns sehr über die Gelegenheit, Sie heute bedienen zu dürfen! Bitte beschreiben Sie Ihr Problem detailliert, damit wir Ihnen weiterhelfen können!</string>
     <string name="overallStats">Gesamtstatistik</string>
@@ -400,13 +399,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     '
     <string name="paid">Bezahlt</string>
     <string name="billTracker">Bill Tracker</string>
-    <string name="billTrackerNotificationChannel">Benachrichtigungskanal der Bill Tracker-App</string>
-    <string name="yourBillFor">Ihre Rechnung für</string>
-    <string name="at">Bei</string>
-    <string name="isDueToday">Ist heute fällig</string>
-    <string name="isDueTomorrow">Ist morgen fällig</string>
-    <string name="isDueInThreeDays">Ist in 3 Tagen fällig</string>
-    <string name="billDue">Rechnung fällig</string>
     <string name="selectDate">Datum auswählen</string>
     <string name="cancel">Stornieren</string>
     <string name="justThisOccurence">Nur dieser Vorfall</string>
@@ -420,7 +412,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="anErrorHasOccurred">Ein Fehler ist aufgetreten. Bitte versuche es erneut.</string>
     <string name="passwordResetLinkSent">Ein Link zum Zurücksetzen des Passworts wurde an Ihren E-Mail-Posteingang gesendet. Bitte befolgen Sie die Anweisungen in der E-Mail, um Ihr Passwort zurückzusetzen.</string>
     <string name="emailSent">E-Mail gesendet</string>
-    <string name="emailNotRegistered">Diese E-Mail-Adresse ist nicht registriert</string>
     <string name="emailNotFound">Email wurde nicht gefunden</string>
     <string name="verifyEmail">Ihre E-Mail-Adresse wurde noch nicht bestätigt. Bitte klicken Sie auf den Link in der von uns gesendeten E-Mail, um dies zu bestätigen. Überprüfen Sie unbedingt Ihren Spam-Ordner.</string>
     <string name="emailNotVerified">E-Mail-Adresse nicht bestätigt</string>
@@ -447,9 +438,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="close_button">Schaltfläche „Schließen“.</string>
     <string name="upload_complete">Hochladen abgeschlossen!</string>
     <string name="administrator_control_panel">Administrator-Systemsteuerung</string>
-    <string name="biller_data">Rechnungsstellerdaten</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">Offene Tickets (1)</string>
     <string name="icon">Symbol</string>
     <string name="_24_567_67">24.567,67 $</string>
     <string name="paid_icon">Bezahltes Symbol</string>
@@ -531,9 +519,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="logo">Logo</string>
     <string name="pay_next_bill_button">Schaltfläche „Nächste Rechnung bezahlen“.</string>
     <string name="arrow">Pfeil</string>
-    <string name="isDueInTwoDays">Ist in zwei Tagen fällig</string>
-    <string name="wasDue">War fällig gewesen</string>
-    <string name="yesterday">Gestern</string>
     <string name="balance_forward">Saldovortrag:</string>
     <string name="payment_date">Zahlungsdatum:</string>
     <string name="other_amount">Andere Menge</string>
@@ -568,7 +553,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="category_name">" Kategoriename"</string>
     <string name="future_budget">" Zukünftiges Budget"</string>
     <string name="previous_budget">Vorheriges Budget</string>
-    <string name="no_budget_categories_assigned">Keine Budgetkategorien zugewiesen</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">Prozentwerte können zusammengenommen nicht mehr als 100 ergeben.</string>
     <string name="a_percent_value_is_required_for_every_category">Für jede Kategorie ist ein Prozentwert erforderlich.</string>
     <string name="add_a_spending_category">" Fügen Sie eine Ausgabenkategorie hinzu"</string>
@@ -601,7 +585,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="weekly_savings">Wöchentliche Ersparnisse:</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">Ihre E-Mail-Adresse wurde erfolgreich aktualisiert und eine Bestätigungs-E-Mail wurde gesendet. Bitte klicken Sie auf den Bestätigungslink in der E-Mail, um sich mit Ihrer neuen E-Mail-Adresse anzumelden.</string>
     <string name="user_registration_failed">Benutzerregistrierung fehlgeschlagen</string>
-    <string name="sign_in_failed_please_try_again">Anmeldung fehlgeschlagen. Bitte versuche es erneut</string>
     <string name="biller_name_can_t_be_blank">Der Name des Rechnungsstellers darf nicht leer sein</string>
     <string name="biller_name_is_already_in_use">Der Name des Rechnungsstellers wird bereits verwendet</string>
     <string name="website_can_t_be_blank">Die Website darf nicht leer sein</string>
@@ -634,14 +617,12 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="active">Aktiv</string>
     <string name="requested_by_user">Angefordert vom Benutzer</string>
     <string name="awaiting_partner_approval">Warten auf die Genehmigung des Partners</string>
-    <string name="you_must_register_first">Sie müssen sich zuerst registrieren</string>
     <string name="when_did_you_pay_this_bill">Wann haben Sie diese Rechnung bezahlt?</string>
     <string name="remaining_payments_can_t_be_blank">Restzahlungen dürfen nicht leer bleiben</string>
     <string name="when_is_this_bill_due">Wann ist diese Rechnung fällig?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">Geben Sie ein, wie viele Zahlungen noch ausstehen, um Ihren Rechnungssteller zu aktualisieren</string>
     <string name="update_biller">Biller aktualisieren</string>
     <string name="bill_marked_as_paid_successfully">Rechnung erfolgreich als bezahlt markiert</string>
-    <string name="delete_account">Konto löschen</string>
     <string name="are_you_sure_you_would_like_to_logout">Möchten Sie sich wirklich abmelden?</string>
     <string name="username_is_unavailable">Nutzername ist nicht verfügbar</string>
     <string name="searching_database">Datenbank wird durchsucht…</string>
@@ -660,9 +641,7 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="expense_description_cannot_be_blank">Die Ausgabenbeschreibung darf nicht leer sein</string>
     <string name="expense_amount_must_be_greater_than_0">Der Ausgabenbetrag muss größer als 0 sein</string>
     <string name="expense_was_saved_successfully">Kosten wurden erfolgreich eingespart</string>
-    <string name="biller_was_updated_successfully">Biller wurde erfolgreich aktualisiert.</string>
     <string name="biller_update_failed">Biller-Update fehlgeschlagen.</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">E-Mail ist noch nicht registriert. Klicken Sie bitte auf „Konto erstellen“, um zu beginnen</string>
     <string name="my_income">Mein Einkommen</string>
     <string name="enter_your_income_details_to_calculate_your_dti">Geben Sie Ihre Einkommensdetails ein, um Ihr DTI zu berechnen</string>
     <string name="income_amount">Eingehender Betrag</string>
@@ -705,7 +684,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="sign_in_with_google">Melden Sie sich bei Google an</string>
     <string name="or">Oder</string>
     <string name="amount_remaining_this_period">Verbleibende Menge in diesem Zeitraum:</string>
-    <string name="login_failed_please_try_again">Fehler bei der Anmeldung. Bitte versuchen Sie es erneut.</string>
     <string name="weekly_spending">Wöchentliche Ausgaben</string>
     <string name="daily_spending">Tägliche Ausgaben</string>
     <string name="monthly_spending">Monatliche Ausgaben</string>
@@ -723,11 +701,6 @@ Wenn Sie Fragen zur App oder zu dieser Vereinbarung haben, wenden Sie sich bitte
     <string name="nothing_due_this_month">Nichts fällig \ n \ nthis Monat</string>
     <string name="remaining3">Verbleibend \ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"Wenn Sie sicher sind, dass Sie Ihr Konto löschen möchten, geben Sie bitte ein."</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">"In der Box unten. Diese Aktion kann nicht rückgängig gemacht werden."</string>
-    <string name="please_enter">"Bitte geben Sie ein"</string>
-    <string name="to_proceed">"fortfahren"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">Wenn Sie sicher sind, dass Sie Ihr Konto löschen möchten, geben Sie bitte Ihr Passwort ein, um dies zu bestätigen. Diese Aktion kann nicht rückgängig gemacht werden.</string>
     <string name="edit_budget">Budget bearbeiten</string>
     <string name="clothing">Kleidung</string>
     <string name="gas">Gas</string>

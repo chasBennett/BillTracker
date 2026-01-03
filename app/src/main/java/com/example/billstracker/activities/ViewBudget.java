@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.expenses;
-import static com.example.billstracker.activities.Login.thisUser;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -19,12 +16,12 @@ import androidx.core.content.res.ResourcesCompat;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
-import com.example.billstracker.custom_objects.Expenses;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.popup_classes.MonthYearPickerDialog;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -222,8 +219,8 @@ public class ViewBudget extends AppCompatActivity {
 
         boolean found = false;
 
-        if (thisUser.getBudgets() != null && !thisUser.getBudgets().isEmpty()) {
-            for (Budget bud : thisUser.getBudgets()) {
+        if (Repo.getInstance().getUser(ViewBudget.this).getBudgets() != null && !Repo.getInstance().getUser(ViewBudget.this).getBudgets().isEmpty()) {
+            for (Budget bud : Repo.getInstance().getUser(ViewBudget.this).getBudgets()) {
                 if (bud.getStartDate() <= dateIntValue && bud.getEndDate() >= dateIntValue) {
                     budget = bud;
                     found = true;
@@ -232,10 +229,10 @@ public class ViewBudget extends AppCompatActivity {
             }
         }
         else {
-            thisUser.setBudgets(new ArrayList<>());
+            Repo.getInstance().getUser(ViewBudget.this).setBudgets(new ArrayList<>());
         }
         if (!found) {
-            budget = new Budget(thisUser.getIncome(), thisUser.getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
+            budget = new Budget(Repo.getInstance().getUser(ViewBudget.this).getIncome(), Repo.getInstance().getUser(ViewBudget.this).getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
             editBudget.setText(getString(R.string.create_a_new_budget));
             editBudget.setOnClickListener(view -> startActivity(new Intent(ViewBudget.this, CreateBudget.class)));
         }
@@ -279,34 +276,26 @@ public class ViewBudget extends AppCompatActivity {
         daysInMonth = selectedDate.lengthOfMonth();
 
         spendingAmount = 0;
-        if (expenses != null) {
-            if (expenses.getExpenses() != null) {
-                for (Expense expense : expenses.getExpenses()) {
-                    switch (frequency) {
-                        case 0:
-                            if (expense.getDate() >= dateIntValue && expense.getDate() < DateFormat.makeLong(DateFormat.makeLocalDate(dateIntValue).plusDays(1))) {
-                                spendingAmount += expense.getAmount();
-                            }
-                            break;
-                        case 1:
-                            if (expense.getDate() >= weekStart && expense.getDate() <= weekEnd) {
-                                spendingAmount += expense.getAmount();
-                            }
-                            break;
-                        case 2:
-                            if (expense.getDate() >= monthStart && expense.getDate() <= monthEnd) {
-                                spendingAmount += expense.getAmount();
-                            }
-                            break;
-                    }
+        if (Repo.getInstance().getExpenses() != null) {
+            for (Expense expense : Repo.getInstance().getExpenses()) {
+                switch (frequency) {
+                    case 0:
+                        if (expense.getDate() >= dateIntValue && expense.getDate() < DateFormat.makeLong(DateFormat.makeLocalDate(dateIntValue).plusDays(1))) {
+                            spendingAmount += expense.getAmount();
+                        }
+                        break;
+                    case 1:
+                        if (expense.getDate() >= weekStart && expense.getDate() <= weekEnd) {
+                            spendingAmount += expense.getAmount();
+                        }
+                        break;
+                    case 2:
+                        if (expense.getDate() >= monthStart && expense.getDate() <= monthEnd) {
+                            spendingAmount += expense.getAmount();
+                        }
+                        break;
                 }
             }
-            else {
-                expenses.setExpenses(new ArrayList<>());
-            }
-        }
-        else {
-            expenses = new Expenses(new ArrayList<>());
         }
 
         if (frequency == 0) {
@@ -406,10 +395,10 @@ public class ViewBudget extends AppCompatActivity {
             budget.setCategories(new ArrayList<>());
             //entries.add(new PieEntry((float) (0), getString(R.string.no_budget_categories_assigned)));
         }
-        if (expenses != null && expenses.getExpenses() != null) {
+        if (Repo.getInstance().getExpenses() != null) {
             for (int i = 0; i < categoryNames.size(); ++i) {
                 double totalForCategory = 0;
-                for (Expense expense : expenses.getExpenses()) {
+                for (Expense expense : Repo.getInstance().getExpenses()) {
                     if (period == 0) {
                         if (expense.getDate() == dateIntValue && expense.getCategory().equals(categoryNames.get(i))) {
                             totalForCategory = totalForCategory + expense.getAmount();

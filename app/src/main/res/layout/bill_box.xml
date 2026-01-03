@@ -120,6 +120,15 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/autoPay"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/symbol_to_indicate_that_a_bill_is_set_to_autopay"
+                app:tint="@color/grayAndWhite"
+                android:paddingHorizontal="3dp"
+                app:srcCompat="@drawable/baseline_autorenew_24" />
+
         </LinearLayout>
 
         <LinearLayout

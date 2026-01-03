@@ -1,7 +1,5 @@
 package com.example.billstracker.popup_classes;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.thisUser;
 import static com.example.billstracker.activities.MainActivity2.skipInstruction1;
 import static com.example.billstracker.activities.MainActivity2.skipInstruction2;
 
@@ -18,6 +16,7 @@ import com.example.billstracker.R;
 import com.example.billstracker.activities.AddBiller;
 import com.example.billstracker.activities.CreateBudget;
 import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 
 public class InstructionPopup {
@@ -39,10 +38,10 @@ public class InstructionPopup {
         }
         else {
 
-            if (thisUser != null) {
-                if (bills.getBills().isEmpty() && !skipInstruction1) {
+            if (Repo.getInstance().getUser(activity) != null) {
+                if (Repo.getInstance().getBills().isEmpty() && !skipInstruction1) {
                     setView(1);
-                } else if (thisUser.getBudgets().isEmpty() && !skipInstruction2) {
+                } else if (Repo.getInstance().getUser(activity).getBudgets().isEmpty() && !skipInstruction2) {
                     setView(2);
                 }
                 else if (!skipInstruction2) {
@@ -74,7 +73,7 @@ public class InstructionPopup {
                 dismissDialog();
             });
             getStarted.setOnClickListener(view -> {
-                if (!bills.getBills().isEmpty() && !thisUser.getBudgets().isEmpty()) {
+                if (!Repo.getInstance().getBills().isEmpty() && !Repo.getInstance().getUser(activity).getBudgets().isEmpty()) {
                     Prefs.setTrainingDone(activity, true);
                 }
                 dismissDialog();

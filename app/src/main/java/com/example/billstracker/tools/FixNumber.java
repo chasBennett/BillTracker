@@ -93,8 +93,13 @@ public class FixNumber {
     }
     public static int makeInt (String string) {
 
-        return Integer.parseInt(string.replaceAll("\\D", ""));
+        String numberString = string.replaceAll("\\D", "");
+        if (numberString.isEmpty()) {
+            numberString = "0";
+        }
+        return Integer.parseInt(numberString);
     }
+
     public static double makeDouble (double dub) {
 
         String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();

@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.uid;
 import static com.google.common.io.Files.getFileExtension;
 
 import android.content.Intent;
@@ -26,27 +23,26 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.bumptech.glide.Glide;
 import com.example.billstracker.R;
+import com.bumptech.glide.Glide;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Biller;
-import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.popup_classes.BottomDrawer;
 import com.example.billstracker.popup_classes.DatePicker;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.recycler_adapters.BillerNameAdapter;
 import com.example.billstracker.tools.BillerManager;
-import com.example.billstracker.tools.Data;
+import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
-import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.example.billstracker.tools.Watcher;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -82,6 +78,7 @@ public class AddBiller extends AppCompatActivity {
     ImageView addBillerLogo;
     String customUri;
     int category, frequency;
+    SwitchCompat autoPaySwitch;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     String originalBillerName;
 
@@ -99,6 +96,7 @@ public class AddBiller extends AppCompatActivity {
         billerFrequencyBox = findViewById(R.id.billerFrequencyBox);
         addPaymentsRemaining = findViewById(R.id.addPaymentsRemaining);
         addBalance = findViewById(R.id.addBalance);
+        autoPaySwitch = findViewById(R.id.autoPaySwitch);
         billerCardName = findViewById(R.id.billerCardName);
         billerCardWebsite = findViewById(R.id.billerCardWebsite);
         addBillerTitle = findViewById(R.id.addBillerTitle);
@@ -140,27 +138,30 @@ public class AddBiller extends AppCompatActivity {
 
     public void loadBillers () {
 
-        if (billers.isEmpty()) {
-            billers = Prefs.getBillers(AddBiller.this);
-            if (billers == null || billers.isEmpty()) {
-                billers = new ArrayList<>();
-            }
-            if (billers.isEmpty()) {
-                FirebaseTools.loadBillers(AddBiller.this, billers, isSuccessful -> initialize());
+        DataTools.getLatestBillersVersion((wasSuccessful, version) -> {
+            if (billers.isEmpty() || wasSuccessful && Repo.getInstance().getUser(AddBiller.this).getVersionNumber() < version) {
+                billers = Repo.getInstance().getBillers(AddBiller.this);
+                if (billers == null || billers.isEmpty() || Repo.getInstance().getUser(AddBiller.this).getVersionNumber() < version) {
+                    billers = new ArrayList<>();
+                }
+                if (billers.isEmpty()) {
+                    FirebaseTools.loadBillers(AddBiller.this, billers, isSuccessful -> initialize());
+                    Repo.getInstance().getUser(AddBiller.this).setVersionNumber(version);
+                }
+                else {
+                    initialize();
+                }
             }
             else {
                 initialize();
             }
-        }
-        else {
-            initialize();
-        }
+        });
     }
 
     public void initialize () {
 
-        ArrayList <String> categories = Data.getCategories(AddBiller.this);
-        ArrayList<String> frequencies = Data.getFrequencies(AddBiller.this);
+        ArrayList <String> categories = DataTools.getCategories(AddBiller.this);
+        ArrayList<String> frequencies = DataTools.getFrequencies(AddBiller.this);
 
         pb.setVisibility(View.GONE);
 
@@ -179,10 +180,11 @@ public class AddBiller extends AppCompatActivity {
 
         if (!billerId.isEmpty()) {
 
-            bill = Data.getBill(billerId);
+            bill = DataTools.getBill(billerId);
 
             if (bill != null) {
                 recurring = bill.isRecurring();
+                autoPaySwitch.setChecked(bill.getAutoPay());
 
                 if (recurring) {
                     billerFrequencySpinner.setText(frequencies.get(bill.getFrequency() + 1));
@@ -260,7 +262,7 @@ public class AddBiller extends AppCompatActivity {
                 customIcon = false;
                 customUri = "default";
 
-                Glide.with(addBillerIcon).load(Data.getIcons().get(category)).fitCenter().into(addBillerIcon);
+                Glide.with(addBillerIcon).load(DataTools.getIcons().get(category)).fitCenter().into(addBillerIcon);
                 addBillerIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.neutralGray, getTheme())));
                 addBillerIcon.setContentPadding(40, 40, 40, 40);
                 bd.dismissDialog();
@@ -273,7 +275,8 @@ public class AddBiller extends AppCompatActivity {
 
 
         if (billers != null && !billers.isEmpty()) {
-            BillerNameAdapter adapter = new BillerNameAdapter(AddBiller.this, R.layout.biller_search_result, billers);
+            ArrayList<Biller> safeBillers = new ArrayList<>(billers);
+            BillerNameAdapter adapter = new BillerNameAdapter(AddBiller.this, R.layout.biller_search_result, safeBillers);
             addBillerName.setAdapter(adapter);
 
             adapter.setClickListener((ignoredPosition, bill) -> {
@@ -301,11 +304,11 @@ public class AddBiller extends AppCompatActivity {
 
         billerCategoryBox.setOnClickListener(view -> {
             Tools.hideKeyboard(AddBiller.this);
-            Tools.spinnerPopup(categories, Data.getIcons(), billerCategorySpinner, item -> {
+            Tools.spinnerPopup(categories, DataTools.getIcons(), billerCategorySpinner, item -> {
                 category = categories.indexOf(item);
 
                 if (!customIcon) {
-                    Glide.with(addBillerIcon).load(Data.getIcons().get(categories.indexOf(item))).fitCenter().into(addBillerIcon);
+                    Glide.with(addBillerIcon).load(DataTools.getIcons().get(categories.indexOf(item))).fitCenter().into(addBillerIcon);
                 }
                 generateMessage();
             });
@@ -389,29 +392,20 @@ public class AddBiller extends AppCompatActivity {
             pb.setVisibility(View.VISIBLE);
             boolean complete = true;
             double escrow;
-            int paymentsRemaining = 0;
+            int paymentsRemaining;
             double balance;
 
             if (addBillerName.getText().toString().isEmpty()) {
                 Notify.createPopup(AddBiller.this, getString(R.string.biller_name_can_t_be_blank), null);
                 complete = false;
             }
-            if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty() && !edit) {
-                for (Bill bill: bills.getBills()) {
-                    if (bill.getBillerName().equalsIgnoreCase(addBillerName.getText().toString())) {
-                        Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
-                        complete = false;
-                        break;
-                    }
-                }
+            if (Repo.getInstance().getBillByName(addBillerName.getText().toString()) != null && !edit) {
+                Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
+                complete = false;
             }
-            else if (edit && !originalBillerName.equals(addBillerName.getText().toString())) {
-                for (Bill bill: bills.getBills()) {
-                    if (bill.getBillerName().equalsIgnoreCase(addBillerName.getText().toString())) {
-                        Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
-                        complete = false;
-                    }
-                }
+            else if (Repo.getInstance().getBillByName(addBillerName.getText().toString()) != null && edit && !originalBillerName.equals(addBillerName.getText().toString())) {
+                Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
+                complete = false;
             }
             if (addBillerWebsite.getText() != null && addBillerWebsite.getText().toString().isEmpty()) {
                 Notify.createPopup(AddBiller.this, getString(R.string.website_can_t_be_blank), null);
@@ -471,25 +465,16 @@ public class AddBiller extends AppCompatActivity {
             else {
                 if (recurring) {
                     if (category == 0 || category == 5 || category == 6) {
-                        if (addPaymentsRemaining.getText() != null) {
-                            paymentsRemaining = FixNumber.makeInt(addPaymentsRemaining.getText().toString());
-                        } else {
-                            paymentsRemaining = bill.getPaymentsRemaining();
-                        }
-                    } else {
-                        paymentsRemaining = bill.getPaymentsRemaining();
+                        if (addPaymentsRemaining.getText() != null) paymentsRemaining = FixNumber.makeInt(addPaymentsRemaining.getText().toString());
+                        else paymentsRemaining = bill.getPaymentsRemaining();
                     }
+                    else paymentsRemaining = bill.getPaymentsRemaining();
                 }
                 else {
-                    boolean found = false;
-                    for (Payment payment: payments.getPayments()) {
-                        if (payment.getBillerName().equals(originalBillerName) && payment.isPaid()) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        paymentsRemaining = 1;
+                    boolean found = Repo.getInstance().getPaymentByBillerName(originalBillerName) != null && Repo.getInstance().getPaymentByBillerName(originalBillerName).isPaid();
+                    if (!found) paymentsRemaining = 1;
+                    else {
+                        paymentsRemaining = 0;
                     }
                 }
             }
@@ -513,23 +498,20 @@ public class AddBiller extends AppCompatActivity {
                 String uri = customUri;
 
                 if (edit) {
-                    Bill biller = null;
-                    for (Bill bil : bills.getBills()) {
-                        if (bil.getBillsId().equals(bill.getBillsId())) {
-                            biller = bil;
-                            break;
-                        }
-                    }
+                    Bill biller = Repo.getInstance().getBillById(bill.getBillsId());
                     if (biller != null) {
-                        biller.updateBiller(billerName, paymentAmount, dueDate, bill.getDateLastPaid(), bill.getBillsId(), recurring, frequency, webAddress, category, uri, paymentsRemaining, balance, escrow, uid, isSuccessful -> {
-                            if (isSuccessful) {
-                                pb.setVisibility(View.GONE);
-                                Notify.createPopup(AddBiller.this, getString(R.string.biller_was_updated_successfully), null);
-                                startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                            } else {
-                                pb.setVisibility(View.GONE);
-                                Notify.createPopup(AddBiller.this, getString(R.string.biller_update_failed), null);
-                            }
+                        Repo.getInstance().updateBill(biller, AddBiller.this, bill -> {
+                            bill.setAmountDue(paymentAmount);
+                            bill.setRecurring(recurring);
+                            bill.setFrequency(frequency);
+                            bill.setWebsite(webAddress);
+                            bill.setCategory(category);
+                            bill.setIcon(uri);
+                            bill.setPaymentsRemaining(paymentsRemaining);
+                            bill.setBalance(balance);
+                            bill.setEscrow(escrow);
+                            bill.setOwner(Repo.getInstance().getUid());
+                            bill.setAutoPay(autoPaySwitch.isChecked());
                         });
                     } else {
                         pb.setVisibility(View.GONE);
@@ -537,12 +519,10 @@ public class AddBiller extends AppCompatActivity {
                     }
                 }
                 else {
-                    Bill newBiller = new Bill(billerName, paymentAmount, dueDate, 0, billerId, recurring, frequency, webAddress, category, uri, paymentsRemaining, balance, escrow, uid);
-                    bills.getBills().add(newBiller);
-                    UserData.save();
-                    Intent main = new Intent(AddBiller.this, MainActivity2.class);
-                    main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(main);
+                    Bill newBiller = new Bill(billerName, paymentAmount, dueDate, 0, billerId, recurring, frequency, webAddress, category, uri, paymentsRemaining,
+                            balance, escrow, Repo.getInstance().getUid(), autoPaySwitch.isChecked());
+                    Repo.getInstance().addBill(newBiller, AddBiller.this);
+                    startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                 }
             }
             else {

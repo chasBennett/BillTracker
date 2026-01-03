@@ -25,9 +25,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.billstracker.R;
+import com.bumptech.glide.Glide;
 import com.example.billstracker.custom_objects.Biller;
-import com.example.billstracker.custom_objects.SupportTicket;
-import com.example.billstracker.tools.Data;
+import com.example.billstracker.tools.DataTools;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,16 +35,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /** @noinspection rawtypes*/
 public class Administrator extends AppCompatActivity {
 
-    static final ArrayList<SupportTicket> tickets = new ArrayList<>();
+
     ImageView icon, back;
     StorageReference storageReference;
     DatabaseReference databaseReference;
@@ -59,7 +59,6 @@ public class Administrator extends AppCompatActivity {
     TextView uploadComplete;
     Button changeIcon, submit;
     View manual;
-    final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Uri filePath;
     final ActivityResultLauncher<Intent> startForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<>() {
         @Override
@@ -68,7 +67,7 @@ public class Administrator extends AppCompatActivity {
 
                 filePath = o.getData().getData();
                 icon.setImageTintList(null);
-                Picasso.get().load(filePath).into(icon);
+                Glide.with(icon).load(filePath).into(icon);
             }
         }
     });
@@ -92,12 +91,10 @@ public class Administrator extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference("images");
         databaseReference = FirebaseDatabase.getInstance().getReference("images");
 
-        String[] types = Data.getCategories(Administrator.this).toArray(new String[0]);
+        String[] types = DataTools.getCategories(Administrator.this).toArray(new String[0]);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, types);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         type.setAdapter(adapter);
-
-        Picasso.get().setLoggingEnabled(true);
 
         display.removeAllViews();
         display.invalidate();
@@ -155,6 +152,11 @@ public class Administrator extends AppCompatActivity {
                                     uploadComplete.setVisibility(View.VISIBLE);
                                     handler.postDelayed(() -> uploadComplete.setVisibility(View.GONE), 5000);
                                     Toast.makeText(Administrator.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
+                                    DataTools.getLatestBillersVersion((wasSuccessful, version) -> {
+                                        Map<String, Object> update = new HashMap<>();
+                                        update.put("version", version + 1);
+                                        FirebaseFirestore.getInstance().collection("versions").document("billers").set(update);
+                                    });
                                     display.addView(manual);
                                 });
                             }

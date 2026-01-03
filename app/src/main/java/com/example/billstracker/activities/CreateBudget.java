@@ -1,9 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.expenses;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,12 +23,12 @@ import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.popup_classes.DatePicker;
-import com.example.billstracker.tools.Data;
+import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.example.billstracker.tools.Watcher;
 
 import java.security.SecureRandom;
@@ -96,7 +92,7 @@ public class CreateBudget extends AppCompatActivity {
         budgetStartDate.setOnClickListener(v -> getDateFromUser(budgetStartDate, true, DateFormat.makeLong(budgetStartDate.getText().toString())));
         budgetEndDate.setOnClickListener(v -> getDateFromUser(budgetEndDate, false, DateFormat.makeLong(budgetEndDate.getText().toString())));
 
-        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(thisUser.getIncome()))));
+        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(Repo.getInstance().getUser(CreateBudget.this).getIncome()))));
         etPayAmount.addTextChangedListener(new MoneyFormatterWatcher(etPayAmount));
 
         etPayAmount.addTextChangedListener(new Watcher() {
@@ -132,7 +128,7 @@ public class CreateBudget extends AppCompatActivity {
         createForMe.setOnClickListener(view -> createDefaultBudget());
 
         if (budgetId != 0) {
-            Budget bud = Data.getBudget(budgetId);
+            Budget bud = DataTools.getBudget(CreateBudget.this, budgetId);
             header.setText(getString(R.string.edit_budget));
             etPayAmount.setText(FixNumber.addSymbol(bud.getPayAmount()));
             payFrequency.setSelection(bud.getPayFrequency());
@@ -186,7 +182,7 @@ public class CreateBudget extends AppCompatActivity {
     public void createDefaultBudget() {
 
         categoriesList.removeAllViews();
-        ArrayList<String> categoryNames = Data.getBudgetCategories(CreateBudget.this);
+        ArrayList<String> categoryNames = DataTools.getBudgetCategories(CreateBudget.this);
         ArrayList<Integer> percentages = new ArrayList<>(Arrays.asList(10, 10, 15, 20, 10, 15, 20));
         for (int i = 0; i < categoryNames.size(); ++i) {
             View category = View.inflate(CreateBudget.this, R.layout.category_item, null);
@@ -234,27 +230,23 @@ public class CreateBudget extends AppCompatActivity {
             }
         }
         Budget a = null;
-        if (expenses != null) {
-            if (expenses.getExpenses() != null && !expenses.getExpenses().isEmpty()) {
-                for (Expense expense : expenses.getExpenses()) {
-                    boolean found = false;
-                    for (Category cat : budgetCategories) {
-                        if (cat.getCategoryName().equals(expense.getCategory())) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        if (!miscellaneous) {
-                            budgetCategories.add(new Category(getString(R.string.miscellaneous), 5));
-                        }
-                        expense.setCategory(getString(R.string.miscellaneous));
-                    }
+        for (Expense expense : Repo.getInstance().getExpenses()) {
+            boolean found = false;
+            for (Category cat : budgetCategories) {
+                if (cat.getCategoryName().equals(expense.getCategory())) {
+                    found = true;
+                    break;
                 }
+            }
+            if (!found) {
+                if (!miscellaneous) {
+                    budgetCategories.add(new Category(getString(R.string.miscellaneous), 5));
+                }
+                expense.setCategory(getString(R.string.miscellaneous));
             }
         }
         if (budgetId != 0) {
-            Budget budget = Data.getBudget(budgetId);
+            Budget budget = DataTools.getBudget(CreateBudget.this, budgetId);
             budget.setPayAmount(payAmount);
             budget.setPayFrequency(payFreq);
             budget.setStartDate(start);
@@ -267,7 +259,7 @@ public class CreateBudget extends AppCompatActivity {
         }
 
         ArrayList<Budget> remove = new ArrayList<>();
-        for (Budget budget : thisUser.getBudgets()) {
+        for (Budget budget : Repo.getInstance().getUser(CreateBudget.this).getBudgets()) {
             if (budget.getStartDate() > start && budget.getStartDate() < end && budget.getBudgetId() != budgetId) {
                 budget.setStartDate(end + 1);
                 if (end + 1 > budget.getEndDate()) {
@@ -287,13 +279,14 @@ public class CreateBudget extends AppCompatActivity {
                 remove.add(budget);
             }
         }
-        thisUser.getBudgets().removeAll(remove);
+        Repo.getInstance().getUser(CreateBudget.this).getBudgets().removeAll(remove);
         if (a != null) {
-            thisUser.getBudgets().add(a);
+            Repo.getInstance().getUser(CreateBudget.this).getBudgets().add(a);
         }
-        thisUser.setIncome(payAmount);
-        thisUser.setPayFrequency(payFreq);
-        UserData.save();
+        Repo.getInstance().updateUser(CreateBudget.this, user -> {
+            user.setIncome(payAmount);
+            user.setPayFrequency(payFreq);
+        });
         Intent budget = new Intent(CreateBudget.this, ViewBudget.class);
         startActivity(budget);
     }
@@ -326,15 +319,15 @@ public class CreateBudget extends AppCompatActivity {
             }
         }
         else {
-            switch (thisUser.getPayFrequency()) {
+            switch (Repo.getInstance().getUser(CreateBudget.this).getPayFrequency()) {
                 case 0:
-                    monthlyPay = thisUser.getIncome() * weeksInMonth;
+                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome() * weeksInMonth;
                     break;
                 case 1:
-                    monthlyPay = thisUser.getIncome() * ((double) weeksInMonth / 2);
+                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
                     break;
                 case 2:
-                    monthlyPay = thisUser.getIncome();
+                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome();
                     break;
             }
         }
@@ -352,7 +345,7 @@ public class CreateBudget extends AppCompatActivity {
                     break;
             }
         }
-        for (Payment payment : payments.getPayments()) {
+        for (Payment payment : Repo.getInstance().getPayments()) {
             if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd) {
                 monthlyBills = monthlyBills + payment.getPaymentAmount();
             }

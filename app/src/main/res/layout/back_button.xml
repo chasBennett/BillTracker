@@ -10,8 +10,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/back"
-    android:layout_width="65dp"
+        android:layout_width="65dp"
     android:layout_height="65dp"
     android:contentDescription="@string/back_button"
     android:gravity="start"

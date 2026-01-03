@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +26,7 @@ import com.example.billstracker.popup_classes.FilterPayments;
 import com.example.billstracker.recycler_adapters.PaymentsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.NavController;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 
 import java.time.LocalDate;
@@ -67,19 +65,13 @@ public class PaymentHistory extends AppCompatActivity {
         selectedBillers = new ArrayList<>();
         range = new DateRange(DateFormat.makeLong(LocalDate.now().minusMonths(3)), DateFormat.makeLong(LocalDate.now().plusMonths(3)));
 
-        if (bills != null && bills.getBills() != null) {
-            if (extras != null) {
-                String billId = extras.getString("Bill Id", "");
-                for (Bill bill : bills.getBills()) {
-                    if (bill.getBillsId().equals(billId)) {
-                        selectedBillers.add(bill);
-                        break;
-                    }
-                }
-            }
-            else {
-                selectedBillers.addAll(bills.getBills());
-            }
+        if (extras != null) {
+            String billId = extras.getString("Bill Id", "");
+            Bill bil = Repo.getInstance().getBillById(billId);
+            if (bil != null) selectedBillers.add(bil);
+        }
+        else {
+            selectedBillers.addAll(Repo.getInstance().getBills());
         }
         filterPayments.setOnClickListener(v -> filterPayments());
         filterResults();
@@ -97,7 +89,7 @@ public class PaymentHistory extends AppCompatActivity {
 
         paymentList.clear();
 
-        for (Payment payment : payments.getPayments()) {
+        for (Payment payment : Repo.getInstance().getPayments()) {
             if (payment.isPaid() || payment.isDateChanged() && payment.getPartialPayment() > 0) {
                 if (payment.getDatePaid() >= range.getStartDate() && payment.getDatePaid() <= range.getEndDate()) {
                     if (!paymentList.contains(payment)) {

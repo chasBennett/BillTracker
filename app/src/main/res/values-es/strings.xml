@@ -351,7 +351,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="noTicketsWereFound">No se encontraron boletos</string>
     <string name="registeredBillers">Facturadores registrados</string>
     <string name="clickBillerTile">Haga clic en el mosaico de un facturador para ver más información</string>
-    <string name="stms">Sistema de Gestión de Tickets de Soporte (STMS)</string>
     <string name="customerService1">Servicio al Cliente:</string>
     <string name="helloUser">Hola usuario y gracias por contactarnos. ¡Estamos encantados de tener la oportunidad de servirle hoy! ¡Por favor, describa su problema en detalle para que podamos ayudarlo!</string>
     <string name="overallStats">Estadísticas generales</string>
@@ -400,13 +399,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     '
     <string name="paid">Pagado</string>
     <string name="billTracker">Rastreador de facturas</string>
-    <string name="billTrackerNotificationChannel">Canal de notificación de la aplicación Bill Tracker</string>
-    <string name="yourBillFor">Su factura por</string>
-    <string name="at">En</string>
-    <string name="isDueToday">vence hoy</string>
-    <string name="isDueTomorrow">es para mañana</string>
-    <string name="isDueInThreeDays">vence en 3 días</string>
-    <string name="billDue">Factura vencida</string>
     <string name="selectDate">Seleccione fecha</string>
     <string name="cancel">Cancelar</string>
     <string name="justThisOccurence">Solo esta ocurrencia</string>
@@ -420,7 +412,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="anErrorHasOccurred">Se ha producido un error. Inténtalo de nuevo.</string>
     <string name="passwordResetLinkSent">Se ha enviado un enlace de restablecimiento de contraseña a su bandeja de entrada de correo electrónico. Siga las instrucciones del correo electrónico para restablecer su contraseña.</string>
     <string name="emailSent">Email enviado</string>
-    <string name="emailNotRegistered">Esa dirección de correo electrónico no está registrada.</string>
     <string name="emailNotFound">El correo electrónico no encontrado</string>
     <string name="verifyEmail">Su dirección de correo electrónico aún no ha sido verificada. Haga clic en el enlace del correo electrónico que le enviamos para verificarlo. Asegúrese de revisar su carpeta de correo no deseado.</string>
     <string name="emailNotVerified">Dirección de correo electrónico no verificada</string>
@@ -447,9 +438,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="close_button">Botón Cerrar</string>
     <string name="upload_complete">¡Carga completa!</string>
     <string name="administrator_control_panel">Panel de control del administrador</string>
-    <string name="biller_data">Datos del facturador</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">Entradas Abiertas (1)</string>
     <string name="icon">Icono</string>
     <string name="_24_567_67">$24,567.67</string>
     <string name="paid_icon">Icono de pago</string>
@@ -531,9 +519,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="logo">logo</string>
     <string name="pay_next_bill_button">Botón Pagar la próxima factura</string>
     <string name="arrow">flecha</string>
-    <string name="isDueInTwoDays">vence en dos días</string>
-    <string name="wasDue">Fue debido</string>
-    <string name="yesterday">Ayer</string>
     <string name="balance_forward">Balancear hacia adelante:</string>
     <string name="payment_date">Fecha de pago:</string>
     <string name="other_amount">Otra cantidad</string>
@@ -568,7 +553,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="category_name">nombre de la categoría</string>
     <string name="future_budget">Presupuesto futuro</string>
     <string name="previous_budget">Presupuesto anterior</string>
-    <string name="no_budget_categories_assigned">No hay categorías de presupuesto asignadas</string>
     <string name="a_percent_value_is_required_for_every_category">Se requiere un valor porcentual para cada categoría.</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">Los valores porcentuales no pueden ser superiores a 100 cuando se combinan.</string>
     <string name="add_a_spending_category">Agregar una categoría de gasto</string>
@@ -601,7 +585,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="weekly_savings">Ahorros semanales:</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">Su dirección de correo electrónico se actualizó correctamente y se envió un correo electrónico de verificación. Haga clic en el enlace de verificación en el correo electrónico para iniciar sesión con su nueva dirección de correo electrónico.</string>
     <string name="user_registration_failed">Error en el registro de usuario</string>
-    <string name="sign_in_failed_please_try_again">Fallo al iniciar sesion. Inténtalo de nuevo</string>
     <string name="biller_name_can_t_be_blank">El nombre del facturador no puede estar en blanco</string>
     <string name="biller_name_is_already_in_use">El nombre del facturador ya está en uso</string>
     <string name="website_can_t_be_blank">El sitio web no puede estar en blanco</string>
@@ -634,14 +617,12 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="active">Activo</string>
     <string name="requested_by_user">Solicitado por el usuario</string>
     <string name="awaiting_partner_approval">En espera de la aprobación del socio</string>
-    <string name="you_must_register_first">Debes registrarte primero</string>
     <string name="when_did_you_pay_this_bill">¿Cuándo pagó esta factura?</string>
     <string name="remaining_payments_can_t_be_blank">Los pagos restantes no pueden estar en blanco</string>
     <string name="when_is_this_bill_due">¿Cuándo vence esta factura?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">Ingrese cuántos pagos quedan para actualizar su facturador</string>
     <string name="update_biller">Actualizar facturador</string>
     <string name="bill_marked_as_paid_successfully">Factura marcada como pagada exitosamente</string>
-    <string name="delete_account">Borrar cuenta</string>
     <string name="are_you_sure_you_would_like_to_logout">¿Está seguro de que desea cerrar sesión?</string>
     <string name="username_is_unavailable">Usuario no disponible</string>
     <string name="searching_database">Buscando en la base de datos…</string>
@@ -660,9 +641,7 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="expense_description_cannot_be_blank">La descripción del gasto no puede estar en blanco</string>
     <string name="expense_amount_must_be_greater_than_0">El monto del gasto debe ser mayor que 0</string>
     <string name="expense_was_saved_successfully">El gasto se guardó correctamente</string>
-    <string name="biller_was_updated_successfully">Biller se actualizó exitosamente.</string>
     <string name="biller_update_failed">Error en la actualización del facturador.</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">El correo electrónico aún no está registrado. Por favor haga clic en \"Crear una cuenta\" Para empezar</string>
     <string name="my_income">mis ingresos</string>
     <string name="enter_your_income_details_to_calculate_your_dti">Ingrese los detalles de sus ingresos para calcular su DTI</string>
     <string name="income_amount">Cantidad de ingresos</string>
@@ -705,7 +684,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="sign_in_with_google">Inicie sesión con Google</string>
     <string name="or">O</string>
     <string name="amount_remaining_this_period">Cantidad restante este período:</string>
-    <string name="login_failed_please_try_again">Error de inicio de sesion. Por favor intente de nuevo.</string>
     <string name="weekly_spending">Gasto semanal</string>
     <string name="daily_spending">Gasto diario</string>
     <string name="monthly_spending">Gasto mensual</string>
@@ -723,11 +701,6 @@ Si tiene alguna pregunta sobre la aplicación o este Acuerdo, comuníquese con s
     <string name="nothing_due_this_month">Nada debido \ n \ nthis mes</string>
     <string name="remaining3">Restante \ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"Si está seguro de que desea eliminar su cuenta, escriba"</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">"En el cuadro a continuación. Esta acción no se puede deshacer".</string>
-    <string name="please_enter">"Por favor ingrese"</string>
-    <string name="to_proceed">"Proceder"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">Si está seguro de que desea eliminar su cuenta, ingrese su contraseña para confirmar. Esta acción no se puede deshacer.</string>
     <string name="edit_budget">Editar presupuesto</string>
     <string name="clothing">Ropa</string>
     <string name="gas">Gas</string>

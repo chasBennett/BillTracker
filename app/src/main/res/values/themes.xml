@@ -39,5 +39,9 @@
         <item name="buttonStyle">@style/TextButton</item>
         <item name="editTextStyle">@style/TextInputEditTextStyle</item>
     </style>
+    <style name="Theme.EditProfile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/blueAndBlack</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
     <!-- Base application theme. -->
 </resources>

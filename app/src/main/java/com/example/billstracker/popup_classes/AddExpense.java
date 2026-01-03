@@ -1,7 +1,5 @@
 package com.example.billstracker.popup_classes;
 
-import static com.example.billstracker.activities.Login.expenses;
-import static com.example.billstracker.activities.Login.uid;
 import static com.example.billstracker.activities.Spending.selectedDate;
 
 import android.app.Activity;
@@ -21,12 +19,11 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
-import com.example.billstracker.custom_objects.Expenses;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.security.SecureRandom;
@@ -95,11 +92,8 @@ public class AddExpense {
                 Notify.createPopup(activity, activity.getString(R.string.expense_amount_must_be_greater_than_0), null);
             }
             else {
-                if (expenses == null || expenses.getExpenses() == null) {
-                    expenses = new Expenses(new ArrayList<>());
-                }
                 if (expense != null) {
-                    for (Expense expenses: expenses.getExpenses()) {
+                    for (Expense expenses: Repo.getInstance().getExpenses()) {
                         if (expenses.getId().equals(expense.getId())) {
                             expenses.setDescription(expenseDescription.getText().toString());
                             expenses.setAmount(FixNumber.makeDouble(expenseAmount.getText().toString()));
@@ -111,10 +105,10 @@ public class AddExpense {
                 }
                 else {
                     Expense a = new Expense(expenseDescription.getText().toString(), categories.get(expenseCategory.getSelectedItemPosition()), DateFormat.makeLong(expenseDate.getText().toString()) + 1,
-                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), uid);
-                    expenses.getExpenses().add(a);
+                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), Repo.getInstance().getUid());
+                    Repo.getInstance().getExpenses().add(a);
                 }
-                UserData.save();
+                Repo.getInstance().save(activity);
                 dismissDialog();
                 listener.onClick(v);
                 Notify.createPopup(activity, activity.getString(R.string.expense_was_saved_successfully), null);

@@ -29,5 +29,9 @@
         <item name="buttonStyle">@style/TextButton</item>
         <item name="popupMenuStyle">@style/MyPopupMenu</item>
     </style>
+    <style name="Theme.EditProfile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/blueAndBlack</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 
 </resources>

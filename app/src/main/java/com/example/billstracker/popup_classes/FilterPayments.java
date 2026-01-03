@@ -1,6 +1,5 @@
 package com.example.billstracker.popup_classes;
 
-import static com.example.billstracker.activities.Login.bills;
 import static com.example.billstracker.activities.PaymentHistory.range;
 import static com.example.billstracker.activities.PaymentHistory.selectedBillers;
 
@@ -21,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class FilterPayments {
     }
     public void generateList (Activity activity) {
 
-        if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty()) {
+        if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
             tabs = new ArrayList<>();
             billersList.removeAllViews();
             billersList.invalidate();
@@ -94,7 +94,7 @@ public class FilterPayments {
             billersList.addView(allBillersTab);
             selectAllBillers.setOnCheckedChangeListener((buttonView, isChecked) -> setAllBillersChecked(selectAllBillers));
             boolean all = true;
-            for (Bill bill : bills.getBills()) {
+            for (Bill bill : Repo.getInstance().getBills()) {
                 View billerTab = View.inflate(activity, R.layout.found_biller, null);
                 CheckBox select = billerTab.findViewById(R.id.selectBiller);
                 com.google.android.material.imageview.ShapeableImageView billerImage = billerTab.findViewById(R.id.biller_icon);
@@ -132,8 +132,8 @@ public class FilterPayments {
                 }
             }
             selectedBillers.clear();
-            if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty()) {
-                selectedBillers.addAll(bills.getBills());
+            if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
+                selectedBillers.addAll(Repo.getInstance().getBills());
             }
         }
     }
@@ -149,8 +149,8 @@ public class FilterPayments {
                     CheckBox button = view.findViewById(R.id.selectBiller);
                     if (button.isChecked()) {
                         TextView name = view.findViewById(R.id.biller_name);
-                        if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty()) {
-                            for (Bill bill: bills.getBills()) {
+                        if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
+                            for (Bill bill: Repo.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(name.getText().toString())) {
                                     if (!selectedBillers.contains(bill)) {
                                         selectedBillers.add(bill);
@@ -194,8 +194,8 @@ public class FilterPayments {
             else {
                 allBillersButton.setChecked(true);
                 selectedBillers.clear();
-                if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty()) {
-                    selectedBillers.addAll(bills.getBills());
+                if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
+                    selectedBillers.addAll(Repo.getInstance().getBills());
                 }
             }
         }

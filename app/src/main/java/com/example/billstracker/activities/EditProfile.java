@@ -1,12 +1,9 @@
 package com.example.billstracker.activities;
 
 import static android.content.ContentValues.TAG;
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,8 +13,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
@@ -32,18 +27,17 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.biometric.BiometricManager;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.billstracker.R;
+import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.BottomDrawer;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.example.billstracker.tools.Watcher;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -59,16 +53,13 @@ import java.util.UUID;
 public class EditProfile extends AppCompatActivity {
 
     final Context mContext = this;
-    SharedPreferences sp;
-    SharedPreferences.Editor editor;
-    boolean biometricPreference;
     TextInputEditText enterNewUsername, enterNewName, enterNewPassword, confirmPassword;
     TextInputLayout matchPassword, editPasswordLayout;
     TextView noUppercase, noLowercase, noNumber, err, passwordTooShort, usernameError;
     LinearLayout passRequirements;
     TextView submit;
     SwitchCompat biometricSwitch2;
-    LinearLayout backEditProfile;
+    ImageView back;
     com.google.android.material.imageview.ShapeableImageView icon;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     StorageReference storageReference;
@@ -77,6 +68,7 @@ public class EditProfile extends AppCompatActivity {
     boolean uName;
     boolean pass;
     int differences;
+    User thisUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,28 +90,17 @@ public class EditProfile extends AppCompatActivity {
         passwordTooShort = findViewById(R.id.passwordTooShort);
         passRequirements = findViewById(R.id.passRequirements);
         biometricSwitch2 = findViewById(R.id.biometricSwitch2);
-        backEditProfile = findViewById(R.id.backButton);
+        back = findViewById(R.id.backEditProfile);
         usernameError = findViewById(R.id.usernameError);
 
         Tools.setupUI(EditProfile.this, findViewById(android.R.id.content));
 
-        Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(getResources().getColor(R.color.blueAndBlack, getTheme()));
-        WindowInsetsControllerCompat wic = new WindowInsetsControllerCompat(window, window.getDecorView());
-        wic.setAppearanceLightStatusBars(false);
-        ImageView back = backEditProfile.findViewById(R.id.back);
-        back.setImageTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.white, getTheme())));
+        thisUser = Repo.getInstance().getUser(EditProfile.this);
 
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::loadImage);
         storageReference = FirebaseStorage.getInstance().getReference("images");
 
         matchPassword.setVisibility(View.GONE);
-
-        sp = Prefs.getPrefs(EditProfile.this);
-        biometricPreference = sp.getBoolean("biometricPreference", false);
-        editor = sp.edit();
 
         icon.setImageTintList(null);
 
@@ -154,9 +135,9 @@ public class EditProfile extends AppCompatActivity {
             });
         });
 
-        biometricSwitch2.setChecked(biometricPreference);
+        biometricSwitch2.setChecked(Repo.getInstance().getAllowBiometrics(EditProfile.this));
 
-        backEditProfile.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
+        back.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
 
         BiometricManager biometricManager = BiometricManager.from(mContext);
         if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
@@ -169,11 +150,12 @@ public class EditProfile extends AppCompatActivity {
 
         biometricSwitch2.setOnCheckedChangeListener((compoundButton, b) -> {
             if (compoundButton.isChecked()) {
-                editor.putBoolean("biometricPreference", true).putBoolean("allowBiometricPrompt", true).putString("email", thisUser.getUserName()).putString("password", thisUser.getPassword());
+                Repo.getInstance().setAllowBiometrics(true, EditProfile.this);
+                Repo.getInstance().setShowBiometricPrompt(true, EditProfile.this);
             } else {
-                editor.putBoolean("biometricPreference", false).putBoolean("allowBiometricPrompt", false);
+                Repo.getInstance().setAllowBiometrics(false, EditProfile.this);
+                Repo.getInstance().setShowBiometricPrompt(false, EditProfile.this);
             }
-            editor.apply();
             Notify.createPopup(EditProfile.this, getString(R.string.your_biometric_preferences_have_been_updated), null);
         });
 
@@ -194,7 +176,7 @@ public class EditProfile extends AppCompatActivity {
         enterNewPassword.addTextChangedListener(watcher);
         confirmPassword.addTextChangedListener(watcher);
 
-        if (thisUser.getPassword().equals(uid)) {
+        if (thisUser.getPassword().equals(Repo.getInstance().getUid())) {
             TextView error = findViewById(R.id.googleSignInError);
             error.setVisibility(View.VISIBLE);
             editPasswordLayout.setVisibility(View.GONE);
@@ -374,18 +356,17 @@ public class EditProfile extends AppCompatActivity {
             String newUserName = enterNewUsername.getText().toString().toLowerCase();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
-                UserData.load(EditProfile.this);
+                Repo.getInstance().loadLocalData(EditProfile.this);
                 recreate();
             } else {
                 FirebaseTools.updateUser(EditProfile.this, user, newUserName, newName, newPassword, isSuccessful -> {
                     if (isSuccessful) {
                         Notify.createPopup(EditProfile.this, getString(R.string.user_profile_updated_successfully), null);
-                        thisUser.setName(newName);
-                        thisUser.setUserName(newUserName);
-                        thisUser.setPassword(newPassword);
-                        Prefs.setPassword(EditProfile.this, newPassword);
-                        Prefs.setUserName(EditProfile.this, newUserName);
-                        UserData.save();
+                        Repo.getInstance().updateUser(EditProfile.this, user1 -> {
+                            user1.setName(newName);
+                            user1.setUserName(newUserName);
+                            user1.setPassword(newPassword);
+                        });
                         submit.setVisibility(View.GONE);
                     } else {
                         Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);

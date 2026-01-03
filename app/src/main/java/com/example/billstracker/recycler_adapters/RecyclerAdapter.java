@@ -1,6 +1,5 @@
 package com.example.billstracker.recycler_adapters;
 
-import static com.example.billstracker.activities.Login.bills;
 import static com.example.billstracker.activities.MainActivity2.todayTotal;
 import static com.example.billstracker.tools.CalculateBalance.calculateApr;
 import static com.example.billstracker.tools.CalculateBalance.calculateNewBalance;
@@ -28,14 +27,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.billstracker.R;
 import com.example.billstracker.activities.AddBiller;
-import com.example.billstracker.activities.Login;
 import com.example.billstracker.activities.MainActivity2;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.time.LocalDate;
@@ -81,16 +79,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if (payment.isPaid()) {
             holder.markPaid.setText(R.string.mark_as_unpaid);
         }
-        if (bills.getBills() == null) {
-            UserData.load(activity);
-        }
 
         todayTotal += pastDue;
-        for (Bill bill : bills.getBills()) {
+        for (Bill bill : Repo.getInstance().getBills()) {
             if (bill.getBillerName().equals(payment.getBillerName())) {
                 bil = bill;
                 if (bill.getPaymentsRemaining() != 0) {
-                    for (Payment pay : Login.payments.getPayments()) {
+                    for (Payment pay : Repo.getInstance().getPayments()) {
                         if (pay.getBillerName().equals(bill.getBillerName()) && pay.getDueDate() > finalPay && !pay.isPaid()) {
                             finalPay = pay.getDueDate();
                         }
@@ -102,6 +97,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                         }
                     }
                     todayTotal += pastDue;
+                }
+                if (bill.getAutoPay()) {
+                    holder.autoPay.setVisibility(View.VISIBLE);
+                }
+                else {
+                    holder.autoPay.setVisibility(View.GONE);
                 }
                 Tools.loadIcon(holder.icon, bill.getCategory(), bill.getIcon());
                 break;
@@ -271,7 +272,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             visitWebsite.setOnClickListener(view13 -> {
-                for (Bill bill : bills.getBills()) {
+                for (Bill bill : Repo.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         String address = bill.getWebsite();
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
@@ -288,7 +289,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             });
 
             editBill.setOnClickListener(view1 -> {
-                for (Bill bill : bills.getBills()) {
+                for (Bill bill : Repo.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         activity.startActivity(new Intent(activity, AddBiller.class).putExtra("billerId", bill.getBillsId()));
                         popupWindow.dismiss();
@@ -297,7 +298,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 if (listener != null) listener.onItemClick(position, payments.get(position));
             });
             paidOff.setOnClickListener(view12 -> {
-                Tools.billPaidOff(payment);
+                Tools.billPaidOff(activity, payment);
                 if (mClickListener1 != null)
                     mClickListener1.onItemClick(position, payments.get(position));
             });
@@ -343,6 +344,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final ShapeableImageView icon;
         final ImageView arrow;
+        final ImageView autoPay;
         final TextView billerName;
         final TextView amountDue;
         final TextView dueDate;
@@ -380,6 +382,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             amountDue = itemView.findViewById(R.id.amountDue);
             dueDate = itemView.findViewById(R.id.tvDueDate);
             status = itemView.findViewById(R.id.status);
+            autoPay = itemView.findViewById(R.id.autoPay);
             estRateLayout = itemView.findViewById(R.id.estRateLayout);
             escAmountLayout = itemView.findViewById(R.id.escAmountLayout);
             estBalanceLayout = itemView.findViewById(R.id.estBalanceLayout);

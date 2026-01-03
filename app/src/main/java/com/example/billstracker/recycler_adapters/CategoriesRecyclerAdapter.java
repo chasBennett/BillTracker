@@ -1,6 +1,5 @@
 package com.example.billstracker.recycler_adapters;
 
-import static com.example.billstracker.activities.Login.expenses;
 import static com.example.billstracker.activities.Spending.selectedDate;
 
 import android.animation.ObjectAnimator;
@@ -20,6 +19,7 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.tools.FixNumber;
+import com.example.billstracker.tools.Repo;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,8 +58,8 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         double remaining;
         double totalBudget = 0;
         holder.budgetCategory.setText(category.getCategoryName());
-        if (expenses != null && expenses.getExpenses() != null) {
-            for (Expense expense : expenses.getExpenses()) {
+        if (Repo.getInstance().getExpenses() != null) {
+            for (Expense expense : Repo.getInstance().getExpenses()) {
                 if (expense.getDate() >= start && expense.getDate() <= end && expense.getCategory().equals(category.getCategoryName())) {
                     catTotal = catTotal + expense.getAmount();
                 }

@@ -1,8 +1,5 @@
 package com.example.billstracker.popup_classes;
 
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Partner;
 import com.example.billstracker.custom_objects.User;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,7 +30,6 @@ import java.util.Objects;
 public class AddPartner extends DialogFragment {
 
     public static View.OnClickListener listener1;
-    private Bundle savedInstanceState;
 
     public void setCloseListener(View.OnClickListener listener1) {
         AddPartner.listener1 = listener1;
@@ -41,7 +37,6 @@ public class AddPartner extends DialogFragment {
     View addPartner;
     ImageView cancel;
     TextView error;
-    LinearLayout addPartnerRoot;
     TextInputEditText partnerEmail;
     Button sendRequest;
 
@@ -49,7 +44,6 @@ public class AddPartner extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        this.savedInstanceState = savedInstanceState;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
@@ -58,7 +52,6 @@ public class AddPartner extends DialogFragment {
         partnerEmail = addPartner.findViewById(R.id.partnerEmail);
         sendRequest = addPartner.findViewById(R.id.sendRequest);
         error = addPartner.findViewById(R.id.partnerError);
-        addPartnerRoot = addPartner.findViewById(R.id.addPartnerRoot);
 
         Tools.setupUI(requireActivity(), addPartner);
 
@@ -81,30 +74,30 @@ public class AddPartner extends DialogFragment {
                                 }
                                 boolean found = false;
                                 for (Partner par: partners) {
-                                    if (par.getPartnerUid().equals(uid)) {
+                                    if (par.getPartnerUid().equals(Repo.getInstance().getUid())) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    partners.add(new Partner(uid, false, thisUser.getName()));
+                                    partners.add(new Partner(Repo.getInstance().getUid(), false, Repo.getInstance().getUser(requireActivity()).getName()));
                                     requested.setPartners(partners);
                                 }
-                                if (thisUser.getPartners() == null) {
-                                    thisUser.setPartners(new ArrayList<>());
+                                if (Repo.getInstance().getUser(requireActivity()).getPartners() == null) {
+                                    Repo.getInstance().getUser(requireActivity()).setPartners(new ArrayList<>());
                                 }
 
                                 db.collection("users").document(document.getId()).set(requested, SetOptions.merge());
                                 found = false;
-                                for (Partner pa: thisUser.getPartners()) {
-                                    if (pa.getPartnerUid().equals(requested.getid())) {
+                                for (Partner pa: Repo.getInstance().getUser(requireActivity()).getPartners()) {
+                                    if (pa.getPartnerUid().equals(requested.getId())) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    thisUser.getPartners().add(new Partner(requested.getid(), true, requested.getName()));
-                                    db.collection("users").document(thisUser.getid()).set(thisUser, SetOptions.merge());
+                                    Repo.getInstance().getUser(requireActivity()).getPartners().add(new Partner(requested.getId(), true, requested.getName()));
+                                    db.collection("users").document(Repo.getInstance().getUser(requireActivity()).getId()).set(Repo.getInstance().getUser(requireActivity()), SetOptions.merge());
                                 }
                                 Notify.createPopup(requireActivity(), getString(R.string.partner_has_been_requested_successfully), null);
                                 listener1.onClick(cancel);

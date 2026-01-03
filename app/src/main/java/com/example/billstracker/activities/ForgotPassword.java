@@ -11,11 +11,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.billstracker.R;
+import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
+import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ForgotPassword extends AppCompatActivity {
 
@@ -52,46 +55,61 @@ public class ForgotPassword extends AppCompatActivity {
             getOnBackPressedDispatcher().onBackPressed();
         });
 
-        submit.setOnClickListener(view -> {
-            Tools.hideKeyboard(ForgotPassword.this);
+        submit.setOnClickListener(v -> {
             if (fpUsername.getText() != null) {
-                if (Patterns.EMAIL_ADDRESS.matcher(fpUsername.getText().toString()).matches()) {
+                String email = fpUsername.getText().toString().trim();
+
+                if (!email.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Tools.hideKeyboard(ForgotPassword.this);
                     pb.setVisibility(View.VISIBLE);
-                    FirebaseAuth.getInstance().sendPasswordResetEmail(fpUsername.getText().toString()).addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    CustomDialog cd = new CustomDialog(ForgotPassword.this, getString(R.string.emailSent), getString(R.string.passwordResetLinkSent), getString(R.string.ok), null, null);
-                                    cd.setPositiveButtonListener(v -> {
-                                        cd.dismissDialog();
+
+                    FirebaseFirestore.getInstance().collection("users")
+                            .whereEqualTo("userName", email)
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                                    User user = task.getResult().toObjects(User.class).get(0);
+                                    if (user.getRegisteredWithGoogle()) {
                                         pb.setVisibility(View.GONE);
-                                        FirebaseAuth.getInstance().signOut();
-                                        getOnBackPressedDispatcher().onBackPressed();
-                                    });
-                                    cd.setPerimeterListener(view1 -> {
-                                        cd.dismissDialog();
-                                        FirebaseAuth.getInstance().signOut();
-                                        getOnBackPressedDispatcher().onBackPressed();
-                                    });
+                                        Notify.createPopup(ForgotPassword.this,
+                                                "This account is linked with Google. Please use 'Sign in with Google' on the login screen.", null);
+                                    } else {
+                                        sendResetPasswordEmail(email);
+                                    }
                                 } else {
-                                    CustomDialog cd = new CustomDialog(ForgotPassword.this, getString(R.string.emailNotFound), getString(R.string.emailNotRegistered), getString(R.string.ok), null, null);
-                                    cd.setPositiveButtonListener(v -> {
-                                        cd.dismissDialog();
-                                        pb.setVisibility(View.GONE);
-                                        FirebaseAuth.getInstance().signOut();
-                                    });
-                                    cd.setPerimeterListener(view1 -> {
-                                        cd.dismissDialog();
-                                        FirebaseAuth.getInstance().signOut();
-                                        getOnBackPressedDispatcher().onBackPressed();
-                                    });
+                                    pb.setVisibility(View.GONE);
+                                    Notify.createPopup(ForgotPassword.this, getString(R.string.emailNotFound), null);
                                 }
                             });
                 } else {
-                    pb.setVisibility(View.GONE);
                     fpError.setVisibility(View.VISIBLE);
                 }
             }
+            else {
+                Notify.createPopup(ForgotPassword.this, "The email address field cannot be blank.", null);
+            }
         });
 
+    }
+
+    private void sendResetPasswordEmail(String email) {
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    pb.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        CustomDialog cd = new CustomDialog(ForgotPassword.this,
+                                getString(R.string.emailSent),
+                                getString(R.string.passwordResetLinkSent),
+                                getString(R.string.ok), null, null);
+
+                        cd.setPositiveButtonListener(v -> {
+                            cd.dismissDialog();
+                            getOnBackPressedDispatcher().onBackPressed();
+                        });
+                    } else {
+                        Notify.createPopup(ForgotPassword.this, "Failed to send reset email. Please try again later.", null);
+                    }
+                });
     }
 
     @Override

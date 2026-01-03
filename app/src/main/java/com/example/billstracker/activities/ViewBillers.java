@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
 import static com.example.billstracker.activities.MainActivity2.startAddBiller;
 
 import android.annotation.SuppressLint;
@@ -32,10 +29,11 @@ import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.BillerManager;
-import com.example.billstracker.tools.Data;
+import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -69,7 +67,7 @@ public class ViewBillers extends AppCompatActivity {
         NavController nc = new NavController();
         nc.navController(ViewBillers.this, ViewBillers.this, pb, "viewBillers");
 
-        BillerManager.refreshPayments();
+        BillerManager.refreshPayments(ViewBillers.this);
 
         showPaidBillers.setChecked(false);
 
@@ -85,16 +83,16 @@ public class ViewBillers extends AppCompatActivity {
         billerTiles.invalidate();
         billerTiles.removeAllViews();
         pb.setVisibility(View.GONE);
-        ArrayList<String> categories = Data.getCategories(ViewBillers.this);
-        ArrayList<String> freq = Data.getFrequencies(ViewBillers.this);
+        ArrayList<String> categories = DataTools.getCategories(ViewBillers.this);
+        ArrayList<String> freq = DataTools.getFrequencies(ViewBillers.this);
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String userId = thisUser.getid();
+        String userId = Repo.getInstance().getUid();
         views = new ArrayList<>();
         ArrayList<Bill> billsList = new ArrayList<>();
-        if (bills != null && bills.getBills() != null && !bills.getBills().isEmpty()) {
-            bills.getBills().sort(Comparator.comparing(Bill::getBillerName));
-            for (Bill bill : bills.getBills()) {
+        if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
+            Repo.getInstance().getBills().sort(Comparator.comparing(Bill::getBillerName));
+            for (Bill bill : Repo.getInstance().getBills()) {
                 if (!showPaid) {
                     if (!billsList.contains(bill) && bill.getPaymentsRemaining() > 0) {
                         billsList.add(bill);
@@ -116,8 +114,8 @@ public class ViewBillers extends AppCompatActivity {
             if (bills.isRecurring() && bills.getPaymentsRemaining() > 0) {
                 recurring = getString(R.string.yes);
                 long earliest = DateFormat.makeLong(DateFormat.makeLocalDate(bills.getDueDate()).plusYears(1));
-                if (payments != null && payments.getPayments() != null) {
-                    for (Payment pay : payments.getPayments()) {
+                if (Repo.getInstance().getPayments() != null) {
+                    for (Payment pay : Repo.getInstance().getPayments()) {
                         if (pay.getBillerName().equalsIgnoreCase(bills.getBillerName()) && !pay.isPaid() && pay.getDueDate() < earliest) {
                             earliest = pay.getDueDate();
                         }
@@ -182,6 +180,7 @@ public class ViewBillers extends AppCompatActivity {
                 Button btnDeleteBiller = view.findViewById(R.id.btnDeleteBiller);
                 ShapeableImageView iconView = view.findViewById(R.id.iconView);
                 Tools.loadIcon(iconView, bills.getCategory(), bills.getIcon());
+                iconView.setContentPadding(60,60,60,60);
                 details.removeAllViews();
                 details.invalidate();
                 details.addView(view);
@@ -209,7 +208,7 @@ public class ViewBillers extends AppCompatActivity {
                     }
                 }
                 if (bills.getFrequency() < freq.size()) {
-                    frequency.setText(freq.get(bills.getFrequency()));
+                    frequency.setText(freq.get(bills.getFrequency() + 1));
                 }
                 showWebsite.setText(HtmlCompat.fromHtml(bills.getWebsite(), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 showWebsite.setOnClickListener(view1 -> {
@@ -241,29 +240,12 @@ public class ViewBillers extends AppCompatActivity {
                     CustomDialog cd = new CustomDialog(ViewBillers.this, getString(R.string.deleteBiller), getString(R.string.confirmDeletion), getString(R.string.deleteBiller), getString(R.string.cancel), null);
                     cd.setPositiveButtonListener(v1 -> {
                         pb.setVisibility(View.VISIBLE);
-                        if (Login.bills != null && Login.bills.getBills() != null) {
-                            Bill bill = null;
-                            for (Bill bil : Login.bills.getBills()) {
-                                if (bil.getBillsId().equals(bills.getBillsId())) {
-                                    bill = bil;
-                                    break;
-                                }
-                            }
-                            if (bill != null) {
-                                bill.deleteBiller(isSuccessful -> {
-                                    if (isSuccessful) {
-                                        Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);
-                                        cd.dismissDialog();
-                                        listBills(showPaidBillers.isChecked());
-                                    }
-                                    else {
-                                        Notify.createPopup(ViewBillers.this, getString(R.string.anErrorHasOccurred), null);
-                                    }
-                                });
-                            }
-                            else {
-                                Notify.createPopup(ViewBillers.this, getString(R.string.anErrorHasOccurred), null);
-                            }
+                        if (Repo.getInstance().getBills() != null) {
+                            Repo.getInstance().deleteBill(bills.getBillerName(), false, ViewBillers.this);
+                            BillerManager.refreshPayments(ViewBillers.this);
+                            Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);
+                            cd.dismissDialog();
+                            recreate();
                         }
                         else {
                             Notify.createPopup(ViewBillers.this, getString(R.string.anErrorHasOccurred), null);

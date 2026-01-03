@@ -3,7 +3,6 @@ package com.example.billstracker.custom_objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/** @noinspection unused, unused, unused */
 public class User implements Serializable {
 
     private String userName;
@@ -24,10 +23,52 @@ public class User implements Serializable {
     private ArrayList <Budget> budgets;
     private String phoneNumber;
     private ArrayList <Partner> partners;
+    private int versionNumber;
+
+    public User(String userName, String password, String name, boolean admin, boolean registeredWithGoogle,
+                String lastLogin, String dateRegistered, String id, int totalLogins, String ticketNumber, double income, int payFrequency,
+                ArrayList <Budget> budgets, ArrayList <Partner> partners, int versionNumber) {
+
+        setUserName(userName);
+        setPassword(password);
+        setName(name);
+        setAdmin(admin);
+        setRegisteredWithGoogle(registeredWithGoogle);
+        setLastLogin(lastLogin);
+        setDateRegistered(dateRegistered);
+        setId(id);
+        setTotalLogins(totalLogins);
+        setTicketNumber(ticketNumber);
+        setIncome(income);
+        setPayFrequency(payFrequency);
+        setBudgets(budgets);
+        setPartners(partners);
+        setVersionNumber(versionNumber);
+    }
+
+    public User(String userName, String password, String name, boolean admin, String lastLogin, String dateRegistered, String id, int totalLogins, String ticketNumber, double income, int payFrequency,
+                ArrayList <Trophy> trophies, ArrayList <Budget> budgets, ArrayList <Partner> partners, int versionNumber) {
+
+        setUserName(userName);
+        setPassword(password);
+        setName(name);
+        setAdmin(admin);
+        setLastLogin(lastLogin);
+        setDateRegistered(dateRegistered);
+        setId(id);
+        setTotalLogins(totalLogins);
+        setTicketNumber(ticketNumber);
+        setIncome(income);
+        setPayFrequency(payFrequency);
+        setTrophies(trophies);
+        setBudgets(budgets);
+        setPartners(partners);
+        setVersionNumber(versionNumber);
+    }
 
     public User(String userName, String password, String name, boolean admin, boolean registeredWithGoogle,
                 String lastLogin, String dateRegistered, String id, ArrayList<Bill> bills, int totalLogins, String ticketNumber, double income, int payFrequency,
-                boolean termsAccepted, String termsAcceptedOn, ArrayList <Trophy> trophies, ArrayList <Budget> budgets, String phoneNumber, ArrayList <Partner> partners) {
+                boolean termsAccepted, String termsAcceptedOn, ArrayList <Trophy> trophies, ArrayList <Budget> budgets, String phoneNumber, ArrayList <Partner> partners, int versionNumber) {
 
         setUserName(userName);
         setPassword(password);
@@ -36,7 +77,7 @@ public class User implements Serializable {
         setRegisteredWithGoogle(true);
         setLastLogin(lastLogin);
         setDateRegistered(dateRegistered);
-        setid(id);
+        setId(id);
         setBills(bills);
         setTotalLogins(totalLogins);
         setTicketNumber(ticketNumber);
@@ -47,10 +88,11 @@ public class User implements Serializable {
         setBudgets(budgets);
         setPhoneNumber(phoneNumber);
         setPartners(partners);
+        setVersionNumber(versionNumber);
     }
 
     public User(String userName, String password, String name, boolean admin, String lastLogin, String dateRegistered, String id, int totalLogins, String ticketNumber, double income, int payFrequency,
-                ArrayList <Trophy> trophies, ArrayList <Budget> budgets, ArrayList <Partner> partners) {
+                ArrayList <Trophy> trophies, ArrayList <Partner> partners, int versionNumber) {
 
         setUserName(userName);
         setPassword(password);
@@ -58,26 +100,7 @@ public class User implements Serializable {
         setAdmin(admin);
         setLastLogin(lastLogin);
         setDateRegistered(dateRegistered);
-        setid(id);
-        setTotalLogins(totalLogins);
-        setTicketNumber(ticketNumber);
-        setIncome(income);
-        setPayFrequency(payFrequency);
-        setTrophies(trophies);
-        setBudgets(budgets);
-        setPartners(partners);
-    }
-
-    public User(String userName, String password, String name, boolean admin, String lastLogin, String dateRegistered, String id, int totalLogins, String ticketNumber, double income, int payFrequency,
-                ArrayList <Trophy> trophies, ArrayList <Partner> partners) {
-
-        setUserName(userName);
-        setPassword(password);
-        setName(name);
-        setAdmin(admin);
-        setLastLogin(lastLogin);
-        setDateRegistered(dateRegistered);
-        setid(id);
+        setId(id);
         setTotalLogins(totalLogins);
         setTicketNumber(ticketNumber);
         setIncome(income);
@@ -87,7 +110,10 @@ public class User implements Serializable {
     }
 
     public User() {
-
+        this.bills = new ArrayList<>();
+        this.trophies = new ArrayList<>();
+        this.budgets = new ArrayList<>();
+        this.partners = new ArrayList<>();
     }
 
     public String getUserName() {
@@ -114,7 +140,7 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public boolean getAdmin() {
+    public boolean isAdmin() {
         return admin;
     }
 
@@ -146,11 +172,11 @@ public class User implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public String getid() {
+    public String getId() {
         return id;
     }
 
-    public void setid(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -228,6 +254,12 @@ public class User implements Serializable {
     }
     public void setPartners (ArrayList <Partner> partners) {
         this.partners = partners;
+    }
+    public int getVersionNumber () {
+        return versionNumber;
+    }
+    public void setVersionNumber (int versionNumber) {
+        this.versionNumber = versionNumber;
     }
 }
 

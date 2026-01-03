@@ -2,8 +2,6 @@ package com.example.billstracker.tools;
 
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
 import static com.example.billstracker.activities.MainActivity2.startAddBiller;
 import static com.example.billstracker.activities.MainActivity2.tickets;
 
@@ -156,7 +154,7 @@ public class NavController {
             });
             budgetTab.setOnClickListener(v -> {
                 pb.setVisibility(View.VISIBLE);
-                if (!thisUser.getBudgets().isEmpty()) {
+                if (!Repo.getInstance().getUser(activity).getBudgets().isEmpty()) {
                     Intent budget = new Intent(context, ViewBudget.class);
                     context.startActivity(budget);
                 } else {
@@ -283,12 +281,12 @@ public class NavController {
                 logout();
             });
 
-            if (thisUser == null || thisUser.getName() == null || thisUser.getUserName() == null) {
-                UserData.load(context);
+            if (Repo.getInstance().getUser(context) == null || Repo.getInstance().getUser(context).getName() == null || Repo.getInstance().getUser(context).getUserName() == null) {
+                Repo.getInstance().loadLocalData(context);
             }
-            if (thisUser.getName() != null && thisUser.getUserName() != null) {
-                displayUserName.setText(thisUser.getName());
-                displayEmail.setText(thisUser.getUserName());
+            if (Repo.getInstance().getUser(context).getName() != null && Repo.getInstance().getUser(context).getUserName() != null) {
+                displayUserName.setText(Repo.getInstance().getUser(context).getName());
+                displayEmail.setText(Repo.getInstance().getUser(context).getUserName());
             }
             else {
                 this.activity.startActivity(new Intent(activity, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| FLAG_ACTIVITY_NEW_TASK| FLAG_ACTIVITY_CLEAR_TASK));
@@ -302,8 +300,8 @@ public class NavController {
             next.setDueDate(DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()).plusDays(60)));
             boolean found = false;
 
-            payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
-            for (Payment payment : payments.getPayments()) {
+            Repo.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+            for (Payment payment : Repo.getInstance().getPayments()) {
                 if (!payment.isPaid() && payment.getDueDate() < next.getDueDate()) {
                     next = payment;
                     found = true;
@@ -376,7 +374,7 @@ public class NavController {
             if (progressBar != null) {
                 progressBar.setVisibility(View.VISIBLE);
             }
-            Tools.signOut(activity);
+            Repo.getInstance().logout(activity);
         });
         cd.setNegativeButtonListener(view -> {
             if (progressBar != null) {

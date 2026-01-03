@@ -1,0 +1,18 @@
+[versions]
+androidx-appcompat = "1.7.1"
+android-material = "1.13.0"
+androidx-lifecycle = "2.10.0"
+
+[libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "android-material" }
+
+# Define the individual libraries that the bundle will point to
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+
+[bundles]
+# Now this will work because the keys above match these strings
+androidx-lifecycle-ktx = ["androidx-lifecycle-livedata-ktx", "androidx-lifecycle-viewmodel-ktx"]
+
+            

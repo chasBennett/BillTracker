@@ -1,7 +1,5 @@
 package com.example.billstracker.tools;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
 import static com.example.billstracker.activities.MainActivity2.dueThisMonth;
 import static com.example.billstracker.activities.MainActivity2.selectedDate;
 
@@ -82,15 +80,15 @@ public class MainPieChart {
         int counter = 0;
         ArrayList <Integer> foundPayments = new ArrayList<>();
 
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment payment: payments.getPayments()) {
-                if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd && !payment.isPaid() && !foundPayments.contains(payment.getPaymentId()) ||
-                        payment.getDatePaid() >= monthStart && payment.getDatePaid() <= monthEnd && payment.isPaid() && !foundPayments.contains(payment.getPaymentId())) {
+        if (Repo.getInstance().getPayments() != null) {
+            Repo.getInstance().removeDuplicatePayments();
+            for (Payment payment: Repo.getInstance().getPayments()) {
+                if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd && !foundPayments.contains(payment.getPaymentId())) {
                     foundPayments.add(payment.getPaymentId());
                     total = total + payment.getPaymentAmount();
                     ++counter;
-                    if (bills != null && bills.getBills() != null) {
-                        for (Bill bill: bills.getBills()) {
+                    if (Repo.getInstance().getBills() != null) {
+                        for (Bill bill: Repo.getInstance().getBills()) {
                             if (bill.getBillerName().equals(payment.getBillerName())) {
                                 if (!payment.isPaid()) {
                                     remaining = remaining + (payment.getPaymentAmount() - payment.getPartialPayment());
@@ -128,7 +126,7 @@ public class MainPieChart {
             }
         }
 
-        ArrayList <String> strings = Data.getCategories(activity);
+        ArrayList <String> strings = DataTools.getCategories(activity);
         ArrayList <Double> values = new ArrayList<>(Arrays.asList(autoLoans, creditCards, entertainment, insurance, miscellaneous, mortgage, personalLoan, utilities));
 
         if (counter > 0) {
@@ -284,7 +282,7 @@ public class MainPieChart {
     }
     public static void onTouch (String selection, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll) {
         ArrayList<Payment> recycles = new ArrayList<>(dueThisMonth);
-        ArrayList <String> categories = Data.getCategories(scroll.getContext());
+        ArrayList <String> categories = DataTools.getCategories(scroll.getContext());
         for (String cat: categories) {
             cat = cat.replaceAll("[^A-Za-z ]", "");
         }
@@ -302,7 +300,7 @@ public class MainPieChart {
             if (adapter != null && adapter.getArrayList() != null) {
                 for (Payment pay : adapter.getArrayList()) {
                     if (recycles.contains(pay)) {
-                        for (Bill bill: bills.getBills()) {
+                        for (Bill bill: Repo.getInstance().getBills()) {
                             if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                 RecyclerView.ViewHolder viewHolder = today.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                 if (viewHolder != null) {
@@ -323,7 +321,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: bills.getBills()) {
+                            for (Bill bill: Repo.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = later.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -345,7 +343,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: bills.getBills()) {
+                            for (Bill bill: Repo.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = evenLater.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -367,7 +365,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: bills.getBills()) {
+                            for (Bill bill: Repo.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = earlier.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {

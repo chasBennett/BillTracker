@@ -1,8 +1,6 @@
 package com.example.billstracker.activities;
 
-import static com.android.volley.VolleyLog.TAG;
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
+import static android.content.ContentValues.TAG;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -27,9 +25,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Message;
 import com.example.billstracker.custom_objects.SupportTicket;
+import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.recycler_adapters.AdminSupportRecyclerAdapter;
 import com.example.billstracker.recycler_adapters.SupportMessageRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -64,6 +64,7 @@ public class Support extends AppCompatActivity {
     FirebaseFirestore db;
     SupportMessageRecyclerAdapter adapter;
     InputMethodManager mgr;
+    User thisUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,13 +84,15 @@ public class Support extends AppCompatActivity {
         mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         Tools.setupUI(Support.this, findViewById(android.R.id.content));
 
+        thisUser = Repo.getInstance().getUser(Support.this);
+
         userName = "";
         userUid = "";
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        if (thisUser.getAdmin()) {
+        if (thisUser.isAdmin()) {
             adminUid = auth.getUid();
             loadAdmin();
         } else {
@@ -152,7 +155,7 @@ public class Support extends AppCompatActivity {
                     name = userName;
                 }
 
-                Message message1 = new Message(DateFormat.createCurrentDateStringWithTime(), thisUser.getid(), name, admin, message.getText().toString());
+                Message message1 = new Message(DateFormat.createCurrentDateStringWithTime(), thisUser.getId(), name, admin, message.getText().toString());
                 message.setText("");
 
                 if (admin) {
@@ -160,10 +163,10 @@ public class Support extends AppCompatActivity {
                     userName = customerTicket.getName();
                     customerTicket.setUnreadByUser(customerTicket.getUnreadByUser() + 1);
                     customerTicket.setAgent(thisUser.getUserName());
-                    customerTicket.setAgentUid(thisUser.getid());
+                    customerTicket.setAgentUid(thisUser.getId());
                 } else {
                     customerTicket.setUnreadByAgent(customerTicket.getUnreadByAgent() + 1);
-                    customerTicket.setUserUid(thisUser.getid());
+                    customerTicket.setUserUid(thisUser.getId());
                     customerTicket.setName(thisUser.getName());
                     customerTicket.setUserEmail(thisUser.getUserName());
                 }
@@ -186,7 +189,7 @@ public class Support extends AppCompatActivity {
                         Toast.makeText(Support.this, (CharSequence) task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 });
-                db.collection("users").document(uid).set(thisUser, SetOptions.merge());
+                db.collection("users").document(Repo.getInstance().getUid()).set(thisUser, SetOptions.merge());
             }
         });
 
@@ -205,7 +208,7 @@ public class Support extends AppCompatActivity {
                 ArrayList <SupportTicket> remove = new ArrayList<>();
                 for (SupportTicket delete: userTickets) {
                     if (delete.getAgentUid() != null) {
-                        if (!delete.getAgentUid().trim().equals(uid) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
+                        if (!delete.getAgentUid().trim().equals(Repo.getInstance().getUid()) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
                             remove.add(delete);
                             if (!delete.isOpen()) {
                                 delete.setUnreadByAgent(0);
@@ -259,7 +262,7 @@ public class Support extends AppCompatActivity {
         admin = false;
         customerTicket = null;
 
-        db.collection("tickets").document(uid).get().addOnCompleteListener(task -> {
+        db.collection("tickets").document(Repo.getInstance().getUid()).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 Log.d(TAG, document.getId() + " => " + document.getData());
@@ -278,8 +281,8 @@ public class Support extends AppCompatActivity {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
             if (customerTicket == null) {
-                customerTicket = new SupportTicket(thisUser.getName(), thisUser.getid(), thisUser.getUserName(), "Unassigned", new ArrayList<>(), "",
-                        true, thisUser.getid(), 0, 0, 0, "Unassigned");
+                customerTicket = new SupportTicket(thisUser.getName(), thisUser.getId(), thisUser.getUserName(), "Unassigned", new ArrayList<>(), "",
+                        true, thisUser.getId(), 0, 0, 0, "Unassigned");
             }
             generateMessages(customerTicket);
         });
@@ -299,7 +302,7 @@ public class Support extends AppCompatActivity {
             }
             ticket.getMessages().add(newMessage);
         }
-        if (thisUser.getAdmin()) {
+        if (thisUser.isAdmin()) {
             ticket.setUnreadByAgent(0);
         } else {
             ticket.setUnreadByUser(0);
@@ -316,7 +319,7 @@ public class Support extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         pb.setVisibility(View.GONE);
-        if (thisUser.getAdmin()) {
+        if (thisUser.isAdmin()) {
             loadAdmin();
         } else {
             loadUser();
@@ -326,7 +329,7 @@ public class Support extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (thisUser.getAdmin()) {
+        if (thisUser.isAdmin()) {
             loadAdmin();
         } else {
             loadUser();

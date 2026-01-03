@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
 import static com.example.billstracker.activities.MainActivity2.startAddBiller;
 
 import android.content.Intent;
@@ -25,13 +22,14 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.custom_objects.Stat;
+import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.NavController;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -81,6 +79,9 @@ public class MyStats extends AppCompatActivity {
     ShapeableImageView icon;
     PieChart pieChart, pieChart1;
     AdView adview;
+    User thisUser;
+    ArrayList <Bill> bills;
+    ArrayList <Payment> payments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,13 +136,15 @@ public class MyStats extends AppCompatActivity {
 
     public void initialize() {
 
-        if (thisUser == null) {
-            UserData.load(MyStats.this);
-        }
+        thisUser = Repo.getInstance().getUser(MyStats.this);
+        payments = Repo.getInstance().getPayments();
+        bills = Repo.getInstance().getBills();
+
         ArrayList <String> monthsList = new ArrayList<>();
-        if (payments != null && payments.getPayments() != null) {
-            payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
-            for (Payment payment: payments.getPayments()) {
+        ArrayList <Payment> payments = Repo.getInstance().getPayments();
+        if (payments != null) {
+            payments.sort(Comparator.comparing(Payment::getDueDate));
+            for (Payment payment: payments) {
                 if (!monthsList.contains(DateFormat.createMonthYearString(DateFormat.makeLocalDate(payment.getDueDate())))) {
                     monthsList.add(DateFormat.createMonthYearString(DateFormat.makeLocalDate(payment.getDueDate())));
                 }
@@ -161,7 +164,7 @@ public class MyStats extends AppCompatActivity {
 
         setupDti();
 
-        if (bills.getBills().isEmpty()) {
+        if (bills.isEmpty()) {
             pieChartLayout.setVisibility(View.GONE);
             addBillerLayout.setVisibility(View.VISIBLE);
             btnAddNewBiller.setOnClickListener(view -> {
@@ -200,9 +203,10 @@ public class MyStats extends AppCompatActivity {
             cd.isMoneyInput(true);
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.setPositiveButtonListener(v -> {
-                thisUser.setPayFrequency(cd.getSpinnerSelection());
-                thisUser.setIncome(FixNumber.makeDouble(cd.getInput()));
-                UserData.save();
+                Repo.getInstance().updateUser(MyStats.this, user -> {
+                    user.setPayFrequency(cd.getSpinnerSelection());
+                    user.setIncome(FixNumber.makeDouble(cd.getInput()));
+                });
                 cd.dismissDialog();
                 initialize();
             });
@@ -216,9 +220,10 @@ public class MyStats extends AppCompatActivity {
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.isMoneyInput(true);
             cd.setPositiveButtonListener(v -> {
-                thisUser.setPayFrequency(cd.getSpinnerSelection());
-                thisUser.setIncome(FixNumber.makeDouble(cd.getInput()));
-                UserData.save();
+                Repo.getInstance().updateUser(MyStats.this, user -> {
+                    user.setPayFrequency(cd.getSpinnerSelection());
+                    user.setIncome(FixNumber.makeDouble(cd.getInput()));
+                });
                 cd.dismissDialog();
                 initialize();
             });
@@ -265,8 +270,8 @@ public class MyStats extends AppCompatActivity {
         double auto = 0, creditCard = 0, entertainment = 0, insurance = 0, miscellaneous = 0, mortgage = 0, personalLoan = 0, utilities = 0, total = 0;
         long monthStart = DateFormat.makeLong(selectedDate.withDayOfMonth(1));
         long monthEnd = DateFormat.makeLong(selectedDate.withDayOfMonth(selectedDate.getMonth().length(selectedDate.isLeapYear())));
-        for (Bill bill : bills.getBills()) {
-            for (Payment payment : payments.getPayments()) {
+        for (Bill bill : bills) {
+            for (Payment payment : payments) {
                 if (payment.getBillerName().equals(bill.getBillerName()) && payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd) {
                     double value = bill.getAmountDue();
                     total = total + value;
@@ -379,14 +384,14 @@ public class MyStats extends AppCompatActivity {
         } else {
             income = thisUser.getIncome();
         }
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment payment : payments.getPayments()) {
+        if (payments != null) {
+            for (Payment payment : payments) {
                 if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd) {
                     bills = bills + payment.getPaymentAmount();
                 }
             }
         } else {
-            UserData.load(this);
+            Repo.getInstance().loadLocalData(MyStats.this);
         }
 
 
@@ -438,8 +443,8 @@ public class MyStats extends AppCompatActivity {
         int billersPaid = 0;
         ArrayList <Stat> stats = new ArrayList<>();
 
-        if (bills != null && bills.getBills() != null) {
-            for (Bill bill: bills.getBills()) {
+        if (bills != null) {
+            for (Bill bill: bills) {
                 ++totalBillers;
                 double totalAmount = 0;
                 double lastPaymentAmount = 0;
@@ -449,25 +454,20 @@ public class MyStats extends AppCompatActivity {
                 if (bill.getPaymentsRemaining() == 0) {
                     ++billersPaid;
                 }
-                if (Login.payments != null && Login.payments.getPayments() != null) {
-                    for (Payment payment: Login.payments.getPayments()) {
-                        if (payment.getBillerName().equals(bill.getBillerName())) {
-                            if (payment.isPaid()) {
-                                ++paymentsMade;
-                                ++payments;
-                                total += payment.getPaymentAmount();
-                                totalAmount += payment.getPaymentAmount();
-                                if (payment.getDatePaid() > dateLastPaid) {
-                                    dateLastPaid = payment.getDatePaid();
-                                    lastPaymentAmount = payment.getPaymentAmount();
-                                }
-                            }
-                            else {
-                                if (nextPaymentDue == 0 || payment.getDueDate() < nextPaymentDue) {
-                                    nextPaymentDue = payment.getDueDate();
-                                }
-                            }
+                Payment payment = Repo.getInstance().getPaymentByBillerName(bill.getBillerName());
+                if (payment != null) {
+                    if (payment.isPaid()) {
+                        ++paymentsMade;
+                        ++payments;
+                        total += payment.getPaymentAmount();
+                        totalAmount += payment.getPaymentAmount();
+                        if (payment.getDatePaid() > dateLastPaid) {
+                            dateLastPaid = payment.getDatePaid();
+                            lastPaymentAmount = payment.getPaymentAmount();
                         }
+                    }
+                    else {
+                        nextPaymentDue = payment.getDueDate();
                     }
                 }
                 stats.add(new Stat(bill.getBillerName(), totalAmount, paymentsMade, dateLastPaid, nextPaymentDue, lastPaymentAmount, bill.getPaymentsRemaining()));
@@ -567,7 +567,7 @@ public class MyStats extends AppCompatActivity {
             else {
                 nextPaymentDue.setText(DateFormat.makeDateString(stat.getNextPaymentDueDate()));
             }
-            for (Bill bill : bills.getBills()) {
+            for (Bill bill : bills) {
                 if (bill.getBillerName().equals(stat.getBillerName())) {
                     Tools.loadIcon(icon, bill.getCategory(), bill.getIcon());
                     icon.setContentPadding(60,60,60,60);

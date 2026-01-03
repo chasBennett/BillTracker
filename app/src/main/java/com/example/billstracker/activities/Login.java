@@ -1,12 +1,9 @@
 package com.example.billstracker.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -14,156 +11,108 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
-import com.example.billstracker.custom_objects.Bills;
 import com.example.billstracker.custom_objects.Expense;
-import com.example.billstracker.custom_objects.Expenses;
 import com.example.billstracker.custom_objects.Partner;
 import com.example.billstracker.custom_objects.Payment;
-import com.example.billstracker.custom_objects.Payments;
 import com.example.billstracker.custom_objects.User;
+import com.example.billstracker.databinding.ActivityLoginBinding;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.Google;
-import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.example.billstracker.tools.Watcher;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 
 public class Login extends AppCompatActivity {
-
-    public static final ArrayList<User> userList = new ArrayList<>();
-    public static User thisUser;
-    public static Payments payments = new Payments();
-    public static Expenses expenses = new Expenses();
-    public static Bills bills = new Bills();
-    public static String uid;
-    TextView loginError;
-    TextView forgotPassword;
-    TextView biometricButton;
-    TextView register;
-    TextInputEditText loginUsername;
-    TextInputEditText loginPassword;
-    Button loginButton;
-    boolean starting;
-    boolean biometricPreference;
+    private boolean starting;
+    private boolean biometricEligible;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
-    BiometricManager biometricManager;
-    Context mContext;
-    androidx.appcompat.widget.SwitchCompat staySignedIn;
-    ConstraintLayout pb;
-    boolean credentialLogin;
-    final ActivityResultLauncher<String> launcher = registerForActivityResult(
+    private BiometricManager biometricManager;
+    private boolean googleLogin;
+    private final ActivityResultLauncher<String> launcher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isGranted -> {
             }
     );
+    private ActivityLoginBinding binding;
+    private boolean isLoading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        loginError = findViewById(R.id.loginError);
-        forgotPassword = findViewById(R.id.forgotPassword);
-        biometricButton = findViewById(R.id.biometricButton);
-        register = findViewById(R.id.createAccount);
-        loginUsername = findViewById(R.id.loginUsername);
-        loginPassword = findViewById(R.id.loginPassword);
-        loginButton = findViewById(R.id.loginButton);
+        binding.progressBar15.progressBar.setVisibility(View.GONE);
         biometricManager = BiometricManager.from(Login.this);
-        mContext = Login.this;
-        pb = findViewById(R.id.progressBar15);
-        Tools.fixProgressBarLogo(pb);
-        staySignedIn = findViewById(R.id.staySignedIn);
-        thisUser = new User();
-        credentialLogin = false;
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.biometricAuthentication))
+                .setNegativeButtonText(getString(R.string.cancel))
+                .setConfirmationRequired(false)
+                .build();
+
+        Tools.fixProgressBarLogo(binding.progressBar15.progressBar);
+        googleLogin = false;
         starting = false;
+        biometricEligible = true;
 
-        FirebaseApp.initializeApp(Login.this);
-        FirebaseAuth.getInstance().useAppLanguage();
-
-        if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) {
-            Tools.requestPermissionLauncher(Login.this, launcher);
-        }
+        if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) Tools.requestPermissionLauncher(Login.this, launcher);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            boolean openEmail = extras.getBoolean("Open Email", false);
-            if (openEmail) {
+            if (extras.getBoolean("Open Email", false)) {
                 Tools.openEmailApp(Login.this);
             }
             else if (extras.getBoolean("Deleted")) {
                 Notify.createPopup(Login.this, getString(R.string.profileDeletedSuccessfully), null);
-                loginUsername.setText("");
-                uid = null;
+                binding.loginUsername.setText("");
+                Repo.getInstance().clearLoginCredentials(Login.this);
             }
             getIntent().getExtras().clear();
         }
 
-        pb.setVisibility(View.GONE);
+        Repo.getInstance().initialize(Login.this);
 
-        payments = new Payments(new ArrayList<>());
-        expenses = new Expenses(new ArrayList<>());
-        bills = new Bills(new ArrayList<>());
-        payments = new Payments(new ArrayList<>());
-        thisUser = new User();
-
-        if (Prefs.getUserUid(Login.this) != null) {
-            uid = Prefs.getUserUid(Login.this);
-        }
-        else {
-            uid = null;
-        }
-
-        staySignedIn.setChecked(Prefs.getStaySignedIn(Login.this));
-        biometricPreference = Prefs.getBiometricPreferences(Login.this);
+        binding.staySignedIn.setChecked(Repo.getInstance().getStaySignedIn(Login.this));
 
         Tools.setupUI(Login.this, findViewById(android.R.id.content));
 
         addListeners();
 
-        if (Prefs.getUserName(Login.this) != null && !Prefs.getUserName(Login.this).isEmpty()) {
-            loginUsername.setText(Prefs.getUserName(Login.this));
-        }
-
-        if (Prefs.getUserUid(Login.this) != null && Prefs.getStaySignedIn(Login.this)) {
-            uid = Prefs.getUserUid(Login.this);
-            load();
-        }
-
-        promptInfo = new BiometricPrompt.PromptInfo.Builder().setTitle(getString(R.string.biometricAuthentication)).setNegativeButtonText(getString(R.string.cancel)).setConfirmationRequired(false).build();
         biometricPrompt = new BiometricPrompt(this, ContextCompat.getMainExecutor(Login.this), new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                if (Prefs.getUserName(Login.this) != null && !Prefs.getUserName(Login.this).isEmpty() && Prefs.getPassword(Login.this) != null && !Prefs.getPassword(Login.this).isEmpty()) {
-                    signInWithEmailAndPassword(Prefs.getUserName(Login.this), Prefs.getPassword(Login.this));
+                if (Repo.getInstance().getSavedEmail(Login.this) != null && Repo.getInstance().getSavedPassword(Login.this) != null) {
+                    signInWithEmailAndPassword(Repo.getInstance().getSavedEmail(Login.this), Repo.getInstance().getSavedPassword(Login.this));
                 }
                 else {
-                    Notify.createPopup(Login.this, getString(R.string.enableAfterLoggingIn), null);
+                    Notify.createPopup(Login.this, "Biometric login failed", null);
                 }
             }
 
         });
 
-        findViewById(R.id.google_button).setOnClickListener(view -> Google.launchGoogleSignIn(Login.this, (wasSuccessful, user) -> {
+        binding.googleButton.setOnClickListener(view -> Google.launchGoogleSignIn(Login.this, (wasSuccessful, user, token) -> {
             if (wasSuccessful && user != null) {
-                uid = user.getUid();
-                credentialLogin = true;
+                Repo.getInstance().setUid(user.getUid(), Login.this);
+                googleLogin = true;
                 load();
             }
         }));
@@ -172,35 +121,41 @@ public class Login extends AppCompatActivity {
 
     protected void addListeners() {
 
-        loginError.setText("");
+        binding.loginError.setText("");
 
-        forgotPassword.setOnClickListener(view -> startActivity(new Intent(Login.this, ForgotPassword.class)));
+        binding.forgotPassword.setOnClickListener(view -> startActivity(new Intent(Login.this, ForgotPassword.class)));
 
-        register.setOnClickListener(v -> startActivity(new Intent(Login.this, Register.class)));
+        binding.createAccount.setOnClickListener(v -> startActivity(new Intent(Login.this, Register.class)));
 
-        Tools.addValidEmailListener(loginUsername);
+        Tools.addValidEmailListener(binding.loginUsername);
 
-        loginPassword.addTextChangedListener(new Watcher() {
+        binding.loginPassword.addTextChangedListener(new Watcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Tools.isValidString(loginPassword, 5);
+                Tools.isValidString(binding.loginPassword, 5);
             }
         });
 
-        TextTools.onEnterSelected(loginPassword, isEnter -> {
+        TextTools.onEnterSelected(binding.loginPassword, isEnter -> {
             if (isEnter) {
-                credentialLogin = false;
+                googleLogin = false;
                 checkLogin();
             }
         });
 
-        loginButton.setOnClickListener(view -> {
-            credentialLogin = false;
+        binding.loginButton.setOnClickListener(view -> {
+            googleLogin = false;
             checkLogin();
-            TextTools.closeSoftInput(loginPassword);
+            TextTools.closeSoftInput(binding.loginPassword);
         });
 
-        biometricButton.setOnClickListener(view -> {
+        if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
+            biometricEligible = false;
+            TextViewCompat.setCompoundDrawableTintList(binding.biometricButton, ColorStateList.valueOf(getResources().getColor(R.color.neutralGray, getTheme())));
+            binding.biometricButton.setTextColor(getResources().getColor(R.color.neutralGray, getTheme()));
+        }
+
+        binding.biometricButton.setOnClickListener(view -> {
 
             biometricManager = BiometricManager.from(Login.this);
             if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
@@ -208,7 +163,7 @@ public class Login extends AppCompatActivity {
                 return;
             }
 
-            if (!Prefs.getBiometricPreferences(this)) {
+            if (!Repo.getInstance().getAllowBiometrics(Login.this)) {
                 Notify.createPopup(Login.this, getString(R.string.enableAfterLoggingIn), null);
             }
             else {
@@ -223,201 +178,220 @@ public class Login extends AppCompatActivity {
     }
 
     protected void checkLogin() {
-        if (!Tools.isValidString(loginPassword, 4) || loginPassword == null || loginPassword.getText() == null) {
+        if (!Tools.isValidString(binding.loginPassword, 4) || binding.loginPassword.getText() == null) {
             Notify.createPopup(Login.this, getString(R.string.password_is_invalid), null);
         }
-        else if (!Tools.isValidEmail(loginUsername) || loginUsername == null || loginUsername.getText() == null) {
+        else if (!Tools.isValidEmail(binding.loginUsername) || binding.loginUsername.getText() == null) {
             Notify.createPopup(Login.this, getString(R.string.username_is_invalid), null);
         }
         else {
-            loginError.setVisibility(View.GONE);
-            signInWithEmailAndPassword(loginUsername.getText().toString(), loginPassword.getText().toString());
+            binding.loginError.setVisibility(View.GONE);
+            signInWithEmailAndPassword(binding.loginUsername.getText().toString(), binding.loginPassword.getText().toString());
         }
     }
 
     protected void signInWithEmailAndPassword(String username, String password) {
 
-        pb.setVisibility(View.VISIBLE);
+        binding.progressBar15.progressBar.setVisibility(View.VISIBLE);
+        Repo.getInstance().loadLocalData(Login.this);
         FirebaseTools.signInWithEmailAndPassword(Login.this, username, password, wasSuccessful -> {
             if (wasSuccessful) {
-                FirebaseTools.checkIfEmailVerified(Login.this, pb, wasSuccessful1 -> {
-                    if (wasSuccessful1) {
-                        Prefs.setUserName(Login.this, username);
-                        Prefs.setPassword(Login.this, password);
+                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                boolean isGoogleUser = false;
 
-                        if (staySignedIn.isChecked() && !Prefs.getStaySignedIn(Login.this)) {
-                            Prefs.setSignedIn(Login.this, true);
+                if (firebaseUser != null) {
+                    for (UserInfo info : firebaseUser.getProviderData()) {
+                        if (info.getProviderId().equals("google.com")) {
+                            isGoogleUser = true;
+                            break;
                         }
-
+                    }
+                }
+                if (isGoogleUser || firebaseUser != null) {
+                    if (isGoogleUser || firebaseUser.isEmailVerified()) {
+                        Repo.getInstance().saveCredentials(Login.this, username, password);
+                        Repo.getInstance().setStaySignedIn(binding.staySignedIn.isChecked(), Login.this);
                         load();
+                    } else {
+                        binding.progressBar15.progressBar.setVisibility(View.GONE);
+                        Notify.createPopup(Login.this, "Please verify your email.", null);
                     }
-                    else {
-                        pb.setVisibility(View.GONE);
-                        Notify.createPopup(Login.this, getString(R.string.sign_in_failed_please_try_again), null);
-                        Prefs.setSignedIn(Login.this, false);
-                    }
-                });
-            }
-            else {
-                FirebaseTools.findEmail(username, isSuccessful -> {
-                    if (!isSuccessful) {
-                        Notify.createPopup(Login.this, getString(R.string.email_is_not_yet_registered_please_click_create_an_account_to_get_started),  null);
-                    }
-                    if (!credentialLogin) {
-                        pb.setVisibility(View.GONE);
-                        Prefs.setSignedIn(Login.this, false);
-                        Notify.createPopup(Login.this, getString(R.string.login_failed_please_try_again), null);
-                    }
-                });
+                }
+                else {
+                    binding.progressBar15.progressBar.setVisibility(View.GONE);
+                    Notify.createPopup(Login.this, "An error occurred", null);
+                }
             }
         });
     }
-    protected void load () {
-        pb.setVisibility(View.VISIBLE);
-        if (uid != null) {
-            payments = new Payments(new ArrayList<>());
-            expenses = new Expenses(new ArrayList<>());
-            bills = new Bills(new ArrayList<>());
+    protected void load() {
+        if (isLoading) return; // Prevent multiple clicks/calls
+        isLoading = true;
 
-            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                FirebaseTools.loadUser(Login.this, pb, wasSuccessful -> {
-                    if (wasSuccessful) {
-                        loadPartnerData();
-                    } else {
-                        Notify.createPopup(Login.this, getString(R.string.login_failed_please_try_again), null);
-                        pb.setVisibility(View.GONE);
-                    }
-                });
-            }
-        }
-        else {
-            Notify.createPopup(Login.this, getString(R.string.login_failed_please_try_again), null);
-            pb.setVisibility(View.GONE);
+        binding.progressBar15.progressBar.setVisibility(View.VISIBLE);
+        String currentUid = FirebaseAuth.getInstance().getUid();
+        if (currentUid != null) {
+            Repo.getInstance().setUid(currentUid, this);
+            Repo.getInstance().fetchCloudData(currentUid, (success, msg) -> {
+                if (success) {
+                    loadPartnerData();
+                } else {
+                    isLoading = false;
+                    binding.progressBar15.progressBar.setVisibility(View.GONE);
+                    Notify.createPopup(this, "Login failed. Please check connection.", null);
+                }
+            });
         }
     }
-    protected void loadPartnerData () {
+    protected void loadPartnerData() {
+        User thisUser = Repo.getInstance().getUser(Login.this);
 
-        if (thisUser.getName() == null) {
-            thisUser.setName("User");
-            UserData.save();
+        if (thisUser == null || thisUser.getName() == null) {
+            binding.progressBar15.progressBar.setVisibility(View.GONE);
+            Notify.createPopup(Login.this, "Error loading user profile.", null);
+            return;
         }
+
+        thisUser.setRegisteredWithGoogle(googleLogin);
+
         if (thisUser.getPartners() == null) {
             thisUser.setPartners(new ArrayList<>());
         }
-        if (thisUser.getPartners() != null && !thisUser.getPartners().isEmpty()) {
+
+        if (!thisUser.getPartners().isEmpty()) {
+            final int totalPartners = thisUser.getPartners().size();
+            final int[] loadedPartners = {0};
+
             for (Partner partner : thisUser.getPartners()) {
                 FirebaseTools.getPartner(partner, wasSuccessful -> {
                     if (wasSuccessful) {
-                        FirebaseTools.loadPartnerData(partner.getPartnerUid(), isSuccessful -> {});
+                        Repo.getInstance().loadPartnerData(partner.getPartnerUid(), (wasSuccessful1, message) -> {
+                            loadedPartners[0]++;
+                            if (loadedPartners[0] == totalPartners) {
+                                finalizeDataAndLaunch();
+                            }
+                        });
                     } else {
-                        loadUserData();
+                        loadedPartners[0]++;
+                        if (loadedPartners[0] == totalPartners) {
+                            finalizeDataAndLaunch();
+                        }
                     }
                 });
             }
-            if (thisUser == null) {
-                pb.setVisibility(View.GONE);
-                Notify.createPopup(Login.this, getString(R.string.anErrorHasOccurred), null);
-            } else {
-                loadUserData();
-            }
-        }
-        else {
-            loadUserData();
+        } else {
+            finalizeDataAndLaunch();
         }
     }
-    protected void loadUserData () {
 
-        FirebaseTools.getPayments(uid, isSuccessful -> FirebaseTools.getBills(uid, isSuccessful1 -> FirebaseTools.getExpenses(uid, isSuccessful2 -> setOwnership())));
+    private void finalizeDataAndLaunch() {
+        setOwnership();
+        Repo.getInstance().saveLocalData(Login.this);
+        checkBiometricPreference();
     }
-    protected void setOwnership () {
-        if (uid != null) {
-            if (bills != null && !bills.getBills().isEmpty()) {
-                for (Bill bill : bills.getBills()) {
+
+    public void setOwnership () {
+        if (Repo.getInstance().getUid() != null) {
+            if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
+                for (Bill bill : Repo.getInstance().getBills()) {
                     if (bill.getOwner() == null) {
-                        bill.setOwner(uid);
+                        bill.setOwner(Repo.getInstance().getUid());
                     }
                 }
             }
-            if (payments != null && !payments.getPayments().isEmpty()) {
-                for (Payment payment: payments.getPayments()) {
+            if (Repo.getInstance().getPayments() != null && !Repo.getInstance().getPayments().isEmpty()) {
+                for (Payment payment: Repo.getInstance().getPayments()) {
                     if (payment.getOwner() == null) {
-                        payment.setOwner(uid);
+                        payment.setOwner(Repo.getInstance().getUid());
                     }
                 }
             }
-            if (expenses != null && !expenses.getExpenses().isEmpty()) {
-                for (Expense expense: expenses.getExpenses()) {
+            if (Repo.getInstance().getExpenses() != null && !Repo.getInstance().getExpenses().isEmpty()) {
+                for (Expense expense: Repo.getInstance().getExpenses()) {
                     if (expense.getOwner() == null) {
-                        expense.setOwner(uid);
+                        expense.setOwner(Repo.getInstance().getUid());
                     }
                 }
             }
-            checkBiometricPreference();
-        }
-        else {
-            Notify.createPopup(Login.this, getString(R.string.anErrorHasOccurred), null);
         }
     }
 
     protected void checkBiometricPreference() {
 
-        boolean allowBiometrics = Prefs.getAllowBiometrics(this);
-        boolean biometricEligible = true;
-        biometricPreference = Prefs.getBiometricPreferences(this);
+        Repo.getInstance().setStaySignedIn(binding.staySignedIn.isChecked(), Login.this);
 
-        Prefs.setSignedIn(Login.this, staySignedIn.isChecked());
+        if (!Repo.getInstance().getAllowBiometrics(Login.this) && biometricEligible && Repo.getInstance().getShowBiometricPrompt(Login.this)) {
+            CustomDialog cd = new CustomDialog(Login.this, getString(R.string.enableBiometrics1), getString(R.string.willYouEnableBiometrics), getString(R.string.yes), getString(R.string.notRightNow),
+                    getString(R.string.dontAskAgain));
+            cd.setPositiveButtonListener(v -> {
+                Repo.getInstance().setAllowBiometrics(true, Login.this);
+                User user = Repo.getInstance().getUser(Login.this);
 
-        if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
-            biometricEligible = false;
-            TextViewCompat.setCompoundDrawableTintList(biometricButton, ColorStateList.valueOf(getResources().getColor(R.color.neutralGray, getTheme())));
-            biometricButton.setTextColor(getResources().getColor(R.color.neutralGray, getTheme()));
-        }
+                if (user.getRegisteredWithGoogle()) {
+                    String email = user.getUserName();
+                    String password = user.getId();
 
-        if (allowBiometrics && biometricEligible) {
+                    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+                    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            if (!biometricPreference) {
-                CustomDialog cd = new CustomDialog(Login.this, getString(R.string.enableBiometrics1), getString(R.string.willYouEnableBiometrics), getString(R.string.yes), getString(R.string.notRightNow),
-                        getString(R.string.dontAskAgain));
-                cd.setPositiveButtonListener(v -> {
-                    Prefs.setBiometricPreferences(Login.this, true);
-                    Prefs.setAllowBiometrics(Login.this, true);
-                    cd.dismissDialog();
-                    launchMainActivity();
-                });
-                cd.setNeutralButtonListener(v -> {
-                    Prefs.setBiometricPreferences(Login.this, false);
-                    Prefs.setAllowBiometrics(Login.this, false);
-                    Prefs.setUserName(Login.this, "");
-                    Prefs.setPassword(Login.this, "");
-                    Notify.createPopup(Login.this, getString(R.string.biometricsAreDisabled), null);
-                    launchMainActivity();
-                });
-                cd.setNegativeButtonListener(v -> launchMainActivity());
-            }
-            else {
+                    if (firebaseUser != null) {
+                        firebaseUser.linkWithCredential(credential).addOnCompleteListener(task -> {
+                            Repo.getInstance().saveCredentials(Login.this, email, password);
+                            finishBiometricSetup(cd);
+                        });
+                    }
+                } else {
+                    Repo.getInstance().saveCredentials(Login.this, user.getUserName(), user.getPassword());
+                    finishBiometricSetup(cd);
+                }
+            });
+            cd.setNeutralButtonListener(v -> {
+                Repo.getInstance().setAllowBiometrics(false, Login.this);
+                Repo.getInstance().setShowBiometricPrompt(false, Login.this);
+                Notify.createPopup(Login.this, getString(R.string.biometricsAreDisabled), null);
                 launchMainActivity();
-            }
-
+            });
+            cd.setNegativeButtonListener(v -> {
+                Repo.getInstance().setAllowBiometrics(false, Login.this);
+                Repo.getInstance().setShowBiometricPrompt(true, Login.this);
+                cd.dismissDialog();
+                launchMainActivity();
+            });
         } else {
             launchMainActivity();
         }
     }
 
+    private void finishBiometricSetup(CustomDialog cd) {
+        Repo.getInstance().setShowBiometricPrompt(false, Login.this);
+        cd.dismissDialog();
+        launchMainActivity();
+    }
+
     protected void launchMainActivity() {
         if (!starting) {
-            Intent home = new Intent(Login.this, MainActivity2.class);
-            home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(home);
+            String pendingPaymentId = getIntent().getStringExtra("paymentId");
             starting = true;
+            if (pendingPaymentId != null) {
+                Intent payIntent = new Intent(this, PayBill.class);
+                payIntent.putExtra("paymentId", pendingPaymentId);
+                startActivity(payIntent);
+            }
+            else {
+                Intent home = new Intent(Login.this, MainActivity2.class);
+                // Clear flags ensure we don't come back to Login on "Back" press
+                home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(home);
+            }
+            finish(); // Explicitly finish Login
         }
     }
     @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            uid = currentUser.getUid();
-            if (Prefs.getStaySignedIn(Login.this)) {
+        if (currentUser != null && Repo.getInstance().getStaySignedIn(this)) {
+            if (!isLoading && !starting) {
                 load();
             }
         }

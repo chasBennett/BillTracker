@@ -1,14 +1,11 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
 import static com.example.billstracker.popup_classes.PaymentConfirm.newPaymentDate;
 import static com.example.billstracker.popup_classes.PaymentConfirm.paymentAmount;
-import static com.example.billstracker.tools.Data.whatsDueThisMonth;
+import static com.example.billstracker.tools.DataTools.whatsDueThisMonth;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -51,8 +48,8 @@ import com.example.billstracker.tools.MainPieChart;
 import com.example.billstracker.tools.NavController;
 import com.example.billstracker.tools.NotificationManager;
 import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.github.mikephil.charting.charts.PieChart;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -71,7 +68,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -148,26 +144,19 @@ public class MainActivity2 extends AppCompatActivity {
             selectedDate = LocalDate.now(ZoneId.systemDefault());
         }
 
-        if (thisUser == null) {
-            UserData.load(MainActivity2.this);
-        }
+        Repo.getInstance().loadLocalData(MainActivity2.this);
 
         CountTickets.countTickets(MainActivity2.this);
 
         pastDue = 0;
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null && thisUser != null && thisUser.getUserName() != null && thisUser.getPassword() != null) {
-            FirebaseTools.signInWithEmailAndPassword(MainActivity2.this, thisUser.getUserName(), thisUser.getPassword(), wasSuccessful -> {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null && Repo.getInstance().getUser(MainActivity2.this) != null && Repo.getInstance().getUser(MainActivity2.this).getUserName() != null &&
+                Repo.getInstance().getUser(MainActivity2.this).getPassword() != null) {
+            FirebaseTools.signInWithEmailAndPassword(MainActivity2.this, Repo.getInstance().getUser(MainActivity2.this).getUserName(), Repo.getInstance().getUser(MainActivity2.this).getPassword(), wasSuccessful -> {
                 if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                     startActivity(new Intent(MainActivity2.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             });
-        }
-        if (payments == null) {
-            payments = new Payments(new ArrayList<>());
-        }
-        if (payments.getPayments() == null) {
-            payments.setPayments(new ArrayList<>());
         }
 
         nc.navController(MainActivity2.this, MainActivity2.this, pb, "main");
@@ -184,7 +173,7 @@ public class MainActivity2 extends AppCompatActivity {
             selectedDate = DateFormat.makeLocalDate(DateFormat.currentDateAsLong());
         }
 
-        if (thisUser.getAdmin()) {
+        if (Repo.getInstance().getUser(MainActivity2.this) != null && Repo.getInstance().getUser(MainActivity2.this).isAdmin()) {
             admin.setEnabled(true);
             admin.setOnClickListener(view -> {
                 Intent admin = new Intent(MainActivity2.this, Administrator.class);
@@ -220,6 +209,8 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
         checkIfNewUser();
+        NotificationChannel channel = new NotificationChannel(Repo.getInstance().getSavedChannelId(MainActivity2.this), "Bill Reminders", android.app.NotificationManager.IMPORTANCE_HIGH);
+        MainActivity2.this.getSystemService(android.app.NotificationManager.class).createNotificationChannel(channel);
     }
 
     public void showProgress() {
@@ -231,7 +222,7 @@ public class MainActivity2 extends AppCompatActivity {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             runOnUiThread(() -> {
-                BillerManager.refreshPayments();
+                BillerManager.refreshPayments(MainActivity2.this);
                 MainPieChart.setupPieChart(MainActivity2.this, pieChart);
                 MainPieChart.loadPieChartData(MainActivity2.this, pieChart, remainingProgressBar, noBillsFound, todayRecycler, laterThisWeekRecycler, laterThisMonthRecycler, earlierThisMonthRecycler, scroll);
                 listBills();
@@ -244,12 +235,23 @@ public class MainActivity2 extends AppCompatActivity {
         });
     }
 
-    public void checkIfNewUser () {
-        if (!bills.getBills().isEmpty() && !thisUser.getBudgets().isEmpty()) {
+    public void checkIfNewUser() {
+        User user = Repo.getInstance().getUser(MainActivity2.this);
+
+        if (user == null) {
+            return;
+        }
+
+        if (user.getBudgets() == null) {
+            user.setBudgets(new ArrayList<>());
+        }
+
+        if (!Repo.getInstance().getBills().isEmpty() && !user.getBudgets().isEmpty()) {
             Prefs.setTrainingDone(activity, true);
         }
-        if (!Prefs.isTrainingDone(MainActivity2.this) && thisUser.getTotalLogins() < 5) {
-            InstructionPopup popup = new InstructionPopup(MainActivity2.this);
+
+        if (!Prefs.isTrainingDone(MainActivity2.this) && user.getTotalLogins() < 5) {
+            new InstructionPopup(MainActivity2.this);
         }
     }
 
@@ -262,23 +264,26 @@ public class MainActivity2 extends AppCompatActivity {
         listBills();
         lineChartLoading.setVisibility(View.GONE);
 
-        channelId = NotificationManager.createNotificationChannel(MainActivity2.this);
+        if (Repo.getInstance().getUid() != null) {
+            channelId = Repo.getInstance().getUid();
+        }
+
         if (channelId != null) {
             NotificationManager.scheduleNotifications(MainActivity2.this);
         }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        if (thisUser.getPartners() == null) {
-            thisUser.setPartners(new ArrayList<>());
+        if (Repo.getInstance().getUser(MainActivity2.this).getPartners() == null) {
+            Repo.getInstance().getUser(MainActivity2.this).setPartners(new ArrayList<>());
         }
-        if (!thisUser.getPartners().isEmpty()) {
-            for (Partner partner : thisUser.getPartners()) {
+        if (!Repo.getInstance().getUser(MainActivity2.this).getPartners().isEmpty()) {
+            for (Partner partner : Repo.getInstance().getUser(MainActivity2.this).getPartners()) {
                 if (partner.getPartnerUid() != null) {
                     db.collection("users").document(partner.getPartnerUid()).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             User partnerUser = task.getResult().toObject(User.class);
                             if (partnerUser != null && partnerUser.getPartners() != null && !partnerUser.getPartners().isEmpty()) {
                                 for (Partner part : partnerUser.getPartners()) {
-                                    if (part.getPartnerUid().equals(uid)) {
+                                    if (part.getPartnerUid().equals(Repo.getInstance().getUid())) {
                                         if (part.getSharingAuthorized()) {
                                             if (!partner.getSharingAuthorized()) {
                                                 Notify.createPartnerRequestNotification(MainActivity2.this, partner, null, new Intent(MainActivity2.this, ShareAccount.class));
@@ -297,21 +302,19 @@ public class MainActivity2 extends AppCompatActivity {
 
     public void getValues() {
 
-        if (thisUser.getName() == null || thisUser.getUserName() == null) {
-            UserData.load(MainActivity2.this);
-        }
-
-        if (thisUser.getName().contains(" ")) {
-            if (thisUser.getName().length() > 2 && thisUser.getName().indexOf(' ') != 0) {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), thisUser.getName().substring(0, 1).toUpperCase(), thisUser.getName().substring(1, thisUser.getName().indexOf(' '))));
+        if (Repo.getInstance().getUser(MainActivity2.this).getName().contains(" ")) {
+            if (Repo.getInstance().getUser(MainActivity2.this).getName().length() > 2 && Repo.getInstance().getUser(MainActivity2.this).getName().indexOf(' ') != 0) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), Repo.getInstance().getUser(MainActivity2.this).getName().substring(0, 1).toUpperCase(),
+                        Repo.getInstance().getUser(MainActivity2.this).getName().substring(1, Repo.getInstance().getUser(MainActivity2.this).getName().indexOf(' '))));
             } else {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), thisUser.getName().toUpperCase()));
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), Repo.getInstance().getUser(MainActivity2.this).getName().toUpperCase()));
             }
         } else {
-            if (thisUser.getName().length() > 1) {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), thisUser.getName().substring(0, 1).toUpperCase(), thisUser.getName().substring(1)));
+            if (Repo.getInstance().getUser(MainActivity2.this).getName().length() > 1) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), Repo.getInstance().getUser(MainActivity2.this).getName().substring(0, 1).toUpperCase(),
+                        Repo.getInstance().getUser(MainActivity2.this).getName().substring(1)));
             } else {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), thisUser.getName().toUpperCase()));
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), Repo.getInstance().getUser(MainActivity2.this).getName().toUpperCase()));
             }
         }
     }
@@ -331,7 +334,7 @@ public class MainActivity2 extends AppCompatActivity {
         todayTotal = 0;
         laterThisWeekTotal = 0;
         laterTotal = 0;
-        dueThisMonth = whatsDueThisMonth();
+        dueThisMonth = whatsDueThisMonth(MainActivity2.this);
         sunday = DateFormat.makeLong(DateFormat.makeLocalDate(DateFormat.currentDateAsLong()).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)));
         todayDateValue = DateFormat.currentDateAsLong();
         long todaysDate = DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()));
@@ -343,7 +346,7 @@ public class MainActivity2 extends AppCompatActivity {
             Set<Payment> paySet = new LinkedHashSet<>(dueThisMonth);
             dueThisMonth.clear();
             dueThisMonth.addAll(paySet);
-            bills.setBills((ArrayList<Bill>) bills.getBills().stream().distinct().collect(Collectors.toList()));
+            Repo.getInstance().sortBills();
             noResults.setVisibility(View.GONE);
             for (Payment due : dueThisMonth) {
                 long dueDate = due.getDueDate();
@@ -521,7 +524,7 @@ public class MainActivity2 extends AppCompatActivity {
                 startActivity(new Intent(activity, PayBill.class).putExtra("Payment Id", payment.getPaymentId()));
             }
             else {
-                UserData.load(MainActivity2.this);
+                Repo.getInstance().loadLocalData(MainActivity2.this);
                 recreate();
             }
         });
@@ -544,13 +547,12 @@ public class MainActivity2 extends AppCompatActivity {
                 case ItemTouchHelper.LEFT:
                     pb.setVisibility(View.VISIBLE);
 
-                    for (Bill bill : bills.getBills()) {
-                        if (bill.getBillerName().equals(payment.getBillerName())) {
-                            Intent history = new Intent(MainActivity2.this, PaymentHistory.class);
-                            history.putExtra("User Id", thisUser.getid());
-                            history.putExtra("Bill Id", bill.getBillsId());
-                            startActivity(history);
-                        }
+                    Bill bill = Repo.getInstance().getBillByName(payment.getBillerName());
+                    if (bill != null) {
+                        Intent history = new Intent(MainActivity2.this, PaymentHistory.class);
+                        history.putExtra("User Id", Repo.getInstance().getUid());
+                        history.putExtra("Bill Id", bill.getBillsId());
+                        startActivity(history);
                     }
                     adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
 
@@ -563,7 +565,7 @@ public class MainActivity2 extends AppCompatActivity {
             adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
         }
         else {
-            UserData.load(MainActivity2.this);
+            Repo.getInstance().loadLocalData(MainActivity2.this);
             recreate();
         }
     }
@@ -575,6 +577,7 @@ public class MainActivity2 extends AppCompatActivity {
             makePayment = payment;
             PaymentConfirm pc = new PaymentConfirm(MainActivity2.this);
             pc.setConfirmListener(v -> {
+                Payments payments = new Payments(Repo.getInstance().getPayments());
                 payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
                 while (paymentAmount > 0.00) {
                     for (Payment pays : payments.getPayments()) {
@@ -583,7 +586,12 @@ public class MainActivity2 extends AppCompatActivity {
                                 pays.setPartialPayment(pays.getPartialPayment() + paymentAmount);
                                 pays.setDateChanged(true);
                                 pays.setDatePaid(newPaymentDate);
-                                pays.setOwner(uid);
+                                Repo.getInstance().updateBill(payment.getBillerName(), MainActivity2.this, bill -> {
+                                    if (bill != null) {
+                                        bill.setDateLastPaid(newPaymentDate);
+                                        bill.setBalance(bill.getBalance() - pays.getPartialPayment());
+                                    }
+                                });
                                 paymentAmount = 0.00;
                                 break;
                             }
@@ -592,49 +600,42 @@ public class MainActivity2 extends AppCompatActivity {
                             }
                             else {
                                 paymentAmount = paymentAmount - (FixNumber.makeDouble(String.valueOf(pays.getPaymentAmount())) - pays.getPartialPayment());
-                                pays.setPartialPayment(0);
                                 pays.setDateChanged(false);
                                 pays.setPaid(true);
-                                pays.setOwner(uid);
                                 pays.setDatePaid(newPaymentDate);
-                                for (Bill bill : bills.getBills()) {
-                                    if (bill.getBillerName().equals(payment.getBillerName())) {
+                                Repo.getInstance().updateBill(payment.getBillerName(), MainActivity2.this, bill -> {
+                                    if (bill != null) {
                                         bill.setPaymentsRemaining(bill.getPaymentsRemaining() - 1);
                                         bill.setDateLastPaid(newPaymentDate);
-                                        NotificationManager.scheduleNotifications(this);
-                                        break;
+                                        bill.setBalance(bill.getBalance() - (pays.getPaymentAmount() - pays.getPartialPayment()));
+                                        pays.setPartialPayment(0);
+                                        NotificationManager.scheduleNotifications(MainActivity2.this);
                                     }
-                                }
+                                });
                             }
                         }
                     }
                 }
-                UserData.save();
+                Repo.getInstance().save(MainActivity2.this);
                 pc.dismissDialog();
                 showProgress();
             });
             pc.setCloseListener(v -> {
                 pc.dismissDialog();
-                BillerManager.refreshPayments();
+                BillerManager.refreshPayments(MainActivity2.this);
                 showProgress();
             });
             pc.setPerimeterListener(view1 -> {
                 pc.dismissDialog();
-                BillerManager.refreshPayments();
+                BillerManager.refreshPayments(MainActivity2.this);
                 showProgress();
             });
 
         } else {
-            payment.deletePayment(true, isSuccessful -> {
-                if (isSuccessful) {
-                    dueThisMonth = whatsDueThisMonth();
-                    NotificationManager.scheduleNotifications(activity);
-                    showProgress();
-                }
-                else {
-                    Notify.createPopup(MainActivity2.this, getString(R.string.anErrorHasOccurred), null);
-                }
-            });
+            Repo.getInstance().deletePayment(makePayment.getPaymentId(), MainActivity2.this);
+            dueThisMonth = whatsDueThisMonth(MainActivity2.this);
+            NotificationManager.scheduleNotifications(activity);
+            showProgress();
         }
     }
 
@@ -662,7 +663,7 @@ public class MainActivity2 extends AppCompatActivity {
                     selectedDate = LocalDate.now(ZoneId.systemDefault());
                 }
                 if (currentDate != null && currentDate != selectedDate) {
-                    BillerManager.refreshPayments();
+                    BillerManager.refreshPayments(MainActivity2.this);
                     setCurrentMonth();
                     counter = 0;
                     listBills();
@@ -673,7 +674,7 @@ public class MainActivity2 extends AppCompatActivity {
                 getValues();
                 CountTickets.countTickets(MainActivity2.this);
                 showProgress();
-                bills.setBills((ArrayList<Bill>) bills.getBills().stream().distinct().collect(Collectors.toList()));
+                Repo.getInstance().sortBills();
                 loadingBills.setVisibility(View.GONE);
                 pb.setVisibility(View.GONE);
             });

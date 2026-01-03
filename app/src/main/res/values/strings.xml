@@ -299,7 +299,6 @@ Assignment\n\n
     <string name="noTicketsWereFound">No Tickets Were Found</string>
     <string name="registeredBillers">Registered Billers</string>
     <string name="clickBillerTile">Click a biller tile to view more information</string>
-    <string name="stms">Support Ticket Management System (STMS)</string>
     <string name="customerService1">Customer Service:</string>
     <string name="helloUser">Hello user and thank you for reaching out to us. We\'re overjoyed at the opportunity to serve you today! Please describe your issue in detail so that we may assist you!</string>
     <string name="overallStats">     Overall Stats     </string>
@@ -347,13 +346,6 @@ Assignment\n\n
     <string name="total">Total</string>
     <string name="paid">Paid</string>
     <string name="billTracker">Bill Tracker</string>
-    <string name="billTrackerNotificationChannel">Bill Tracker App Notification Channel</string>
-    <string name="yourBillFor">Your Bill For</string>
-    <string name="at">At</string>
-    <string name="isDueToday">Is Due Today</string>
-    <string name="isDueTomorrow">Is Due Tomorrow</string>
-    <string name="isDueInThreeDays">Is Due In 3 Days</string>
-    <string name="billDue">Bill Due</string>
     <string name="selectDate">Select Date</string>
     <string name="cancel">Cancel</string>
     <string name="justThisOccurence">Just This Occurrence</string>
@@ -367,7 +359,6 @@ Assignment\n\n
     <string name="anErrorHasOccurred">An error has occurred. Please try again.</string>
     <string name="passwordResetLinkSent">A password reset link has been sent to your email inbox. Please follow the instructions in the email to reset your password.</string>
     <string name="emailSent">Email Sent</string>
-    <string name="emailNotRegistered">That email address is not registered</string>
     <string name="emailNotFound">Email Not Found</string>
     <string name="verifyEmail">Your email address has not yet been verified. Please click the link in the email we sent to verify it. Be sure to check your spam folder.</string>
     <string name="emailNotVerified">Email Address Not Verified</string>
@@ -394,9 +385,6 @@ Assignment\n\n
     <string name="close_button">Close Button</string>
     <string name="upload_complete">Upload Complete!</string>
     <string name="administrator_control_panel">Administrator Control Panel</string>
-    <string name="biller_data">Biller Data</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">Open Tickets (1)</string>
     <string name="icon">Icon</string>
     <string name="_24_567_67">$24,567.67</string>
     <string name="paid_icon">Paid Icon</string>
@@ -478,9 +466,6 @@ Assignment\n\n
     <string name="logo">logo</string>
     <string name="pay_next_bill_button">Pay Next Bill Button</string>
     <string name="arrow">arrow</string>
-    <string name="isDueInTwoDays">Is Due In Two Days</string>
-    <string name="wasDue">Was Due</string>
-    <string name="yesterday">Yesterday</string>
     <string name="balance_forward">Balance Forward:</string>
     <string name="payment_date">Payment Date:</string>
     <string name="other_amount">Other Amount</string>
@@ -518,7 +503,6 @@ Assignment\n\n
     <string name="category_name">Category Name</string>
     <string name="future_budget">Future Budget</string>
     <string name="previous_budget">Previous Budget</string>
-    <string name="no_budget_categories_assigned">No budget categories have been assigned</string>
     <string name="a_percent_value_is_required_for_every_category">A percent value is required for every category.</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">Percent values cannot equal more than 100 when combined.</string>
     <string name="add_a_spending_category">Add A Spending Category</string>
@@ -555,7 +539,6 @@ Assignment\n\n
     <string name="weekly_savings">Weekly Savings:</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">Your email address has been updated successfully and a verification email has been sent. Please click the verification link in the email in order to login using your new email address.</string>
     <string name="user_registration_failed">User Registration Failed</string>
-    <string name="sign_in_failed_please_try_again">Sign-In Failed. Please try again</string>
     <string name="biller_name_can_t_be_blank">Biller name can\'t be blank</string>
     <string name="biller_name_is_already_in_use">Biller name is already in use</string>
     <string name="website_can_t_be_blank">Website can\'t be blank</string>
@@ -587,14 +570,12 @@ Assignment\n\n
     <string name="active">Active</string>
     <string name="requested_by_user">Requested By User</string>
     <string name="awaiting_partner_approval">Awaiting Partner Approval</string>
-    <string name="you_must_register_first">You Must Register First</string>
     <string name="when_did_you_pay_this_bill">When Did You Pay This Bill?</string>
     <string name="remaining_payments_can_t_be_blank">Remaining payments can\'t be blank</string>
     <string name="when_is_this_bill_due">When Is This Bill Due?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">Enter how many payments are remaining to update your biller</string>
     <string name="update_biller">Update Biller</string>
     <string name="bill_marked_as_paid_successfully">Bill marked as paid successfully</string>
-    <string name="delete_account">Delete Account</string>
     <string name="are_you_sure_you_would_like_to_logout">Are you sure you would like to logout?</string>
     <string name="username_is_unavailable">Username is unavailable</string>
     <string name="searching_database">Searching Database…</string>
@@ -613,9 +594,7 @@ Assignment\n\n
     <string name="expense_description_cannot_be_blank">Expense description cannot be blank</string>
     <string name="expense_amount_must_be_greater_than_0">Expense amount must be greater than 0</string>
     <string name="expense_was_saved_successfully">Expense was saved successfully</string>
-    <string name="biller_was_updated_successfully">Biller was updated successfully.</string>
     <string name="biller_update_failed">Biller update failed.</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">Email is not yet registered. Please click \"Create an account\" to get started</string>
     <string name="my_income">My Income</string>
     <string name="enter_your_income_details_to_calculate_your_dti">Enter your income details to calculate your DTI</string>
     <string name="income_amount">Income Amount</string>
@@ -658,7 +637,6 @@ Assignment\n\n
     <string name="sign_in_with_google">Sign In With Google</string>
     <string name="or">Or</string>
     <string name="amount_remaining_this_period">Amount Remaining This Period:</string>
-    <string name="login_failed_please_try_again">Login failed. Please try again.</string>
     <string name="weekly_spending">Weekly Spending</string>
     <string name="daily_spending">Daily Spending</string>
     <string name="monthly_spending">Monthly Spending</string>
@@ -672,16 +650,10 @@ Assignment\n\n
     <string name="a_good_budget_is_a_great_way_to_ensure_you_re_saving_enough_for_life_s_surpises_and_will_be_prepared_to_provide_for_those_you_care_most_about_no_matter_what_changes_may_come_create_a_budget_now_by_clicking_the_button_below">A good budget is a great way to ensure you\'re saving enough for life\'s surpises, and will be prepared to provide for those you care most about no matter what changes may come. Create a budget now by clicking the button below.</string>
     <string name="ready_to_track_your_bills">Ready To Track Your Bills?</string>
     <string name="changes_to_email_are_not_allowed_when_signed_in_via_google">Changes to email are not allowed when signed in via Google</string>
-    <string name="delete" translatable="false">\"Delete\"</string>
     <string name="select_email_app">Select Email App:</string>
     <string name="nothing_due_this_month">Nothing Due\n\nThis Month</string>
     <string name="remaining3">Remaining\n</string>
     <string name="total3">\n\nTotal\n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"If you are sure you would like to delete your account, please type "</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">" in the box below. This action cannot be undone."</string>
-    <string name="please_enter">"Please enter "</string>
-    <string name="to_proceed">" to proceed"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">If you are sure you would like to delete your account, please enter your password to confirm. This action cannot be undone.</string>
     <string name="edit_budget">Edit Budget</string>
     <string name="clothing">Clothing</string>
     <string name="gas">Gas</string>
@@ -705,4 +677,7 @@ Assignment\n\n
     <string name="select_a_new_end_date">Select A New End Date</string>
     <string name="you_have_a_sharing_request_from">"You have a sharing request from "</string>
     <string name="click_here_to_view_it">. Click here to view it.</string>
+    <string name="set_to_autopay">Set to Autopay</string>
+    <string name="symbol_to_indicate_that_a_bill_is_set_to_autopay">Symbol to indicate that a bill is set to autopay.</string>
+    <string name="logos_provided_by_logo_dev">Logos provided by Logo.dev</string>
 </resources>

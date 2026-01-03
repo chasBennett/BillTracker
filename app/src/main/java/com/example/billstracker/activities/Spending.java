@@ -1,8 +1,5 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.expenses;
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
 import static com.example.billstracker.tools.BillerManager.id;
 
 import android.annotation.SuppressLint;
@@ -37,7 +34,6 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
-import com.example.billstracker.custom_objects.Expenses;
 import com.example.billstracker.popup_classes.AddExpense;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.recycler_adapters.CategoriesRecyclerAdapter;
@@ -45,8 +41,8 @@ import com.example.billstracker.recycler_adapters.TransactionsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
@@ -137,14 +133,10 @@ public class Spending extends AppCompatActivity {
         transactionsLayout.setVisibility(View.GONE);
         categoriesListLayout.setVisibility(View.GONE);
 
-        if (expenses == null || expenses.getExpenses() == null) {
-            expenses = new Expenses(new ArrayList<>());
-        }
-
         ArrayList <Expense> remove = new ArrayList<>();
-        for (Expense expense: expenses.getExpenses()) {
+        for (Expense expense: Repo.getInstance().getExpenses()) {
             boolean found = false;
-            for (Expense exp: expenses.getExpenses()) {
+            for (Expense exp: Repo.getInstance().getExpenses()) {
                 if (expense.getId().equals(exp.getId())) {
                     if (!found) {
                         found = true;
@@ -157,7 +149,7 @@ public class Spending extends AppCompatActivity {
         }
 
         if (!remove.isEmpty()) {
-            expenses.getExpenses().removeAll(remove);
+            Repo.getInstance().getExpenses().removeAll(remove);
         }
 
         addListeners();
@@ -351,13 +343,13 @@ public class Spending extends AppCompatActivity {
         if (days == null) { days = new ArrayList<>(); }
         if (weeks == null) { weeks = new ArrayList<>(); }
         if (months == null) { months = new ArrayList<>(); }
-        if (expenses != null && expenses.getExpenses() != null) {
+        if (Repo.getInstance().getExpenses() != null) {
             if (freq == 0) {
                 days.clear();
                 LocalDate start = selectedDate.minusDays(3);
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : expenses.getExpenses()) {
+                    for (Expense expense : Repo.getInstance().getExpenses()) {
                         if (LocalDate.from(DateFormat.makeLocalDate(expense.getDate()).atStartOfDay()).isEqual(start)) {
                             total = total + expense.getAmount();
                         }
@@ -374,7 +366,7 @@ public class Spending extends AppCompatActivity {
                 LocalDate start = selectedDate.minusWeeks(3).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : expenses.getExpenses()) {
+                    for (Expense expense : Repo.getInstance().getExpenses()) {
                         if (expense.getDate() >= DateFormat.makeLong(start.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))) && expense.getDate() <= DateFormat.makeLong(start.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)))) {
                             total = total + expense.getAmount();
                         }
@@ -391,7 +383,7 @@ public class Spending extends AppCompatActivity {
                 LocalDate start = selectedDate.minusMonths(3);
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : expenses.getExpenses()) {
+                    for (Expense expense : Repo.getInstance().getExpenses()) {
                         if (expense.getDate() >= DateFormat.makeLong(start.withDayOfMonth(1)) && expense.getDate() <= DateFormat.makeLong(start.withDayOfMonth(start.lengthOfMonth()))) {
                             total = total + expense.getAmount();
                         }
@@ -427,9 +419,9 @@ public class Spending extends AppCompatActivity {
         weekEnd = LocalDate.from(selectedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).atStartOfDay());
         categories.clear();
 
-        if (thisUser.getBudgets() != null) {
-            if (!thisUser.getBudgets().isEmpty()) {
-                for (Budget bud: thisUser.getBudgets()) {
+        if (Repo.getInstance().getUser(Spending.this).getBudgets() != null) {
+            if (!Repo.getInstance().getUser(Spending.this).getBudgets().isEmpty()) {
+                for (Budget bud: Repo.getInstance().getUser(Spending.this).getBudgets()) {
                     if (bud.getStartDate() <= DateFormat.makeLong(selectedDate) && bud.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                         budget = bud;
                         break;
@@ -438,7 +430,7 @@ public class Spending extends AppCompatActivity {
             }
         }
         if (budget == null) {
-            budget = new Budget(thisUser.getIncome(), thisUser.getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
+            budget = new Budget(Repo.getInstance().getUser(Spending.this).getIncome(), Repo.getInstance().getUser(Spending.this).getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
                     DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()).plusMonths(6)), id(), 20, new ArrayList<>());
         }
         switch (budget.getPayFrequency()) {
@@ -494,8 +486,8 @@ public class Spending extends AppCompatActivity {
         }
 
         expenseList = new ArrayList<>();
-        if (expenses != null && expenses.getExpenses() != null && !expenses.getExpenses().isEmpty()) {
-            for (Expense expense : expenses.getExpenses()) {
+        if (Repo.getInstance().getExpenses() != null && !Repo.getInstance().getExpenses().isEmpty()) {
+            for (Expense expense : Repo.getInstance().getExpenses()) {
                 if (expense.getDate() >= start && expense.getDate() <= end) {
                     if (!expenseList.contains(expense)) {
                         expenseList.add(expense);
@@ -609,16 +601,16 @@ public class Spending extends AppCompatActivity {
                     case ItemTouchHelper.RIGHT:
                         transaction = adapter.getTransaction(position);
                         FirebaseFirestore.getInstance().collection("users").document(transaction.getOwner()).collection("expenses").document(transaction.getId()).delete();
-                        expenses.getExpenses().remove(transaction);
+                        Repo.getInstance().getExpenses().remove(transaction);
                         String message = transaction.getDescription() + " " + getString(R.string.has_been_removed);
                         Button snackButton = Notify.createButtonPopup(Spending.this, message, getString(R.string.undo), null);
                         snackButton.setOnClickListener(v -> {
-                            expenses.getExpenses().add(transaction);
-                            expenses.getExpenses().sort(Comparator.comparing(Expense::getDate).reversed());
-                            UserData.save();
+                            Repo.getInstance().getExpenses().add(transaction);
+                            Repo.getInstance().getExpenses().sort(Comparator.comparing(Expense::getDate).reversed());
+                            Repo.getInstance().save(Spending.this);
                             listExpenses();
                         });
-                        UserData.save();
+                        Repo.getInstance().save(Spending.this);
                         adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
                         listExpenses();
                         break;
@@ -696,7 +688,7 @@ public class Spending extends AppCompatActivity {
                             budget.getCategories().remove(category);
                             categoriesList.removeView(slider);
                             sliders.remove(categorySlider);
-                            FirebaseFirestore.getInstance().collection("users").document(uid).set(thisUser, SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })
@@ -725,7 +717,7 @@ public class Spending extends AppCompatActivity {
             categoriesList.addView(slider);
         }
         submit.setOnClickListener(view -> {
-            FirebaseFirestore.getInstance().collection("users").document(uid).set(thisUser, SetOptions.merge());
+            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
             cats.setVisibility(View.VISIBLE);
             categoriesListLayout.setVisibility(View.GONE);
             categoriesList.removeAllViews();
@@ -781,7 +773,7 @@ public class Spending extends AppCompatActivity {
                         .setPositiveButton(getString(R.string.remove), (dialogInterface, i) -> {
                             budget.getCategories().remove(newCat);
                             categoriesList.removeView(slider);
-                            FirebaseFirestore.getInstance().collection("users").document(uid).set(thisUser, SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })

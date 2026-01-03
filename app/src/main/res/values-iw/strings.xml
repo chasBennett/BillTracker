@@ -349,7 +349,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="noTicketsWereFound">לא נמצאו כרטיסים</string>
     <string name="registeredBillers">בילטרים רשומים</string>
     <string name="clickBillerTile">לחץ על אריח מגולר כדי להציג מידע נוסף</string>
-    <string name="stms">מערכת ניהול כרטיסי תמיכה (STMS)</string>
     <string name="customerService1">שירות לקוחות:</string>
     <string name="helloUser">שלום משתמש ותודה שפנית אלינו. אנו שמחים על ההזדמנות לשרת אותך היום! אנא תאר את הבעיה שלך בפירוט כדי שנוכל לסייע לך!</string>
     <string name="overallStats">סטטיסטיקות כלליות</string>
@@ -398,13 +397,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     '
     <string name="paid">שולם</string>
     <string name="billTracker">ביל גשש</string>
-    <string name="billTrackerNotificationChannel">ערוץ ההתראות של האפליקציה Bill Tracker</string>
-    <string name="yourBillFor">החשבון שלך עבור</string>
-    <string name="at">בְּ</string>
-    <string name="isDueToday">מגיע היום</string>
-    <string name="isDueTomorrow">אמורה להגיע מחר</string>
-    <string name="isDueInThreeDays">אמור להגיע בעוד 3 ימים</string>
-    <string name="billDue">ביל בשל</string>
     <string name="selectDate">בחר תאריך</string>
     <string name="cancel">לְבַטֵל</string>
     <string name="justThisOccurence">רק ההתרחשות הזו</string>
@@ -418,7 +410,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="anErrorHasOccurred">אירעה שגיאה. בבקשה נסה שוב.</string>
     <string name="passwordResetLinkSent">קישור לאיפוס סיסמה נשלח לתיבת הדואר הנכנס שלך. אנא עקוב אחר ההוראות בדוא"ל כדי לאפס את הסיסמה שלך.</string>
     <string name="emailSent">הדוא"ל נשלח</string>
-    <string name="emailNotRegistered">כתובת האימייל הזו לא רשומה</string>
     <string name="emailNotFound">אימייל לא נמצא</string>
     <string name="verifyEmail">כתובת האימייל שלך עדיין לא אומתה. אנא לחץ על הקישור בדוא"ל ששלחנו כדי לאמת זאת. הקפד לבדוק את תיקיית הספאם שלך.</string>
     <string name="emailNotVerified">כתובת אימייל לא מאומתת</string>
@@ -445,9 +436,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="close_button">כפתור סגירה</string>
     <string name="upload_complete">ההעלאה הושלמה!</string>
     <string name="administrator_control_panel">לוח הבקרה של מנהל המערכת</string>
-    <string name="biller_data">נתוני בילר</string>
-    <string name="ums">UMS</string>
-    <string name="open_tickets_1">כרטיסים פתוחים (1)</string>
     <string name="icon">סמל</string>
     <string name="_24_567_67">$24,567.67</string>
     <string name="paid_icon">אייקון בתשלום</string>
@@ -529,9 +517,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="logo">סֵמֶל</string>
     <string name="pay_next_bill_button">כפתור תשלום החשבון הבא</string>
     <string name="arrow">חֵץ</string>
-    <string name="isDueInTwoDays">אמור להגיע בעוד יומיים</string>
-    <string name="wasDue">היה בשל</string>
-    <string name="yesterday">אתמול</string>
     <string name="balance_forward">לאזן קדימה:</string>
     <string name="payment_date">תאריך תשלום:</string>
     <string name="other_amount">סכום אחר</string>
@@ -566,7 +551,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="category_name">שם קטגוריה</string>
     <string name="future_budget">תקציב עתידי</string>
     <string name="previous_budget">תקציב קודם</string>
-    <string name="no_budget_categories_assigned">לא הוקצו קטגוריות תקציב</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">ערכי אחוז אינם יכולים להיות יותר מ-100 בשילוב.</string>
     <string name="a_percent_value_is_required_for_every_category">נדרש ערך אחוז עבור כל קטגוריה.</string>
     <string name="add_a_spending_category">הוסף קטגוריית הוצאות</string>
@@ -599,7 +583,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="weekly_savings">חיסכון שבועי:</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">כתובת הדוא\"ל שלך עודכנה בהצלחה ונשלחה דוא\"ל אימות. אנא לחץ על קישור האימות בדוא\"ל כדי להתחבר באמצעות כתובת הדוא\"ל החדשה שלך.</string>
     <string name="user_registration_failed">רישום המשתמש נכשל</string>
-    <string name="sign_in_failed_please_try_again">ההרשמה נכשלה. בבקשה נסה שוב</string>
     <string name="biller_name_can_t_be_blank">שם המפרסם לא יכול להיות ריק</string>
     <string name="biller_name_is_already_in_use">שם הבילר כבר בשימוש</string>
     <string name="website_can_t_be_blank">האתר לא יכול להיות ריק</string>
@@ -632,14 +615,12 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="active">פָּעִיל</string>
     <string name="requested_by_user">מבוקש על ידי המשתמש</string>
     <string name="awaiting_partner_approval">ממתין לאישור השותף</string>
-    <string name="you_must_register_first">עליך להירשם תחילה</string>
     <string name="when_did_you_pay_this_bill">מתי שילמת את החשבון הזה?</string>
     <string name="remaining_payments_can_t_be_blank">התשלומים הנותרים לא יכולים להיות ריקים</string>
     <string name="when_is_this_bill_due">מתי יש לשלם את החשבון הזה?</string>
     <string name="enter_how_many_payments_are_remaining_to_update_your_biller">הזן כמה תשלומים נותרו כדי לעדכן את החיוב שלך</string>
     <string name="update_biller">עדכן את בילר</string>
     <string name="bill_marked_as_paid_successfully">החשבון סומן כשולם בהצלחה</string>
-    <string name="delete_account">מחק חשבון</string>
     <string name="are_you_sure_you_would_like_to_logout">האם אתה בטוח שברצונך להתנתק?</string>
     <string name="username_is_unavailable">שם המשתמש אינו זמין</string>
     <string name="searching_database">מחפש מסד נתונים…</string>
@@ -658,9 +639,7 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="expense_description_cannot_be_blank">תיאור ההוצאה לא יכול להיות ריק</string>
     <string name="expense_amount_must_be_greater_than_0">סכום ההוצאה חייב להיות גדול מ-0</string>
     <string name="expense_was_saved_successfully">ההוצאה נשמרה בהצלחה</string>
-    <string name="biller_was_updated_successfully">בילר עודכן בהצלחה.</string>
     <string name="biller_update_failed">עדכון בילר נכשל.</string>
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">האימייל עדיין לא רשום. אנא לחץ על \"צור חשבון\" כדי להתחיל</string>
     <string name="my_income">ההכנסה שלי</string>
     <string name="enter_your_income_details_to_calculate_your_dti">הזן את פרטי ההכנסה שלך כדי לחשב את ה-DTI שלך</string>
     <string name="income_amount">כמות הכנסה</string>
@@ -703,7 +682,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="sign_in_with_google">היכנס עם גוגל</string>
     <string name="or">אוֹ</string>
     <string name="amount_remaining_this_period">הסכום שנותר לתקופה זו:</string>
-    <string name="login_failed_please_try_again">הכניסה נכשלה. אנא נסה שוב.</string>
     <string name="weekly_spending">הוצאות שבועיות</string>
     <string name="daily_spending">הוצאות יומיות</string>
     <string name="monthly_spending">הוצאות חודשיות</string>
@@ -721,11 +699,6 @@ Bill Tracker רשאי להקצות הסכם זה לכל צד בכל עת ללא 
     <string name="nothing_due_this_month">שום דבר שמגיע לחודש</string>
     <string name="remaining3">נשאר \ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"אם אתה בטוח שאתה רוצה למחוק את חשבונך, אנא הקלד"</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">"בתיבה למטה. לא ניתן לבטל פעולה זו."</string>
-    <string name="please_enter">"אנא הכנס"</string>
-    <string name="to_proceed">"להמשיך"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">אם אתה בטוח שאתה רוצה למחוק את חשבונך, אנא הזן את הסיסמה שלך כדי לאשר. לא ניתן לבטל פעולה זו.</string>
     <string name="edit_budget">ערוך תקציב</string>
     <string name="clothing">הַלבָּשָׁה</string>
     <string name="gas">גַז</string>

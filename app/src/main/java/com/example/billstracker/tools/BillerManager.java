@@ -1,14 +1,11 @@
 package com.example.billstracker.tools;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
 import static com.example.billstracker.activities.MainActivity2.selectedDate;
 
+import android.content.Context;
+
 import com.example.billstracker.custom_objects.Bill;
-import com.example.billstracker.custom_objects.Bills;
 import com.example.billstracker.custom_objects.Payment;
-import com.example.billstracker.custom_objects.Payments;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.security.SecureRandom;
@@ -20,25 +17,24 @@ import java.util.Set;
 
 public class BillerManager {
 
-    public static void refreshPayments() {
+    public static void refreshPayments(Context context) {
 
         if (selectedDate == null) {
             selectedDate = LocalDate.now();
         }
-        if (payments == null || payments.getPayments() == null) {
-            payments = new Payments(new ArrayList<>());
-        }
+
         ArrayList<Payment> paymentList = new ArrayList<>();
-        payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
-        for (Bill bill : bills.getBills()) {
-            for (Payment payment : payments.getPayments()) {
+        Repo.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+        Repo.getInstance().removeDuplicatePayments();
+        for (Bill bill : Repo.getInstance().getBills()) {
+            for (Payment payment : Repo.getInstance().getPayments()) {
                 boolean found = false;
                 if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid() || payment.getBillerName().equals(bill.getBillerName()) && payment.isDateChanged() && payment.getDueDate() >= bill.getDueDate()) {
                     paymentList.add(payment);
                     found = true;
                 }
                 else if (payment.getBillerName().equals(bill.getBillerName()) && !payment.isPaid() && payment.isDateChanged() && payment.getDueDate() < bill.getDueDate()) {
-                    payment.deletePayment(false, isSuccessful -> {});
+                    Repo.getInstance().deletePayment(payment.getPaymentId(), context);
                 }
                 if (!bill.isRecurring() && found) {
                     bill.setPaymentsRemaining(0);
@@ -47,12 +43,12 @@ public class BillerManager {
             }
         }
         Set<Payment> set = new LinkedHashSet<>(paymentList);
-        payments.getPayments().clear();
-        payments.getPayments().addAll(set);
-        payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
+        Repo.getInstance().getPayments().clear();
+        Repo.getInstance().getPayments().addAll(set);
+        Repo.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
         long endDate = DateFormat.makeLong(selectedDate.plusYears(1).withDayOfMonth(1));
-        if (thisUser != null && bills.getBills() != null) {
-            for (Bill bill : bills.getBills()) {
+        if (Repo.getInstance().getUser(context) != null && Repo.getInstance().getBills() != null) {
+            for (Bill bill : Repo.getInstance().getBills()) {
                 int paymentNumber = 1;
                 long iterateDate = bill.getDueDate();
                 int frequency = bill.getFrequency();
@@ -60,7 +56,7 @@ public class BillerManager {
 
                 while (iterateDate <= endDate && paymentsRemaining > 0) {
                     boolean found = false;
-                    for (Payment payment : payments.getPayments()) {
+                    for (Payment payment : Repo.getInstance().getPayments()) {
                         if (payment.getBillerName().equals(bill.getBillerName()) && payment.getDueDate() >= iterateDate && payment.getDueDate() <= DateFormat.incrementDate(frequency, iterateDate)) {
                             found = true;
                             iterateDate = DateFormat.incrementDate(frequency, iterateDate);
@@ -76,7 +72,7 @@ public class BillerManager {
                         }
                         Payment payment = new Payment(bill.getAmountDue(), 0, iterateDate, false, false, paymentNumber, bill.getBillerName(), id, 0, bill.getOwner());
                         ++paymentNumber;
-                        payments.getPayments().add(payment);
+                        Repo.getInstance().getPayments().add(payment);
                         iterateDate = DateFormat.incrementDate(frequency, iterateDate);
                         --paymentsRemaining;
                     }
@@ -84,11 +80,11 @@ public class BillerManager {
             }
         }
 
-        if (payments != null && payments.getPayments() != null) {
+        if (Repo.getInstance().getPayments() != null) {
             ArrayList <Payment> remove = new ArrayList<>();
-            for (Payment pay: payments.getPayments()) {
+            for (Payment pay: Repo.getInstance().getPayments()) {
                 boolean found = false;
-                for (Payment payment: payments.getPayments()) {
+                for (Payment payment: Repo.getInstance().getPayments()) {
                     if (pay.getBillerName().equals(payment.getBillerName()) && pay.getDueDate() == payment.getDueDate()) {
                         if (!found) {
                             found = true;
@@ -100,16 +96,13 @@ public class BillerManager {
                 }
             }
             if (!remove.isEmpty()) {
-                payments.getPayments().removeAll(remove);
+                Repo.getInstance().getPayments().removeAll(remove);
             }
         }
-        if (bills == null || bills.getBills() == null) {
-            bills = new Bills(new ArrayList<>());
-        }
         ArrayList <Bill> remove = new ArrayList<>();
-        for (Bill bill: bills.getBills()) {
+        for (Bill bill: Repo.getInstance().getBills()) {
             boolean found = false;
-            for (Bill bil: bills.getBills()) {
+            for (Bill bil: Repo.getInstance().getBills()) {
                 if (bill.getBillerName().equals(bil.getBillerName())) {
                     if (!found) {
                         found = true;
@@ -120,12 +113,12 @@ public class BillerManager {
                 }
             }
         }
-        bills.getBills().removeAll(remove);
+        Repo.getInstance().getBills().removeAll(remove);
     }
     public static void deleteFuturePayments(String billerName, long newDueDate, FirebaseTools.FirebaseCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
             ArrayList <Payment> remove = new ArrayList<>();
-            for (Payment payment: payments.getPayments()){
+            for (Payment payment: Repo.getInstance().getPayments()){
                 if (payment.getBillerName().equals(billerName) && payment.getDueDate() >= newDueDate) {
                     remove.add(payment);
                 }
@@ -134,25 +127,25 @@ public class BillerManager {
                 }
             }
             if (!remove.isEmpty()) {
-                payments.getPayments().removeAll(remove);
+                Repo.getInstance().getPayments().removeAll(remove);
                 for (Payment payment : remove) {
                     db.collection("users").document(payment.getOwner()).collection("payments").document(String.valueOf(payment.getPaymentId())).delete();
                 }
-                Data.getBill(billerName).setPaymentsRemaining(Data.getBill(billerName).getPaymentsRemaining() + 1);
+                DataTools.getBill(billerName).setPaymentsRemaining(DataTools.getBill(billerName).getPaymentsRemaining() + 1);
                 long highest = 0;
-                for (Payment pay : payments.getPayments()) {
+                for (Payment pay : Repo.getInstance().getPayments()) {
                     if (pay.getBillerName().equals(billerName) && pay.isPaid() && pay.getDatePaid() > highest) {
                         highest = pay.getDatePaid();
                     }
                 }
-                Data.getBill(billerName).setDateLastPaid(highest);
+                DataTools.getBill(billerName).setDateLastPaid(highest);
                 callback.isSuccessful(true);
             }
     }
     static boolean idExists (int id) {
 
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment payment : payments.getPayments()) {
+        if (Repo.getInstance().getPayments() != null) {
+            for (Payment payment : Repo.getInstance().getPayments()) {
                 if (payment.getPaymentId() == id) {
                     return true;
                 }

@@ -351,7 +351,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="noTicketsWereFound">Aucun billet n\'a été trouvé</string>
     <string name="registeredBillers">Facteurs enregistrés</string>
     <string name="clickBillerTile">Cliquez sur une vignette de facturation pour afficher plus d\'informations</string>
-    <string name="stms">Système de gestion des tickets d\'assistance (STMS)</string>
     <string name="customerService1">Service Clients:</string>
     <string name="helloUser">Bonjour utilisateur et merci de nous avoir contacté. Nous sommes ravis de l\'opportunité de vous servir aujourd\'hui ! Veuillez décrire votre problème en détail afin que nous puissions vous aider !</string>
     <string name="overallStats">Statistiques globales</string>
@@ -400,13 +399,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     '
     <string name="paid">Payé</string>
     <string name="billTracker">Suivi des factures</string>
-    <string name="billTrackerNotificationChannel">Canal de notification de l\'application Bill Tracker</string>
-    <string name="yourBillFor">Votre facture pour</string>
-    <string name="at">À</string>
-    <string name="isDueToday">Est due aujourd\'hui</string>
-    <string name="isDueTomorrow">Est dû demain</string>
-    <string name="isDueInThreeDays">Est due dans 3 jours</string>
-    <string name="billDue">Facture due</string>
     <string name="selectDate">Sélectionner une date</string>
     <string name="cancel">Annuler</string>
     <string name="justThisOccurence">Juste cet événement</string>
@@ -420,7 +412,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="anErrorHasOccurred">Une erreur est survenue. Veuillez réessayer.</string>
     <string name="passwordResetLinkSent">Un lien de réinitialisation du mot de passe a été envoyé dans votre boîte de réception. Veuillez suivre les instructions de l\'e-mail pour réinitialiser votre mot de passe.</string>
     <string name="emailSent">Email envoyé</string>
-    <string name="emailNotRegistered">Cette adresse e-mail n\'est pas enregistrée</string>
     <string name="emailNotFound">Email non trouvé</string>
     <string name="verifyEmail">Votre adresse e-mail n\'a pas encore été vérifiée. Veuillez cliquer sur le lien dans l\'e-mail que nous avons envoyé pour le vérifier. Assurez-vous de vérifier votre dossier spam.</string>
     <string name="emailNotVerified">Adresse e-mail non vérifiée</string>
@@ -447,9 +438,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="close_button">Bouton Fermer</string>
     <string name="upload_complete">Téléchargement complet!</string>
     <string name="administrator_control_panel">Panneau de configuration de l\'administrateur</string>
-    <string name="biller_data">Données de facturation</string>
-    <string name="ums">SMU</string>
-    <string name="open_tickets_1">Billets ouverts (1)</string>
     <string name="icon">Icône</string>
     <string name="_24_567_67">24 567,67 $</string>
     <string name="paid_icon">Icône payante</string>
@@ -531,9 +519,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="logo">logo</string>
     <string name="pay_next_bill_button">Bouton Payer la facture suivante</string>
     <string name="arrow">flèche</string>
-    <string name="isDueInTwoDays">Est due dans deux jours</string>
-    <string name="wasDue">Était due</string>
-    <string name="yesterday">Hier</string>
     <string name="balance_forward">Solde à reporter :</string>
     <string name="payment_date">Date de paiement:</string>
     <string name="other_amount">Autre montant</string>
@@ -568,7 +553,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="category_name">Nom de catégorie</string>
     <string name="future_budget">" Budget futur"</string>
     <string name="previous_budget">" Budget précédent"</string>
-    <string name="no_budget_categories_assigned">Aucune catégorie budgétaire attribuée</string>
     <string name="percent_values_cannot_equal_more_than_100_when_combined">" Les valeurs en pourcentage ne peuvent pas dépasser 100 lorsqu’elles sont combinées."</string>
     <string name="a_percent_value_is_required_for_every_category">" Une valeur en pourcentage est requise pour chaque catégorie."</string>
     <string name="add_a_spending_category">Ajouter une catégorie de dépenses</string>
@@ -601,7 +585,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="weekly_savings">Économies hebdomadaires :</string>
     <string name="your_email_address_has_been_updated_successfully_and_a_verification_email_has_been_sent_please_click_the_verification_link_in_the_email_in_order_to_login_using_your_new_email_address">" Votre adresse e-mail a été mise à jour avec succès et un e-mail de vérification a été envoyé. Veuillez cliquer sur le lien de vérification dans l'e-mail afin de vous connecter en utilisant votre nouvelle adresse e-mail."</string>
     <string name="user_registration_failed">Échec de l\'enregistrement de l\'utilisateur</string>
-    <string name="sign_in_failed_please_try_again">Échec de la connexion. Veuillez réessayer</string>
     <string name="biller_name_can_t_be_blank">Le nom de l\'émetteur de la facture ne peut pas être vide</string>
     <string name="biller_name_is_already_in_use">Le nom de l\'émetteur de factures est déjà utilisé</string>
     <string name="website_can_t_be_blank">Le site Web ne peut pas être vide</string>
@@ -659,7 +642,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
 
     <string name="awaiting_partner_approval">En attente de l\'approbation du partenaire</string>
 
-    <string name="you_must_register_first">Vous devez d\'abord vous inscrire</string>
 
     <string name="when_did_you_pay_this_bill">Quand avez-vous payé cette facture ?</string>
 
@@ -673,7 +655,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
 
     <string name="bill_marked_as_paid_successfully">Facture marquée comme payée avec succès</string>
 
-    <string name="delete_account">Supprimer le compte</string>
 
     <string name="are_you_sure_you_would_like_to_logout">Êtes-vous sûr de vouloir vous déconnecter ?</string>
 
@@ -711,11 +692,9 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
 
     <string name="expense_was_saved_successfully">La dépense a été enregistrée avec succès</string>
 
-    <string name="biller_was_updated_successfully">Biller a été mis à jour avec succès.</string>
 
     <string name="biller_update_failed">La mise à jour du émetteur de factures a échoué.</string>
 
-    <string name="email_is_not_yet_registered_please_click_create_an_account_to_get_started">L\'e-mail n\'est pas encore enregistré. Veuillez cliquer sur « Créer un compte » pour commencer</string>
 
     <string name="my_income">Mon revenu</string>
 
@@ -774,7 +753,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="sign_in_with_google">Connectez-vous avec Google</string>
     <string name="or">Ou</string>
     <string name="amount_remaining_this_period">Montant restant cette période:</string>
-    <string name="login_failed_please_try_again">La connexion a échoué. Veuillez réessayer.</string>
     <string name="weekly_spending">Dépenses hebdomadaires</string>
     <string name="daily_spending">Dépenses quotidiennes</string>
     <string name="monthly_spending">Dépenses mensuelles</string>
@@ -792,11 +770,6 @@ Si vous avez des questions sur l\'application ou cet accord, veuillez contacter 
     <string name="nothing_due_this_month">Rien du dû \ n \ ntu mois</string>
     <string name="remaining3">Restant \ n</string>
     <string name="total3">\ n \ ntotal \ n</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_type">"Si vous êtes sûr que vous souhaitez supprimer votre compte, veuillez taper"</string>
-    <string name="in_the_box_below_this_action_cannot_be_undone">"Dans la case ci-dessous. Cette action ne peut pas être annulée."</string>
-    <string name="please_enter">"Veuillez entrer"</string>
-    <string name="to_proceed">"Procéder"</string>
-    <string name="if_you_are_sure_you_would_like_to_delete_your_account_please_enter_your_password_to_confirm_this_action_cannot_be_undone">Si vous êtes sûr que vous souhaitez supprimer votre compte, veuillez saisir votre mot de passe pour confirmer. Cette action ne peut pas être annulée.</string>
     <string name="edit_budget">Modifier le budget</string>
     <string name="clothing">Vêtements</string>
     <string name="gas">Gaz</string>

@@ -1,0 +1,67 @@
+[versions]
+agp = "8.8.1"
+compiler = "5.0.5"
+credentials = "1.6.0-rc01"
+flexbox = "3.0.0"
+glideVersion = "5.0.5"
+googleid = "<latest version>"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+kotlin = "2.0.21"
+googleServices = "4.4.4"
+firebaseCrashlytics = "3.0.6"
+dependencyAnalysis = "3.0.4"
+lottie = "6.6.10"
+
+# Libraries
+material = "1.13.0"
+constraintlayout = "2.2.1"
+gson = "2.13.2"
+fragment = "1.8.9"
+lifecycle = "2.10.0"
+firebaseBom = "34.7.0"
+appcompat = "1.7.1"
+glide = "5.0.5"
+biometric = "1.1.0"
+mpandroidchart = "v3.1.0"
+playServicesAds = "24.9.0"
+playServicesAdsApi = "24.9.0"
+recyclerviewSwipedecorator = "1.4"
+
+[libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-database = { module = "com.google.firebase:firebase-database" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
+junit = { module = "junit:junit", version.ref = "junit" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
+recyclerview-swipedecorator = { module = "it.xabaras.android:recyclerview-swipedecorator", version.ref = "recyclerviewSwipedecorator" }
+# Add others following this pattern...
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

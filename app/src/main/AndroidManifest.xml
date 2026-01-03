@@ -83,12 +83,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <receiver
-            android:name=".tools.NotificationReceiver"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedReceiver" />
-
         <activity
             android:name=".activities.PayBill"
             android:exported="true"
@@ -133,7 +127,8 @@
             android:name=".activities.EditProfile"
             android:exported="false"
             android:parentActivityName=".activities.Settings"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.EditProfile" />
         <activity
             android:name=".activities.Register"
             android:exported="false"

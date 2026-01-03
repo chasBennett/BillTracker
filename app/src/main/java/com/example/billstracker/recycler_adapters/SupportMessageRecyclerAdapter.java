@@ -1,7 +1,5 @@
 package com.example.billstracker.recycler_adapters;
 
-import static com.example.billstracker.activities.Login.thisUser;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
@@ -14,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Message;
+import com.example.billstracker.tools.Repo;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -34,7 +33,7 @@ public class SupportMessageRecyclerAdapter extends RecyclerView.Adapter<SupportM
 
     @Override
     public int getItemViewType(int position) {
-        if (messages.get(position).getAuthorId().equals(thisUser.getid())) {
+        if (messages.get(position).getAuthorId().equals(Repo.getInstance().getUser(context).getId())) {
             return SENT;
         }
         else {

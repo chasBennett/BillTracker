@@ -1,32 +1,31 @@
 package com.example.billstracker.tools;
 
-import static com.example.billstracker.activities.Login.bills;
-import static com.example.billstracker.activities.Login.payments;
-import static com.example.billstracker.activities.Login.thisUser;
+import static androidx.constraintlayout.widget.Constraints.TAG;
 import static com.example.billstracker.activities.MainActivity2.dueThisMonth;
 import static com.example.billstracker.activities.MainActivity2.selectedDate;
 import static com.example.billstracker.tools.BillerManager.deleteFuturePayments;
-import static com.example.billstracker.tools.BillerManager.refreshPayments;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.billstracker.R;
-import com.example.billstracker.activities.Login;
 import com.example.billstracker.activities.MainActivity2;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Payment;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public interface Data {
+public interface DataTools {
     static Bill getBill (String nameOrId) {
         if (nameOrId != null) {
-            if (bills != null && bills.getBills() != null) {
-                for (Bill bill : bills.getBills()) {
+            if (Repo.getInstance().getBills() != null) {
+                for (Bill bill : Repo.getInstance().getBills()) {
                     if (bill.getBillsId().equals(nameOrId)) {
                         return bill;
                     }
@@ -41,8 +40,8 @@ public interface Data {
 
     static void changePaymentDueDate(Payment payment, long newDueDate, boolean changeAll, FirebaseTools.FirebaseCallback callback) {
         if (changeAll) {
-            if (bills != null && bills.getBills() != null) {
-                for (Bill bill : bills.getBills()) {
+            if (Repo.getInstance().getBills() != null) {
+                for (Bill bill : Repo.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         bill.setDueDate(newDueDate);
                     }
@@ -52,8 +51,6 @@ public interface Data {
                 if (isSuccessful) {
                     payment.setDateChanged(false);
                     payment.setDueDate(newDueDate);
-                    refreshPayments();
-                    UserData.save();
                     callback.isSuccessful(true);
                 }
                 else {
@@ -62,28 +59,19 @@ public interface Data {
             });
         }
         else {
-            if (payments != null && payments.getPayments() != null && payment != null) {
-                for (Payment payments : payments.getPayments()) {
+            if (Repo.getInstance().getPayments() != null && payment != null) {
+                for (Payment payments : Repo.getInstance().getPayments()) {
                     if (payments.getPaymentId() == payment.getPaymentId()) {
                         payments.setDueDate(newDueDate);
                         payments.setDateChanged(true);
                         payment.setDueDate(newDueDate);
                         payment.setDateChanged(true);
                         callback.isSuccessful(true);
-                        UserData.save();
                         break;
                     }
                 }
             }
         }
-    }
-    static boolean paidPaymentFound (String billerName) {
-        for (Payment payment: payments.getPayments()) {
-            if (payment.getBillerName().equals(billerName) && payment.isPaid()) {
-                return true;
-            }
-        }
-        return false;
     }
     static ArrayList <String> getCategories (Context context) {
         if (context != null) {
@@ -117,9 +105,9 @@ public interface Data {
         return new ArrayList<>(Arrays.asList(R.drawable.auto, R.drawable.credit_card, R.drawable.entertainment, R.drawable.insurance,
                 R.drawable.invoice, R.drawable.mortgage, R.drawable.personal_loan, R.drawable.utilities));
     }
-    static Budget getBudget (int budgetId) {
-        if (thisUser != null && thisUser.getBudgets() != null) {
-            for (Budget bud : thisUser.getBudgets()) {
+    static Budget getBudget (Context context, int budgetId) {
+        if (Repo.getInstance().getUser(context) != null && Repo.getInstance().getUser(context).getBudgets() != null) {
+            for (Budget bud : Repo.getInstance().getUser(context).getBudgets()) {
                 if (bud.getBudgetId() == budgetId) {
                     return bud;
                 }
@@ -127,19 +115,21 @@ public interface Data {
         }
         return new Budget(0, 2, DateFormat.makeLong(LocalDate.now().minusMonths(6)), DateFormat.makeLong(LocalDate.now().plusMonths(6)), budgetId, 20, new ArrayList<>());
     }
-    static ArrayList<Payment> whatsDueThisMonth() {
+    static ArrayList<Payment> whatsDueThisMonth(Context context) {
 
         dueThisMonth.clear();
         MainActivity2.pastDue = 0;
         long monthStart = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(1).atStartOfDay()));
         long monthEnd = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()));
-        BillerManager.refreshPayments();
-        ArrayList<Payment> payments = Login.payments.getPayments();
+        BillerManager.refreshPayments(context);
+        ArrayList<Payment> payments = Repo.getInstance().getPayments();
         payments.sort(Comparator.comparing(Payment::getDueDate));
 
         if (!payments.isEmpty()) {
             for (Payment payment : payments) {
-                if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd) {
+                if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd || payment.getDueDate() < DateFormat.currentDateAsLong() && !payment.isPaid() &&
+                        selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth() ||
+                payment.getDueDate() < monthStart && !payment.isPaid() && selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth()) {
                     if (!dueThisMonth.contains(payment)) {
                         dueThisMonth.add(payment);
                     }
@@ -167,5 +157,33 @@ public interface Data {
             paymentsList.removeAll(remove);
         }
         return paymentsList;
+    }
+    static void getLatestBillersVersion (OnVersionRetrievedListener listener) {
+        FirebaseFirestore.getInstance().collection("versions").document("billers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Long version = document.getLong("version");
+
+                    if (version != null) {
+                        Log.d(TAG, "Fetched version number: " + version);
+                        listener.onComplete(true, Math.toIntExact(version));
+                    } else {
+                        Log.d(TAG, "Version field not found or is null in the document.");
+                        listener.onComplete(false, 0);
+                    }
+                }
+                else {
+                    listener.onComplete(false, 0);
+                }
+            }
+            else {
+                listener.onComplete(false, 0);
+                Log.e(TAG, "Failed to fetch document: ", task.getException());
+            }
+        });
+    }
+    interface OnVersionRetrievedListener {
+        void onComplete(boolean wasSuccessful, int version);
     }
 }

@@ -3,7 +3,6 @@ package com.example.billstracker.activities;
 import static android.content.ContentValues.TAG;
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static com.example.billstracker.activities.Login.userList;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,14 +27,11 @@ import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.example.billstracker.R;
-import com.example.billstracker.custom_objects.Bill;
-import com.example.billstracker.custom_objects.Budget;
-import com.example.billstracker.custom_objects.Trophy;
 import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.Prefs;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
@@ -235,11 +231,7 @@ public class Register extends AppCompatActivity {
                     Notify.createPopup(Register.this, getString(R.string.user_registration_failed), null);
                 } else {
                     String userId = mAuth.getUid();
-                    ArrayList<Bill> bills = new ArrayList<>();
-                    ArrayList<Trophy> trophies = new ArrayList<>();
-                    ArrayList<Budget> budgets = new ArrayList<>();
-                    User user1 = new User(email, password, name, false, false, lastLogin, dateRegistered, userId, bills, 0, "0", 0, 2, false,
-                            "01-01-2022", trophies, budgets, "none", new ArrayList<>());
+                    User user1 = new User(email, password, name, false, false, lastLogin, dateRegistered, userId, 0, "0", 0, 2, new ArrayList<>(), new ArrayList<>(), 0);
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     if (userId != null) {
                         db.collection("users").document(userId).set(user1);
@@ -252,7 +244,6 @@ public class Register extends AppCompatActivity {
                     UserProfileChangeRequest update = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
                     if (user != null) {
                         user.updateProfile(update);
-                        userList.add(user1);
                         sendVerificationEmail(user);
                     } else {
                         pb.setVisibility(View.GONE);
@@ -287,7 +278,7 @@ public class Register extends AppCompatActivity {
                                 }
                             });
                             pb.setVisibility(View.GONE);
-                            Prefs.setSignedIn(Register.this, false);
+                            Repo.getInstance().setStaySignedIn(false, Register.this);
                             startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
                         });
                     } else {

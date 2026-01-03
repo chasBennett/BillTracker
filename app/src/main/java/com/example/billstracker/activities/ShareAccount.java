@@ -1,8 +1,6 @@
 package com.example.billstracker.activities;
 
-import static com.example.billstracker.activities.Login.thisUser;
-import static com.example.billstracker.activities.Login.uid;
-
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,8 +16,8 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.AddPartner;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
+import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
-import com.example.billstracker.tools.UserData;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -33,6 +31,8 @@ public class ShareAccount extends AppCompatActivity {
     Button addPartner;
     Partner delete;
 
+    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +42,8 @@ public class ShareAccount extends AppCompatActivity {
         sharingWith = findViewById(R.id.currentlySharingWith);
         partnerList = findViewById(R.id.partnerList);
         addPartner = findViewById(R.id.btnAddPartner);
+
+        context = getApplicationContext();
 
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
@@ -58,23 +60,23 @@ public class ShareAccount extends AppCompatActivity {
     public void listPartners() {
 
         if (delete != null) {
-            thisUser.getPartners().remove(delete);
-            UserData.save();
+            Repo.getInstance().getUser(ShareAccount.this).getPartners().remove(delete);
+            Repo.getInstance().save(ShareAccount.this);
             delete = null;
             listPartners();
         }
 
         partnerList.removeAllViews();
         partnerList.invalidate();
-        if (thisUser == null) {
-            UserData.load(ShareAccount.this);
+        if (Repo.getInstance().getUser(ShareAccount.this) == null) {
+            Repo.getInstance().loadLocalData(ShareAccount.this);
         }
-        if (thisUser.getPartners() == null || thisUser.getPartners().isEmpty()) {
+        if (Repo.getInstance().getUser(ShareAccount.this).getPartners() == null || Repo.getInstance().getUser(ShareAccount.this).getPartners().isEmpty()) {
             sharingWith.setText(getString(R.string.you_aren_t_currently_sharing_data_with_anyone));
         }
         else {
             sharingWith.setText(getString(R.string.you_re_currently_sharing_your_data_with_the_following_users));
-            for (Partner partner : thisUser.getPartners()) {
+            for (Partner partner : Repo.getInstance().getUser(ShareAccount.this).getPartners()) {
                 checkPartner(partner);
             }
         }
@@ -97,7 +99,7 @@ public class ShareAccount extends AppCompatActivity {
                     User partnerUser = task.getResult().toObject(User.class);
                     if (partnerUser != null && partnerUser.getPartners() != null && !partnerUser.getPartners().isEmpty()) {
                         for (Partner part: partnerUser.getPartners()) {
-                            if (part.getPartnerUid().equals(uid)) {
+                            if (part.getPartnerUid().equals(Repo.getInstance().getUid())) {
                                 if (part.getSharingAuthorized()) {
                                     if (partner.getSharingAuthorized()) {
                                         shareStatus.setText(getString(R.string.active));
@@ -131,32 +133,32 @@ public class ShareAccount extends AppCompatActivity {
         revokeAccess.setOnClickListener(v -> {
             partner.setSharingAuthorized(false);
             Tools.removePartnerData(partner.getPartnerUid());
-            UserData.save();
+            Repo.getInstance().save(ShareAccount.this);
             listPartners();
         });
         cancelRequest.setOnClickListener(v -> {
             delete = partner;
             removePartner(partner.getPartnerUid());
             Tools.removePartnerData(partner.getPartnerUid());
-            UserData.save();
+            Repo.getInstance().save(ShareAccount.this);
             listPartners();
         });
         removePartner.setOnClickListener(v -> {
             delete = partner;
             removePartner(partner.getPartnerUid());
             Tools.removePartnerData(partner.getPartnerUid());
-            UserData.save();
+            Repo.getInstance().save(ShareAccount.this);
             listPartners();
         });
         approve.setOnClickListener(v -> {
-            for (Partner part: thisUser.getPartners()) {
+            for (Partner part: Repo.getInstance().getUser(ShareAccount.this).getPartners()) {
                 if (part.getPartnerUid().equals(partner.getPartnerUid())) {
                     part.setSharingAuthorized(true);
                     break;
                 }
             }
             partner.setSharingAuthorized(true);
-            FirebaseTools.getBills(partner.getPartnerUid(), isSuccessful -> {
+            FirebaseTools.getBills(context, partner.getPartnerUid(), isSuccessful -> {
                 if (isSuccessful) {
                     FirebaseTools.getPayments(partner.getPartnerUid(), isSuccessful1 -> {
                         if (isSuccessful1) {
@@ -175,7 +177,7 @@ public class ShareAccount extends AppCompatActivity {
                     Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
                 }
             });
-            UserData.save();
+            Repo.getInstance().save(ShareAccount.this);
             listPartners();
         });
         partnerList.addView(userCard);
@@ -187,7 +189,7 @@ public class ShareAccount extends AppCompatActivity {
                     User partner = task.getResult().toObject(User.class);
                     if (partner != null && partner.getPartners() != null && !partner.getPartners().isEmpty()) {
                         for (Partner part: partner.getPartners()) {
-                            if (part.getPartnerUid().equals(uid)) {
+                            if (part.getPartnerUid().equals(Repo.getInstance().getUid())) {
                                 remove.add(part);
                             }
                         }
