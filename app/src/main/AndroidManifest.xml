@@ -11,9 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission
-        android:name="android.permission.USE_EXACT_ALARM"
-        android:minSdkVersion="33" />
-    <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
@@ -38,6 +35,8 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan"
         tools:targetApi="tiramisu">
+
+        <receiver android:name=".tools.MarkAsPaidReceiver" android:exported="false" />
 
         <activity
             android:name=".activities.ShareAccount"
@@ -68,6 +67,10 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7376638390241452~2472177486" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".activities.Support"

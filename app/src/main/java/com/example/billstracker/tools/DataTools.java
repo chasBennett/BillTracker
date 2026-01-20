@@ -22,10 +22,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public interface DataTools {
-    static Bill getBill (String nameOrId) {
+    static Bill getBill(String nameOrId) {
         if (nameOrId != null) {
-            if (Repo.getInstance().getBills() != null) {
-                for (Bill bill : Repo.getInstance().getBills()) {
+            if (Repository.getInstance().getBills() != null) {
+                for (Bill bill : Repository.getInstance().getBills()) {
                     if (bill.getBillsId().equals(nameOrId)) {
                         return bill;
                     }
@@ -40,8 +40,8 @@ public interface DataTools {
 
     static void changePaymentDueDate(Payment payment, long newDueDate, boolean changeAll, FirebaseTools.FirebaseCallback callback) {
         if (changeAll) {
-            if (Repo.getInstance().getBills() != null) {
-                for (Bill bill : Repo.getInstance().getBills()) {
+            if (Repository.getInstance().getBills() != null) {
+                for (Bill bill : Repository.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         bill.setDueDate(newDueDate);
                     }
@@ -52,15 +52,13 @@ public interface DataTools {
                     payment.setDateChanged(false);
                     payment.setDueDate(newDueDate);
                     callback.isSuccessful(true);
-                }
-                else {
+                } else {
                     callback.isSuccessful(false);
                 }
             });
-        }
-        else {
-            if (Repo.getInstance().getPayments() != null && payment != null) {
-                for (Payment payments : Repo.getInstance().getPayments()) {
+        } else {
+            if (Repository.getInstance().getPayments() != null && payment != null) {
+                for (Payment payments : Repository.getInstance().getPayments()) {
                     if (payments.getPaymentId() == payment.getPaymentId()) {
                         payments.setDueDate(newDueDate);
                         payments.setDateChanged(true);
@@ -73,41 +71,43 @@ public interface DataTools {
             }
         }
     }
-    static ArrayList <String> getCategories (Context context) {
+
+    static ArrayList<String> getCategories(Context context) {
         if (context != null) {
             return new ArrayList<>(Arrays.asList(context.getString(R.string.autoLoan), context.getString(R.string.creditCard), context.getString(R.string.entertainment),
                     context.getString(R.string.insurance), context.getString(R.string.miscellaneous), context.getString(R.string.mortgage), context.getString(R.string.personalLoans), context.getString(R.string.utilities)));
-        }
-        else {
+        } else {
             return new ArrayList<>();
         }
     }
-    static ArrayList <String> getFrequencies (Context context) {
+
+    static ArrayList<String> getFrequencies(Context context) {
         if (context != null) {
             return new ArrayList<>(Arrays.asList(context.getString(R.string.one_time), context.getString(R.string.daily), context.getString(R.string.weekly), context.getString(R.string.biweekly), context.getString(R.string.monthly),
                     context.getString(R.string.bi_monthly), context.getString(R.string.quarterly), context.getString(R.string.yearly)));
-        }
-        else {
+        } else {
             return new ArrayList<>();
         }
     }
-    static ArrayList <String> getBudgetCategories (Context context) {
+
+    static ArrayList<String> getBudgetCategories(Context context) {
 
         if (context != null) {
             return new ArrayList<>(Arrays.asList(context.getString(R.string.clothing), context.getString(R.string.entertainment), context.getString(R.string.gas), context.getString(R.string.groceries),
                     context.getString(R.string.personal_care), context.getString(R.string.restaurants), context.getString(R.string.shopping)));
-        }
-        else {
+        } else {
             return new ArrayList<>();
         }
     }
-    static ArrayList <Integer> getIcons () {
+
+    static ArrayList<Integer> getIcons() {
         return new ArrayList<>(Arrays.asList(R.drawable.auto, R.drawable.credit_card, R.drawable.entertainment, R.drawable.insurance,
                 R.drawable.invoice, R.drawable.mortgage, R.drawable.personal_loan, R.drawable.utilities));
     }
-    static Budget getBudget (Context context, int budgetId) {
-        if (Repo.getInstance().getUser(context) != null && Repo.getInstance().getUser(context).getBudgets() != null) {
-            for (Budget bud : Repo.getInstance().getUser(context).getBudgets()) {
+
+    static Budget getBudget(Context context, int budgetId) {
+        if (Repository.getInstance().getUser(context) != null && Repository.getInstance().getUser(context).getBudgets() != null) {
+            for (Budget bud : Repository.getInstance().getUser(context).getBudgets()) {
                 if (bud.getBudgetId() == budgetId) {
                     return bud;
                 }
@@ -115,6 +115,7 @@ public interface DataTools {
         }
         return new Budget(0, 2, DateFormat.makeLong(LocalDate.now().minusMonths(6)), DateFormat.makeLong(LocalDate.now().plusMonths(6)), budgetId, 20, new ArrayList<>());
     }
+
     static ArrayList<Payment> whatsDueThisMonth(Context context) {
 
         dueThisMonth.clear();
@@ -122,14 +123,14 @@ public interface DataTools {
         long monthStart = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(1).atStartOfDay()));
         long monthEnd = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()));
         BillerManager.refreshPayments(context);
-        ArrayList<Payment> payments = Repo.getInstance().getPayments();
+        ArrayList<Payment> payments = Repository.getInstance().getPayments();
         payments.sort(Comparator.comparing(Payment::getDueDate));
 
         if (!payments.isEmpty()) {
             for (Payment payment : payments) {
                 if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd || payment.getDueDate() < DateFormat.currentDateAsLong() && !payment.isPaid() &&
                         selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth() ||
-                payment.getDueDate() < monthStart && !payment.isPaid() && selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth()) {
+                        payment.getDueDate() < monthStart && !payment.isPaid() && selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth()) {
                     if (!dueThisMonth.contains(payment)) {
                         dueThisMonth.add(payment);
                     }
@@ -138,16 +139,16 @@ public interface DataTools {
         }
         return clearDuplicatePayments(dueThisMonth);
     }
-    static ArrayList <Payment> clearDuplicatePayments (ArrayList <Payment> paymentsList) {
-        ArrayList <Payment> remove = new ArrayList<>();
-        for (Payment payment: paymentsList) {
+
+    static ArrayList<Payment> clearDuplicatePayments(ArrayList<Payment> paymentsList) {
+        ArrayList<Payment> remove = new ArrayList<>();
+        for (Payment payment : paymentsList) {
             boolean found = false;
-            for (Payment pay: paymentsList) {
+            for (Payment pay : paymentsList) {
                 if (pay.getPaymentId() == payment.getPaymentId()) {
                     if (!found) {
                         found = true;
-                    }
-                    else {
+                    } else {
                         remove.add(pay);
                     }
                 }
@@ -158,7 +159,8 @@ public interface DataTools {
         }
         return paymentsList;
     }
-    static void getLatestBillersVersion (OnVersionRetrievedListener listener) {
+
+    static void getLatestBillersVersion(OnVersionRetrievedListener listener) {
         FirebaseFirestore.getInstance().collection("versions").document("billers").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -172,17 +174,16 @@ public interface DataTools {
                         Log.d(TAG, "Version field not found or is null in the document.");
                         listener.onComplete(false, 0);
                     }
-                }
-                else {
+                } else {
                     listener.onComplete(false, 0);
                 }
-            }
-            else {
+            } else {
                 listener.onComplete(false, 0);
                 Log.e(TAG, "Failed to fetch document: ", task.getException());
             }
         });
     }
+
     interface OnVersionRetrievedListener {
         void onComplete(boolean wasSuccessful, int version);
     }

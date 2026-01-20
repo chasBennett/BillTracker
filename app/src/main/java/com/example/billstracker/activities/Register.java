@@ -27,11 +27,10 @@ import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.example.billstracker.R;
-import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
@@ -39,11 +38,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
 public class Register extends AppCompatActivity {
@@ -144,17 +141,14 @@ public class Register extends AppCompatActivity {
                 pb.setVisibility(View.VISIBLE);
                 mgr.hideSoftInputFromWindow(registerName.getApplicationWindowToken(), 0);
                 registerUser(registerName.getText().toString(), registerEmail.getText().toString(), registerPassword.getText().toString());
-            }
-            else {
+            } else {
                 pb.setVisibility(View.GONE);
                 String errorMessage;
                 if (!nam || registerName.getText() == null) {
                     errorMessage = getString(R.string.name_must_be_at_least_3_characters_long);
-                }
-                else if (!email || registerEmail.getText() == null) {
+                } else if (!email || registerEmail.getText() == null) {
                     errorMessage = getString(R.string.enterAValidEmailAddress);
-                }
-                else {
+                } else {
                     errorMessage = getString(R.string.password_is_invalid);
                 }
                 Notify.createPopup(Register.this, errorMessage, null);
@@ -167,8 +161,8 @@ public class Register extends AppCompatActivity {
         });
 
     }
-    protected void checkEntries () {
 
+    protected void checkEntries() {
         ////////Name Validation/////////
         if (getCurrentFocus() == registerName) {
             if (registerName.getText() != null) {
@@ -203,8 +197,7 @@ public class Register extends AppCompatActivity {
             if (!pas && registerPassword.getText() != null && !registerPassword.getText().toString().isEmpty()) {
                 passwordRequirements.setVisibility(View.VISIBLE);
                 passwordRequirements.post(() -> scroll.smoothScrollTo(0, passwordRequirements.getBottom()));
-            }
-            else {
+            } else {
                 passwordRequirements.setVisibility(View.GONE);
             }
         }
@@ -215,40 +208,40 @@ public class Register extends AppCompatActivity {
     }
 
     protected void registerUser(String name, String email, String password) {
-
         if (Tools.isValidString(registerName, 3) && Tools.isValidEmail(registerEmail) && TextTools.isAcceptablePassword(registerPassword, passwordLength, uppercaseLetter, lowercaseLetter, number)) {
-
             mgr.hideSoftInputFromWindow(registerName.getApplicationWindowToken(), 0);
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            String lastLogin = "01-01-2022";
-            LocalDateTime loginTime = LocalDateTime.now();
-            DateTimeFormatter formattedLoginTime = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
-            String dateRegistered = loginTime.format(formattedLoginTime);
+
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                Log.d("TAG", "createUserWithEmail:isSuccessful:" + task.isSuccessful());
                 if (!task.isSuccessful()) {
                     pb.setVisibility(View.GONE);
                     Notify.createPopup(Register.this, getString(R.string.user_registration_failed), null);
                 } else {
                     String userId = mAuth.getUid();
-                    User user1 = new User(email, password, name, false, false, lastLogin, dateRegistered, userId, 0, "0", 0, 2, new ArrayList<>(), new ArrayList<>(), 0);
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    if (userId != null) {
-                        db.collection("users").document(userId).set(user1);
-                    } else {
-                        pb.setVisibility(View.GONE);
-                        Notify.createPopup(Register.this, getString(R.string.anErrorHasOccurred), null);
-                        recreate();
-                    }
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    UserProfileChangeRequest update = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
-                    if (user != null) {
-                        user.updateProfile(update);
-                        sendVerificationEmail(user);
-                    } else {
-                        pb.setVisibility(View.GONE);
-                        Notify.createPopup(Register.this, getString(R.string.anErrorHasOccurred), null);
-                    }
+
+                    // Create the date string for registration
+                    String dateRegistered = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss"));
+
+                    // IMPLEMENTATION: Use the new addUser builder flow
+                    Repository.getInstance().addUser(email, password, name, userId, this)
+                            .setDateRegistered(dateRegistered)
+                            .setLastLogin("01-01-2022") // Default starting point
+                            .setIncome(0.0)
+                            .setPayFrequency(2) // Bi-weekly default
+                            .save((success, message) -> {
+                                if (success) {
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    if (user != null) {
+                                        UserProfileChangeRequest update = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name).build();
+                                        user.updateProfile(update);
+                                        sendVerificationEmail(user);
+                                    }
+                                } else {
+                                    pb.setVisibility(View.GONE);
+                                    Notify.createPopup(Register.this, "Sync Error: " + message, null);
+                                }
+                            });
                 }
             });
         }
@@ -264,23 +257,25 @@ public class Register extends AppCompatActivity {
                             cd.dismissDialog();
                             pb.setVisibility(View.VISIBLE);
                             FirebaseAuth.getInstance().signOut();
+
+                            // Clear Credential Manager State
                             ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
                             CredentialManager manager = CredentialManager.create(Register.this);
                             manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
                                 @Override
-                                public void onResult(Void unused) {
-
-                                }
+                                public void onResult(Void unused) {}
 
                                 @Override
                                 public void onError(@NonNull ClearCredentialException e) {
                                     Log.e(TAG, "Couldn't clear user credentials: " + e);
                                 }
                             });
+
                             pb.setVisibility(View.GONE);
-                            Repo.getInstance().setStaySignedIn(false, Register.this);
+                            Repository.getInstance().setStaySignedIn(false, Register.this);
                             startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
                         });
+                        cd.show();
                     } else {
                         pb.setVisibility(View.GONE);
                         Notify.createPopup(Register.this, getString(R.string.anErrorHasOccurred), null);

@@ -52,10 +52,12 @@ public class Stat {
     public void setTotalPaymentsMade(int totalPaymentsMade) {
         this.totalPaymentsMade = totalPaymentsMade;
     }
-    public long getNextPaymentDueDate () {
+
+    public long getNextPaymentDueDate() {
         return nextPaymentDueDate;
     }
-    public void setNextPaymentDueDate (long nextPaymentDueDate) {
+
+    public void setNextPaymentDueDate(long nextPaymentDueDate) {
         this.nextPaymentDueDate = nextPaymentDueDate;
     }
 

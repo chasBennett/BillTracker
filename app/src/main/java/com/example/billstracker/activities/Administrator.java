@@ -3,7 +3,6 @@ package com.example.billstracker.activities;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -22,10 +21,9 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.billstracker.R;
 import com.bumptech.glide.Glide;
+import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Biller;
 import com.example.billstracker.tools.DataTools;
 import com.google.android.gms.tasks.Task;
@@ -41,8 +39,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/** @noinspection rawtypes*/
-public class Administrator extends AppCompatActivity {
+/**
+ * @noinspection rawtypes
+ */
+public class Administrator extends BaseActivity {
 
 
     ImageView icon, back;
@@ -73,8 +73,7 @@ public class Administrator extends AppCompatActivity {
     });
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_administrator);
 
         display = findViewById(R.id.notices);

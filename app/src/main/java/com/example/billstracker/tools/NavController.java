@@ -71,7 +71,7 @@ public class NavController {
 
 
     @SuppressLint("ClickableViewAccessibility")
-    public void navController (Context context, Activity activity, ConstraintLayout pb, String page) {
+    public void navController(Context context, Activity activity, ConstraintLayout pb, String page) {
 
         this.activity = activity;
         scrollDetect = null;
@@ -144,7 +144,7 @@ public class NavController {
 
             billsTab.setOnClickListener(v -> {
                 pb.setVisibility(View.VISIBLE);
-                Intent main = new Intent (context, MainActivity2.class);
+                Intent main = new Intent(context, MainActivity2.class);
                 context.startActivity(main);
             });
             expensesTab.setOnClickListener(v -> {
@@ -154,7 +154,7 @@ public class NavController {
             });
             budgetTab.setOnClickListener(v -> {
                 pb.setVisibility(View.VISIBLE);
-                if (!Repo.getInstance().getUser(activity).getBudgets().isEmpty()) {
+                if (!Repository.getInstance().getUser(activity).getBudgets().isEmpty()) {
                     Intent budget = new Intent(context, ViewBudget.class);
                     context.startActivity(budget);
                 } else {
@@ -172,8 +172,7 @@ public class NavController {
         if (page.equals("paymentHistory") || page.equals("myStats") || page.equals("payBill")) {
             addBiller.setVisibility(View.GONE);
             blueBackground = false;
-        }
-        else if (page.equals("viewBillers")) {
+        } else if (page.equals("viewBillers")) {
             scroll = activity.findViewById(R.id.scroll14);
             topDetect = activity.findViewById(R.id.viewBillersHeader);
             scrollDetect = activity.findViewById(R.id.scrollDetect3);
@@ -281,36 +280,31 @@ public class NavController {
                 logout();
             });
 
-            if (Repo.getInstance().getUser(context) == null || Repo.getInstance().getUser(context).getName() == null || Repo.getInstance().getUser(context).getUserName() == null) {
-                Repo.getInstance().loadLocalData(context);
+            if (Repository.getInstance().getUser(context) == null || Repository.getInstance().getUser(context).getName() == null || Repository.getInstance().getUser(context).getUserName() == null) {
+                Repository.getInstance().loadLocalData(context, null);
             }
-            if (Repo.getInstance().getUser(context).getName() != null && Repo.getInstance().getUser(context).getUserName() != null) {
-                displayUserName.setText(Repo.getInstance().getUser(context).getName());
-                displayEmail.setText(Repo.getInstance().getUser(context).getUserName());
-            }
-            else {
-                this.activity.startActivity(new Intent(activity, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| FLAG_ACTIVITY_NEW_TASK| FLAG_ACTIVITY_CLEAR_TASK));
+            if (Repository.getInstance().getUser(context).getName() != null && Repository.getInstance().getUser(context).getUserName() != null) {
+                displayUserName.setText(Repository.getInstance().getUser(context).getName());
+                displayEmail.setText(Repository.getInstance().getUser(context).getUserName());
+            } else {
+                this.activity.startActivity(new Intent(activity, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK));
             }
         });
 
         payNext.setOnClickListener(view -> {
 
             pb.setVisibility(View.VISIBLE);
-            Payment next = new Payment();
-            next.setDueDate(DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()).plusDays(60)));
+            Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
             boolean found = false;
-
-            Repo.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
-            for (Payment payment : Repo.getInstance().getPayments()) {
-                if (!payment.isPaid() && payment.getDueDate() < next.getDueDate()) {
-                    next = payment;
+            for (Payment payment: Repository.getInstance().getPayments()) {
+                if (!payment.isPaid()) {
+                    activity.startActivity(new Intent(activity, PayBill.class).putExtra("paymentId", payment.getPaymentId()));
                     found = true;
+                    break;
                 }
             }
 
-            if (found) {
-                activity.startActivity(new Intent(activity, PayBill.class).putExtra("Payment Id", next.getPaymentId()));
-            } else {
+            if (!found) {
                 pb.setVisibility(View.GONE);
                 CustomDialog cd = new CustomDialog(activity, context.getString(R.string.noBillsDue), context.getString(R.string.noUpcomingBills), context.getString(R.string.ok), null, null);
                 cd.setPositiveButtonListener(v -> cd.dismissDialog());
@@ -319,28 +313,34 @@ public class NavController {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
-    public void personalize () {
+    public void personalize() {
 
-            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                if (FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
-                    Tools.fixToolbar(activity, blueBackground, iconFound);
-                    Glide.with(settingsButton).load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).circleCrop().into(settingsButton);
-                    iconFound = true;
-                }
-                else {
-                    Glide.with(settingsButton).load(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.profile_icon, activity.getTheme())).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(settingsButton);
-                }
-            }
-            else {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
+                Tools.fixToolbar(activity, blueBackground, iconFound);
+                Glide.with(settingsButton).load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).circleCrop().into(settingsButton);
+                iconFound = true;
+            } else {
                 Glide.with(settingsButton).load(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.profile_icon, activity.getTheme())).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(settingsButton);
             }
+        } else {
+            Glide.with(settingsButton).load(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.profile_icon, activity.getTheme())).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(settingsButton);
+        }
     }
 
-    public void fixStatusBar () {
+    public void fixStatusBar() {
 
         if (scroll != null && scrollDetect != null && window != null && page != null && topDetect != null) {
-                scrollDetect.post(() -> {
-                    Rect scrollBounds = new Rect();
+            scrollDetect.post(() -> {
+                Rect scrollBounds = new Rect();
+                scroll.getHitRect(scrollBounds);
+                if (scrollDetect.getLocalVisibleRect(scrollBounds) || topDetect.getLocalVisibleRect(scrollBounds)) {
+                    blueBackground = page.equals("main") || Objects.equals(page, "viewBillers") || Objects.equals(page, "budget") || Objects.equals(page, "spending");
+                } else {
+                    blueBackground = false;
+                }
+                Tools.fixToolbar(this.activity, blueBackground, iconFound);
+                scroll.setOnScrollChangeListener((view1, i, i1, i2, i3) -> {
                     scroll.getHitRect(scrollBounds);
                     if (scrollDetect.getLocalVisibleRect(scrollBounds) || topDetect.getLocalVisibleRect(scrollBounds)) {
                         blueBackground = page.equals("main") || Objects.equals(page, "viewBillers") || Objects.equals(page, "budget") || Objects.equals(page, "spending");
@@ -348,25 +348,16 @@ public class NavController {
                         blueBackground = false;
                     }
                     Tools.fixToolbar(this.activity, blueBackground, iconFound);
-                    scroll.setOnScrollChangeListener((view1, i, i1, i2, i3) -> {
-                        scroll.getHitRect(scrollBounds);
-                        if (scrollDetect.getLocalVisibleRect(scrollBounds) || topDetect.getLocalVisibleRect(scrollBounds)) {
-                            blueBackground = page.equals("main") || Objects.equals(page, "viewBillers") || Objects.equals(page, "budget") || Objects.equals(page, "spending");
-                        } else {
-                            blueBackground = false;
-                        }
-                        Tools.fixToolbar(this.activity, blueBackground, iconFound);
-                    });
                 });
-        }
-        else {
+            });
+        } else {
             if (window != null) {
                 Tools.fixToolbar(this.activity, blueBackground, iconFound);
             }
         }
     }
 
-    public void logout () {
+    public void logout() {
 
         CustomDialog cd = new CustomDialog(activity, activity.getString(R.string.logout), activity.getString(R.string.are_you_sure_you_would_like_to_logout), activity.getString(R.string.logout), activity.getString(R.string.cancel), null);
         cd.setPositiveButtonListener(v -> {
@@ -374,7 +365,7 @@ public class NavController {
             if (progressBar != null) {
                 progressBar.setVisibility(View.VISIBLE);
             }
-            Repo.getInstance().logout(activity);
+            Repository.getInstance().logout(activity);
         });
         cd.setNegativeButtonListener(view -> {
             if (progressBar != null) {

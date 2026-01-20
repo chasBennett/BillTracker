@@ -12,20 +12,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class CountTickets {
 
-    public static void countTickets (Activity view) {
+    public static void countTickets(Activity view) {
 
-        Repo.getInstance().loadLocalData(view);
+        Repository.getInstance().loadLocalData(view, null);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        if (Repo.getInstance().getUser(view) != null) {
-            if (Repo.getInstance().getUser(view).isAdmin()) {
+        if (Repository.getInstance().getUser(view) != null) {
+            if (Repository.getInstance().getUser(view).isAdmin()) {
                 db.collection("tickets").get().addOnCompleteListener(task -> {
                     MainActivity2.tickets = 0;
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Log.d(TAG, document.getId() + " => data retrieved");
                             SupportTicket ticket = document.toObject(SupportTicket.class);
-                            if (ticket.getAgentUid().equalsIgnoreCase(Repo.getInstance().getUid()) || ticket.getAgentUid().equals("Unassigned")) {
+                            if (ticket.getAgentUid().equalsIgnoreCase(Repository.getInstance().retrieveUid(view)) || ticket.getAgentUid().equals("Unassigned")) {
                                 if (ticket.getUnreadByAgent() > 0) {
                                     MainActivity2.tickets = MainActivity2.tickets + ticket.getUnreadByAgent();
                                 }
@@ -34,7 +34,7 @@ public class CountTickets {
                     }
                 });
             } else {
-                db.collection("tickets").document(Repo.getInstance().getUid()).get().addOnCompleteListener(task -> {
+                db.collection("tickets").document(Repository.getInstance().retrieveUid(view)).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         SupportTicket ticket = task.getResult().toObject(SupportTicket.class);
                         if (ticket != null) {

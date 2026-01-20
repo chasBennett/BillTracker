@@ -16,35 +16,33 @@ import com.example.billstracker.R;
 import com.example.billstracker.activities.AddBiller;
 import com.example.billstracker.activities.CreateBudget;
 import com.example.billstracker.tools.Prefs;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 
 public class InstructionPopup {
 
+    final Activity activity;
     ViewGroup main;
     View dialog;
     LinearLayout addBiller, addBudget, instructions;
     TextView skip, skip2, dontAsk, dontAsk2;
     Button addBill, addBud, getStarted;
     View parent;
-    final Activity activity;
 
-    public InstructionPopup (Activity activity) {
+    public InstructionPopup(Activity activity) {
         this.activity = activity;
         setViews();
 
         if (skipInstruction1 && skipInstruction2) {
             dismissDialog();
-        }
-        else {
+        } else {
 
-            if (Repo.getInstance().getUser(activity) != null) {
-                if (Repo.getInstance().getBills().isEmpty() && !skipInstruction1) {
+            if (Repository.getInstance().getUser(activity) != null) {
+                if (Repository.getInstance().getBills().isEmpty() && !skipInstruction1) {
                     setView(1);
-                } else if (Repo.getInstance().getUser(activity).getBudgets().isEmpty() && !skipInstruction2) {
+                } else if (Repository.getInstance().getUser(activity).getBudgets().isEmpty() && !skipInstruction2) {
                     setView(2);
-                }
-                else if (!skipInstruction2) {
+                } else if (!skipInstruction2) {
                     setView(3);
                 }
             }
@@ -73,7 +71,7 @@ public class InstructionPopup {
                 dismissDialog();
             });
             getStarted.setOnClickListener(view -> {
-                if (!Repo.getInstance().getBills().isEmpty() && !Repo.getInstance().getUser(activity).getBudgets().isEmpty()) {
+                if (!Repository.getInstance().getBills().isEmpty() && !Repository.getInstance().getUser(activity).getBudgets().isEmpty()) {
                     Prefs.setTrainingDone(activity, true);
                 }
                 dismissDialog();
@@ -91,7 +89,7 @@ public class InstructionPopup {
         }
     }
 
-    public void setView (int choice) {
+    public void setView(int choice) {
 
         addBiller.setVisibility(View.GONE);
         addBudget.setVisibility(View.GONE);
@@ -108,7 +106,8 @@ public class InstructionPopup {
                 break;
         }
     }
-    public void setViews () {
+
+    public void setViews() {
 
         if (dialog == null) {
             main = activity.findViewById(android.R.id.content);
@@ -129,7 +128,7 @@ public class InstructionPopup {
 
     }
 
-    public void dismissDialog () {
+    public void dismissDialog() {
         if (main != null && dialog != null) {
             main.removeView(dialog);
         }

@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -41,7 +39,6 @@ import com.example.billstracker.recycler_adapters.TransactionsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -69,10 +66,10 @@ import java.util.Locale;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class Spending extends AppCompatActivity {
+public class Spending extends BaseActivity {
 
-    int freq;
     public static LocalDate selectedDate;
+    int freq;
     LocalDate weekStart, weekEnd;
     ConstraintLayout pb;
     LinearLayout noExpensesFound, cats, categoriesListLayout;
@@ -94,8 +91,7 @@ public class Spending extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_spending);
 
         sp = getSharedPreferences("shared preferences", MODE_PRIVATE);
@@ -133,15 +129,14 @@ public class Spending extends AppCompatActivity {
         transactionsLayout.setVisibility(View.GONE);
         categoriesListLayout.setVisibility(View.GONE);
 
-        ArrayList <Expense> remove = new ArrayList<>();
-        for (Expense expense: Repo.getInstance().getExpenses()) {
+        ArrayList<Expense> remove = new ArrayList<>();
+        for (Expense expense : repo.getExpenses()) {
             boolean found = false;
-            for (Expense exp: Repo.getInstance().getExpenses()) {
+            for (Expense exp : repo.getExpenses()) {
                 if (expense.getId().equals(exp.getId())) {
                     if (!found) {
                         found = true;
-                    }
-                    else {
+                    } else {
                         remove.add(exp);
                     }
                 }
@@ -149,7 +144,7 @@ public class Spending extends AppCompatActivity {
         }
 
         if (!remove.isEmpty()) {
-            Repo.getInstance().getExpenses().removeAll(remove);
+            repo.getExpenses().removeAll(remove);
         }
 
         addListeners();
@@ -158,20 +153,16 @@ public class Spending extends AppCompatActivity {
             if (sp.getInt("frequency", 0) == 0) {
                 btnDaily.performClick();
                 freq = 0;
-            }
-            else if (sp.getInt("frequency", 0) == 1) {
+            } else if (sp.getInt("frequency", 0) == 1) {
                 btnWeekly.performClick();
                 freq = 1;
-            }
-            else if (sp.getInt("frequency", 0) == 2) {
+            } else if (sp.getInt("frequency", 0) == 2) {
                 btnMonthly.performClick();
                 freq = 2;
-            }
-            else {
+            } else {
                 freq = 1;
             }
-        }
-        else {
+        } else {
             btnDaily.setBackground(null);
             btnWeekly.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected));
             btnMonthly.setBackground(null);
@@ -184,7 +175,7 @@ public class Spending extends AppCompatActivity {
         listExpenses();
     }
 
-    private void addListeners () {
+    private void addListeners() {
         btnAddExpense.setOnClickListener(v -> {
             AddExpense ae = new AddExpense(Spending.this, null);
             ae.setSubmitExpenseListener(v1 -> listExpenses());
@@ -193,11 +184,10 @@ public class Spending extends AppCompatActivity {
         showCategories.setOnClickListener(v -> {
             if (transactionsLayout.getVisibility() == View.VISIBLE) {
                 transactionsLayout.setVisibility(View.GONE);
-                showCategories.setCompoundDrawablesWithIntrinsicBounds(0,0, R.drawable.ic_baseline_keyboard_arrow_down_24, 0);
-            }
-            else {
+                showCategories.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_keyboard_arrow_down_24, 0);
+            } else {
                 transactionsLayout.setVisibility(View.VISIBLE);
-                showCategories.setCompoundDrawablesWithIntrinsicBounds(0,0, R.drawable.baseline_keyboard_arrow_up_24, 0);
+                showCategories.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.baseline_keyboard_arrow_up_24, 0);
             }
         });
 
@@ -236,27 +226,33 @@ public class Spending extends AppCompatActivity {
         btnMonthly.setOnClickListener(view -> selectFrequency(2));
     }
 
-    private void selectFrequency (int frequency) {
+    private void selectFrequency(int frequency) {
         editor.putInt("frequency", frequency);
         editor.commit();
         btnDaily.setBackground(null);
         btnWeekly.setBackground(null);
         btnMonthly.setBackground(null);
         switch (frequency) {
-            case 0: btnDaily.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected)); break;
-            case 1: btnWeekly.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected)); break;
-            case 2: btnMonthly.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected)); break;
+            case 0:
+                btnDaily.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected));
+                break;
+            case 1:
+                btnWeekly.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected));
+                break;
+            case 2:
+                btnMonthly.setBackground(AppCompatResources.getDrawable(Spending.this, R.drawable.border_selected));
+                break;
         }
         freq = frequency;
         listExpenses();
     }
 
-    private void setupBarChart () {
+    private void setupBarChart() {
 
         barEntries = getBarEntries();
         boolean hasValue = false;
         if (barEntries != null && !barEntries.isEmpty()) {
-            for (BarEntry entry: barEntries) {
+            for (BarEntry entry : barEntries) {
                 if (barEntries.indexOf(entry) < barEntries.size() - 1 && entry.getY() > 0) {
                     hasValue = true;
                     break;
@@ -266,8 +262,7 @@ public class Spending extends AppCompatActivity {
         if (hasValue) {
             barChart.setVisibility(View.VISIBLE);
             noChartData.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             barChart.setVisibility(View.GONE);
             noChartData.setVisibility(View.VISIBLE);
         }
@@ -323,8 +318,7 @@ public class Spending extends AppCompatActivity {
         }
         if (freq == 1 && weeks != null && !weeks.isEmpty()) {
             xAxis.setValueFormatter(new IndexAxisValueFormatter(weeks));
-        }
-        else if (freq == 2 && months != null && !months.isEmpty()) {
+        } else if (freq == 2 && months != null && !months.isEmpty()) {
             xAxis.setValueFormatter(new IndexAxisValueFormatter(months));
         }
         xAxis.setAxisMinimum(data.getXMin() - 0.5f);
@@ -340,16 +334,22 @@ public class Spending extends AppCompatActivity {
     private ArrayList<BarEntry> getBarEntries() {
         barEntries = new ArrayList<>();
 
-        if (days == null) { days = new ArrayList<>(); }
-        if (weeks == null) { weeks = new ArrayList<>(); }
-        if (months == null) { months = new ArrayList<>(); }
-        if (Repo.getInstance().getExpenses() != null) {
+        if (days == null) {
+            days = new ArrayList<>();
+        }
+        if (weeks == null) {
+            weeks = new ArrayList<>();
+        }
+        if (months == null) {
+            months = new ArrayList<>();
+        }
+        if (repo.getExpenses() != null) {
             if (freq == 0) {
                 days.clear();
                 LocalDate start = selectedDate.minusDays(3);
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : Repo.getInstance().getExpenses()) {
+                    for (Expense expense : repo.getExpenses()) {
                         if (LocalDate.from(DateFormat.makeLocalDate(expense.getDate()).atStartOfDay()).isEqual(start)) {
                             total = total + expense.getAmount();
                         }
@@ -360,13 +360,12 @@ public class Spending extends AppCompatActivity {
                     start = start.plusDays(1);
                 }
                 barChartTitle.setText(getString(R.string.daily_spending));
-            }
-            else if (freq == 1) {
+            } else if (freq == 1) {
                 weeks.clear();
                 LocalDate start = selectedDate.minusWeeks(3).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : Repo.getInstance().getExpenses()) {
+                    for (Expense expense : repo.getExpenses()) {
                         if (expense.getDate() >= DateFormat.makeLong(start.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))) && expense.getDate() <= DateFormat.makeLong(start.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)))) {
                             total = total + expense.getAmount();
                         }
@@ -377,13 +376,12 @@ public class Spending extends AppCompatActivity {
                     start = start.plusWeeks(1);
                 }
                 barChartTitle.setText(getString(R.string.weekly_spending));
-            }
-            else {
+            } else {
                 months.clear();
                 LocalDate start = selectedDate.minusMonths(3);
                 for (int i = 0; i < 8; ++i) {
                     double total = 0;
-                    for (Expense expense : Repo.getInstance().getExpenses()) {
+                    for (Expense expense : repo.getExpenses()) {
                         if (expense.getDate() >= DateFormat.makeLong(start.withDayOfMonth(1)) && expense.getDate() <= DateFormat.makeLong(start.withDayOfMonth(start.lengthOfMonth()))) {
                             total = total + expense.getAmount();
                         }
@@ -411,7 +409,7 @@ public class Spending extends AppCompatActivity {
         double totalBudget = 0;
         double expenseTotal = 0;
         double dailyIncome = 0;
-        ArrayList <Expense> expenseList;
+        ArrayList<Expense> expenseList;
         long start = DateFormat.makeLong(selectedDate.withDayOfMonth(1));
         long end = DateFormat.makeLong(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()));
         boolean misc = false;
@@ -419,9 +417,9 @@ public class Spending extends AppCompatActivity {
         weekEnd = LocalDate.from(selectedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).atStartOfDay());
         categories.clear();
 
-        if (Repo.getInstance().getUser(Spending.this).getBudgets() != null) {
-            if (!Repo.getInstance().getUser(Spending.this).getBudgets().isEmpty()) {
-                for (Budget bud: Repo.getInstance().getUser(Spending.this).getBudgets()) {
+        if (repo.getUser(Spending.this).getBudgets() != null) {
+            if (!repo.getUser(Spending.this).getBudgets().isEmpty()) {
+                for (Budget bud : repo.getUser(Spending.this).getBudgets()) {
                     if (bud.getStartDate() <= DateFormat.makeLong(selectedDate) && bud.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                         budget = bud;
                         break;
@@ -430,30 +428,29 @@ public class Spending extends AppCompatActivity {
             }
         }
         if (budget == null) {
-            budget = new Budget(Repo.getInstance().getUser(Spending.this).getIncome(), Repo.getInstance().getUser(Spending.this).getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
+            budget = new Budget(repo.getUser(Spending.this).getIncome(), repo.getUser(Spending.this).getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
                     DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()).plusMonths(6)), id(), 20, new ArrayList<>());
         }
-        switch (budget.getPayFrequency()) {
-            case 0: dailyIncome = budget.getPayAmount() / 7; break;
-            case 1: dailyIncome = budget.getPayAmount() / 14; break;
-            case 2: dailyIncome = budget.getPayAmount() / selectedDate.lengthOfMonth(); break;
-        }
+        dailyIncome = switch (budget.getPayFrequency()) {
+            case 0 -> budget.getPayAmount() / 7;
+            case 1 -> budget.getPayAmount() / 14;
+            case 2 -> budget.getPayAmount() / selectedDate.lengthOfMonth();
+            default -> dailyIncome;
+        };
 
         monthlyBills = Tools.getBillsAmount(2, selectedDate);
 
         if (budget.getCategories() != null) {
             if (!budget.getCategories().isEmpty()) {
-                for (Category category: budget.getCategories()) {
+                for (Category category : budget.getCategories()) {
                     categories.add(category.getCategoryName());
                 }
-            }
-            else {
+            } else {
                 budget.getCategories().add(new Category("Miscellaneous", 20));
                 misc = true;
                 categories.add("Miscellaneous");
             }
-        }
-        else {
+        } else {
             budget.setCategories(new ArrayList<>());
             budget.getCategories().add(new Category("Miscellaneous", 20));
             misc = true;
@@ -486,8 +483,8 @@ public class Spending extends AppCompatActivity {
         }
 
         expenseList = new ArrayList<>();
-        if (Repo.getInstance().getExpenses() != null && !Repo.getInstance().getExpenses().isEmpty()) {
-            for (Expense expense : Repo.getInstance().getExpenses()) {
+        if (repo.getExpenses() != null && !repo.getExpenses().isEmpty()) {
+            for (Expense expense : repo.getExpenses()) {
                 if (expense.getDate() >= start && expense.getDate() <= end) {
                     if (!expenseList.contains(expense)) {
                         expenseList.add(expense);
@@ -496,15 +493,14 @@ public class Spending extends AppCompatActivity {
             }
         }
 
-        ArrayList <Expense> remove = new ArrayList<>();
-        for (Expense expense: expenseList) {
+        ArrayList<Expense> remove = new ArrayList<>();
+        for (Expense expense : expenseList) {
             boolean found = false;
-            for (Expense exp: expenseList) {
+            for (Expense exp : expenseList) {
                 if (expense.getId().equals(exp.getId())) {
                     if (!found) {
                         found = true;
-                    }
-                    else {
+                    } else {
                         remove.add(exp);
                     }
                 }
@@ -514,7 +510,7 @@ public class Spending extends AppCompatActivity {
         if (!remove.isEmpty()) {
             expenseList.removeAll(remove);
         }
-        for (Expense expense: expenseList) {
+        for (Expense expense : expenseList) {
             totalAmountSpent = totalAmountSpent + expense.getAmount();
             expenseTotal = expenseTotal + expense.getAmount();
         }
@@ -544,8 +540,7 @@ public class Spending extends AppCompatActivity {
 
         if (expenseList.isEmpty()) {
             noExpensesFound.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             noExpensesFound.setVisibility(View.GONE);
         }
         if (totalBudget > 0) {
@@ -601,21 +596,22 @@ public class Spending extends AppCompatActivity {
                     case ItemTouchHelper.RIGHT:
                         transaction = adapter.getTransaction(position);
                         FirebaseFirestore.getInstance().collection("users").document(transaction.getOwner()).collection("expenses").document(transaction.getId()).delete();
-                        Repo.getInstance().getExpenses().remove(transaction);
+                        repo.getExpenses().remove(transaction);
                         String message = transaction.getDescription() + " " + getString(R.string.has_been_removed);
                         Button snackButton = Notify.createButtonPopup(Spending.this, message, getString(R.string.undo), null);
                         snackButton.setOnClickListener(v -> {
-                            Repo.getInstance().getExpenses().add(transaction);
-                            Repo.getInstance().getExpenses().sort(Comparator.comparing(Expense::getDate).reversed());
-                            Repo.getInstance().save(Spending.this);
+                            repo.getExpenses().add(transaction);
+                            repo.getExpenses().sort(Comparator.comparing(Expense::getDate).reversed());
+                            repo.saveData(Spending.this, (wasSuccessful, message1) -> listExpenses());
+                        });
+                        repo.saveData(Spending.this, (wasSuccessful, message1) -> {
+                            adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
                             listExpenses();
                         });
-                        Repo.getInstance().save(Spending.this);
-                        adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
-                        listExpenses();
                         break;
                 }
             }
+
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
@@ -642,14 +638,14 @@ public class Spending extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void adjustCategories (double dailyBudget) {
+    public void adjustCategories(double dailyBudget) {
 
         Button submit = findViewById(R.id.submit_changes);
         TextView addCategory = findViewById(R.id.add_category);
         LinearLayout categoriesList = findViewById(R.id.categories_list);
         cats.setVisibility(View.GONE);
         categoriesListLayout.setVisibility(View.VISIBLE);
-        ArrayList <Slider> sliders = new ArrayList<>();
+        ArrayList<Slider> sliders = new ArrayList<>();
         for (Category category : budget.getCategories()) {
             final int[] remainder = {0};
             View slider = View.inflate(Spending.this, R.layout.category_slider, null);
@@ -688,12 +684,12 @@ public class Spending extends AppCompatActivity {
                             budget.getCategories().remove(category);
                             categoriesList.removeView(slider);
                             sliders.remove(categorySlider);
-                            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })
                         .create();
-                        dialog.show();
+                dialog.show();
             });
             categorySlider.setValue(category.getCategoryPercentage());
             categoryPercent.setText(String.format(Locale.getDefault(), "%d%%", category.getCategoryPercentage()));
@@ -717,7 +713,7 @@ public class Spending extends AppCompatActivity {
             categoriesList.addView(slider);
         }
         submit.setOnClickListener(view -> {
-            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
+            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
             cats.setVisibility(View.VISIBLE);
             categoriesListLayout.setVisibility(View.GONE);
             categoriesList.removeAllViews();
@@ -734,7 +730,7 @@ public class Spending extends AppCompatActivity {
             TextView remove = slider.findViewById(R.id.remove_category);
             String newName = getString(R.string.miscellaneous);
             int counter = 1;
-            for (Category category: budget.getCategories()) {
+            for (Category category : budget.getCategories()) {
                 while (category.getCategoryName().equalsIgnoreCase(newName)) {
                     newName = getString(R.string.miscellaneous) + " (" + counter + ")";
                     ++counter;
@@ -773,7 +769,7 @@ public class Spending extends AppCompatActivity {
                         .setPositiveButton(getString(R.string.remove), (dialogInterface, i) -> {
                             budget.getCategories().remove(newCat);
                             categoriesList.removeView(slider);
-                            FirebaseFirestore.getInstance().collection("users").document(Repo.getInstance().getUid()).set(Repo.getInstance().getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })
@@ -802,18 +798,11 @@ public class Spending extends AppCompatActivity {
             categoriesList.addView(slider);
         });
     }
-    public static class MyYAxisValueFormatter extends ValueFormatter {
 
-        @Override
-        public String getFormattedValue(float value) {
-            return FixNumber.addSymbol(String.valueOf(value));  // Format value, and get any string here
-        }
-    }
-
-    public int getRemainder (ArrayList <Slider> sliders, Slider chosenSlider) {
+    public int getRemainder(ArrayList<Slider> sliders, Slider chosenSlider) {
 
         float remainder = 100;
-        for (Slider slider: sliders) {
+        for (Slider slider : sliders) {
             if (!slider.equals(chosenSlider)) {
                 remainder = remainder - slider.getValue();
             }
@@ -828,5 +817,13 @@ public class Spending extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         pb.setVisibility(View.GONE);
+    }
+
+    public static class MyYAxisValueFormatter extends ValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value) {
+            return FixNumber.addSymbol(String.valueOf(value));  // Format value, and get any string here
+        }
     }
 }

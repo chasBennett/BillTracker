@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -21,15 +19,14 @@ import com.example.billstracker.R;
 import com.example.billstracker.tools.Prefs;
 import com.example.billstracker.tools.Tools;
 
-public class NotificationSettings extends AppCompatActivity {
+public class NotificationSettings extends BaseActivity {
 
     Context mContext;
     LinearLayout notificationInstruction;
     ScrollView scroll;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_about);
         mContext = this;
         update();
@@ -55,15 +52,13 @@ public class NotificationSettings extends AppCompatActivity {
             notificationsToggle.setOnClickListener(view -> {
                 if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled()) {
                     requestPermissionLauncher();
-                }
-                else {
+                } else {
                     pb.setVisibility(View.VISIBLE);
                     Prefs.setNotificationPreference(NotificationSettings.this, true);
                     update();
                 }
             });
-        }
-        else {
+        } else {
             notificationsOff.setVisibility(View.GONE);
             notificationsOn.setVisibility(View.VISIBLE);
             notificationsToggle.setText(R.string.notificationsOff);
@@ -73,8 +68,7 @@ public class NotificationSettings extends AppCompatActivity {
                     Prefs.setNotificationPreference(NotificationSettings.this, false);
                     NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
                     notificationManager.cancelAll();
-                }
-                else {
+                } else {
                     Prefs.setNotificationPreference(NotificationSettings.this, true);
                 }
                 update();
@@ -98,7 +92,7 @@ public class NotificationSettings extends AppCompatActivity {
         }
     }
 
-    public void setPreference () {
+    public void setPreference() {
 
         Prefs.setNotificationPreference(NotificationSettings.this, NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled());
         update();

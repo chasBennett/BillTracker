@@ -19,19 +19,19 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.tools.FixNumber;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRecyclerAdapter.ViewHolder> {
 
-    private final ArrayList<Category> categories;
-    private final LayoutInflater mInflater;
     final int freq;
     final long start, end;
     final double dailyBudget;
     final boolean misc;
+    private final ArrayList<Category> categories;
+    private final LayoutInflater mInflater;
     private CategoryItemClickListener mClickListener;
 
     public CategoriesRecyclerAdapter(Context context, ArrayList<Category> data, long startDate, long endDate, int frequency, double dailyBud, boolean miscellaneous) {
@@ -43,12 +43,14 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         this.dailyBudget = dailyBud;
         this.misc = miscellaneous;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.category_view, parent, false);
         return new ViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
@@ -58,8 +60,8 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         double remaining;
         double totalBudget = 0;
         holder.budgetCategory.setText(category.getCategoryName());
-        if (Repo.getInstance().getExpenses() != null) {
-            for (Expense expense : Repo.getInstance().getExpenses()) {
+        if (Repository.getInstance().getExpenses() != null) {
+            for (Expense expense : Repository.getInstance().getExpenses()) {
                 if (expense.getDate() >= start && expense.getDate() <= end && expense.getCategory().equals(category.getCategoryName())) {
                     catTotal = catTotal + expense.getAmount();
                 }
@@ -70,32 +72,28 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
             case 0:
                 if (misc) {
                     totalBudget = dailyBudget;
-                }
-                else {
+                } else {
                     totalBudget = dailyBudget * (category.getCategoryPercentage() / 100.0);
                 }
                 break;
             case 1:
                 if (misc) {
                     totalBudget = dailyBudget * 7;
-                }
-                else {
+                } else {
                     totalBudget = (dailyBudget * 7) * (category.getCategoryPercentage() / 100.0);
                 }
                 break;
             case 2:
                 if (misc) {
                     totalBudget = dailyBudget * selectedDate.lengthOfMonth();
-                }
-                else {
+                } else {
                     totalBudget = (dailyBudget * selectedDate.lengthOfMonth()) * (category.getCategoryPercentage() / 100.0);
                 }
                 break;
         }
         if (!misc) {
             remaining = totalBudget - catTotal;
-        }
-        else {
+        } else {
             remaining = 0;
         }
         holder.budgetRemaining.setText(String.format(Locale.getDefault(), "%s %s", mInflater.getContext().getString(R.string.budget_remaining), FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(remaining)))));
@@ -108,14 +106,24 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         });
 
         holder.itemView.setOnLongClickListener(view -> {
-            if (mClickListener != null) mClickListener.onItemClick(position, categories.get(position));
+            if (mClickListener != null)
+                mClickListener.onItemClick(position, categories.get(position));
             return false;
         });
 
     }
+
     @Override
     public int getItemCount() {
         return categories.size();
+    }
+
+    public void setClickListener(CategoryItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    public interface CategoryItemClickListener {
+        void onItemClick(int ignoredPosition, Category ignoredCategory);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -133,12 +141,6 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
             budgetRemaining = itemView.findViewById(R.id.remainingBudget);
             spendPercentage = itemView.findViewById(R.id.spendPercentage);
         }
-    }
-    public void setClickListener(CategoryItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-    public interface CategoryItemClickListener {
-        void onItemClick(int ignoredPosition, Category ignoredCategory);
     }
 
 }

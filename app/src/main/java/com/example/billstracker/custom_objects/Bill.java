@@ -1,5 +1,10 @@
 package com.example.billstracker.custom_objects;
 
+import android.content.Context;
+
+import com.example.billstracker.tools.Repository;
+import com.google.firebase.database.Exclude;
+
 public class Bill {
 
     private String billerName;
@@ -17,6 +22,8 @@ public class Bill {
     private double escrow;
     private String owner;
     private boolean autoPay;
+    private boolean needsSync = false;
+    private boolean needsDelete = false;
 
     public Bill(String billerName, double amountDue, long dueDate, long dateLastPaid, String billsId, boolean recurring, int frequency, String website, int category, String icon, int paymentsRemaining,
                 double balance, double escrow, String owner, boolean autoPay) {
@@ -145,16 +152,135 @@ public class Bill {
     public void setEscrow(double escrow) {
         this.escrow = escrow;
     }
-    public String getOwner () {
+
+    public String getOwner() {
         return owner;
     }
-    public void setOwner (String owner) {
+
+    public void setOwner(String owner) {
         this.owner = owner;
     }
-    public boolean getAutoPay() {
+
+    public boolean isAutoPay() {
         return autoPay;
     }
-    public void setAutoPay (boolean autoPay) {
+
+    public void setAutoPay(boolean autoPay) {
         this.autoPay = autoPay;
+    }
+
+    @Exclude
+    public boolean isNeedsSync() {
+        return needsSync;
+    }
+
+    public void setNeedsSync(boolean needsSync) {
+        this.needsSync = needsSync;
+    }
+
+    @Exclude
+    public boolean isNeedsDelete() { return needsDelete; }
+    public void setNeedsDelete(boolean needsDelete) { this.needsDelete = needsDelete; }
+
+    public static class Builder {
+        private final Bill bill;
+        private final Context context;
+
+        public Builder(Context context, Bill bill) {
+            this.context = context;
+            this.bill = bill;
+        }
+
+        public Builder setBillerName(String name) {
+            bill.setBillerName(name);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setWebsite(String url) {
+            bill.setWebsite(url);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setAmountDue(double amount) {
+            bill.setAmountDue(amount);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setDueDate(long date) {
+            bill.setDueDate(date);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setDateLastPaid(long date) {
+            bill.setDateLastPaid(date);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setFrequency(int freq) {
+            bill.setFrequency(freq);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setRecurring(boolean rec) {
+            bill.setRecurring(rec);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setCategory(int cat) {
+            bill.setCategory(cat);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setIcon(String icon) {
+            bill.setIcon(icon);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setPaymentsRemaining(int paymentsRemaining) {
+            bill.setPaymentsRemaining(paymentsRemaining);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setBalance(double bal) {
+            bill.setBalance(bal);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setEscrow(double esc) {
+            bill.setEscrow(esc);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setOwner(String owner) {
+            bill.setOwner(owner);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public Builder setAutoPay(boolean auto) {
+            bill.setAutoPay(auto);
+            bill.needsSync = true;
+            return this;
+        }
+
+        public void save(Repository.OnCompleteCallback callback) {
+            if (bill == null) {
+                if (callback != null) callback.onComplete(false, "Bill was not found.");
+                return;
+            }
+            Repository.getInstance().saveData(context, callback);
+        }
     }
 }

@@ -12,13 +12,6 @@ public class BottomDrawer {
 
     public static View.OnClickListener defaultButtonListener;
     public static View.OnClickListener selectImageButtonListener;
-    public void setDefaultButtonListener (View.OnClickListener listener) {
-        BottomDrawer.defaultButtonListener = listener;
-    }
-    public void setSelectImageButtonListener (View.OnClickListener listener) {
-        BottomDrawer.selectImageButtonListener = listener;
-    }
-
     final ViewGroup viewGroup;
     final View dialog;
     final LinearLayout parent;
@@ -27,8 +20,7 @@ public class BottomDrawer {
     final LinearLayout selectImageButton;
     final LinearLayout closeDrawer;
     final long drawerSlideDuration = 400;
-
-    public BottomDrawer (Activity activity) {
+    public BottomDrawer(Activity activity) {
 
         viewGroup = activity.findViewById(android.R.id.content);
         dialog = View.inflate(activity, R.layout.bottom_drawer, null);
@@ -49,7 +41,16 @@ public class BottomDrawer {
         dialog.setElevation(400);
         drawer.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(drawerSlideDuration).start();
     }
-    public void dismissDialog () {
+
+    public void setDefaultButtonListener(View.OnClickListener listener) {
+        BottomDrawer.defaultButtonListener = listener;
+    }
+
+    public void setSelectImageButtonListener(View.OnClickListener listener) {
+        BottomDrawer.selectImageButtonListener = listener;
+    }
+
+    public void dismissDialog() {
         if (dialog != null) {
             ViewGroup parent = (ViewGroup) dialog.getParent();
             if (parent != null && drawer != null) {

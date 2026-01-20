@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Payments implements Serializable {
-    private ArrayList <Payment> payments;
+    private ArrayList<Payment> payments;
 
-    public Payments(ArrayList <Payment> payments) {
+    public Payments(ArrayList<Payment> payments) {
 
         setPayments(payments);
     }

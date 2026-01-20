@@ -19,6 +19,8 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.core.view.WindowCompat;
+
 import com.example.billstracker.R;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
@@ -33,32 +35,6 @@ public class CustomDialog extends Dialog {
     public static View.OnClickListener neutralButtonListener;
     public static View.OnClickListener negativeButtonListener;
     public static View.OnClickListener perimeterListener;
-
-    public void setPositiveButtonListener (View.OnClickListener listener) {
-        CustomDialog.positiveButtonListener = listener;
-    }
-    public void setNeutralButtonListener (View.OnClickListener listener) {
-        CustomDialog.neutralButtonListener = listener;
-    }
-    public void setNegativeButtonListener (View.OnClickListener listener) {
-        CustomDialog.negativeButtonListener = listener;
-    }
-    public void setPerimeterListener (View.OnClickListener listener) {
-        CustomDialog.perimeterListener = listener;
-    }
-    public void isMoneyInput (boolean isMoney) {
-        if (isMoney && editText != null) {
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }
-    }
-    public Dialog getDialog () {
-        if (this.dialog != null) {
-            return this.getDialog();
-        }
-        else {
-            return null;
-        }
-    }
     ViewGroup main;
     View dialog;
     LinearLayout parent;
@@ -74,7 +50,6 @@ public class CustomDialog extends Dialog {
     ImageView spinnerIcon;
     TextView spinnerHint;
     Spinner spinner;
-
     public CustomDialog(Activity activity, String title, String message, String positiveButtonText, String negativeButtonText, String neutralButtonText) {
         super(activity);
 
@@ -115,8 +90,7 @@ public class CustomDialog extends Dialog {
                         negativeButtonListener.onClick(v);
                     }
                 });
-            }
-            else {
+            } else {
                 negativeButton.setVisibility(View.GONE);
             }
         }
@@ -131,24 +105,46 @@ public class CustomDialog extends Dialog {
         scroll.animate().translationY(0).setDuration(500).setInterpolator(new AccelerateDecelerateInterpolator()).start();
         main.bringChildToFront(dialog);
         dialog.bringToFront();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activity.getWindow().setDecorFitsSystemWindows(true);
-        }
-        else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
 
     }
 
-    public void setEditText (String hint, String defaultValue, Drawable startIconDrawable) {
+    public void setPositiveButtonListener(View.OnClickListener listener) {
+        CustomDialog.positiveButtonListener = listener;
+    }
+
+    public void setNeutralButtonListener(View.OnClickListener listener) {
+        CustomDialog.neutralButtonListener = listener;
+    }
+
+    public void setNegativeButtonListener(View.OnClickListener listener) {
+        CustomDialog.negativeButtonListener = listener;
+    }
+
+    public void setPerimeterListener(View.OnClickListener listener) {
+        CustomDialog.perimeterListener = listener;
+    }
+
+    public void isMoneyInput(boolean isMoney) {
+        if (isMoney && editText != null) {
+            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        }
+    }
+
+    public Dialog getDialog() {
+        return this;
+    }
+
+    public void setEditText(String hint, String defaultValue, Drawable startIconDrawable) {
 
         editTextParent = dialog.findViewById(R.id.dialogEditTextParent);
         editText = dialog.findViewById(R.id.dialogEditText);
         editTextParent.setVisibility(View.VISIBLE);
         if (startIconDrawable != null) {
             editTextParent.setStartIconDrawable(startIconDrawable);
-        }
-        else {
+        } else {
             editText.setCompoundDrawables(null, null, null, null);
         }
         if (hint != null) {
@@ -160,7 +156,7 @@ public class CustomDialog extends Dialog {
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
     }
 
-    public void setViews (Activity activity) {
+    public void setViews(Activity activity) {
         main = activity.findViewById(android.R.id.content);
         dialog = View.inflate(activity, R.layout.custom_dialog, null);
         scroll = dialog.findViewById(R.id.dialogScroll);
@@ -173,7 +169,8 @@ public class CustomDialog extends Dialog {
         dialog.bringToFront();
         Tools.setupUI(activity, dialog);
     }
-    public void setTextWatcher (TextWatcher watcher) {
+
+    public void setTextWatcher(TextWatcher watcher) {
         if (editText != null) {
             String string = "";
             if (editText.getText() != null && !editText.getText().toString().isEmpty()) {
@@ -183,31 +180,31 @@ public class CustomDialog extends Dialog {
             editText.setText(string);
         }
     }
-    public String getInput () {
+
+    public String getInput() {
         if (editText.getText() != null) {
             return editText.getText().toString();
-        }
-        else {
+        } else {
             return "";
         }
     }
-    public EditText getEditText () {
+
+    public EditText getEditText() {
         if (editText != null) {
             return editText;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
-    public int getSpinnerSelection () {
+    public int getSpinnerSelection() {
         if (spinner != null) {
             return spinner.getSelectedItemPosition();
         }
         return 0;
     }
 
-    public void setSpinner (ArrayAdapter <String> spinnerAdapter, String hint, int defaultSelection, Drawable icon) {
+    public void setSpinner(ArrayAdapter<String> spinnerAdapter, String hint, int defaultSelection, Drawable icon) {
         if (dialog != null) {
             spinnerParent = dialog.findViewById(R.id.dialogSpinnerParent);
             spinnerParent.setVisibility(View.VISIBLE);
@@ -221,13 +218,13 @@ public class CustomDialog extends Dialog {
             spinner.setSelection(defaultSelection);
             if (icon != null) {
                 spinnerIcon.setImageDrawable(icon);
-            }
-            else {
+            } else {
                 spinnerIcon.setVisibility(View.GONE);
             }
         }
     }
-    public void dismissDialog () {
+
+    public void dismissDialog() {
         if (dialog != null) {
             ViewGroup parent = (ViewGroup) dialog.getParent();
             if (editText != null) {

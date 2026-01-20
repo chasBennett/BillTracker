@@ -7,15 +7,18 @@ public class Trophy {
     private String message;
     private boolean shared;
 
-    public Trophy (int type, boolean shown, String message, boolean shared) {
+    public Trophy(int type, boolean shown, String message, boolean shared) {
 
         setType(type);
         setShown(shown);
         setMessage(message);
         setShared(shared);
     }
-    /** @noinspection unused*/
-    public Trophy () {
+
+    /**
+     * @noinspection unused
+     */
+    public Trophy() {
 
     }
 
@@ -43,7 +46,9 @@ public class Trophy {
         this.message = message;
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public boolean isShared() {
         return shared;
     }

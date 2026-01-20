@@ -5,7 +5,6 @@ import static android.content.ContentValues.TAG;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,7 +17,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +27,6 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.recycler_adapters.AdminSupportRecyclerAdapter;
 import com.example.billstracker.recycler_adapters.SupportMessageRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
-import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -44,14 +41,14 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
-public class Support extends AppCompatActivity {
+public class Support extends BaseActivity {
 
     public static String name;
     public static String userUid;
     public static String adminUid;
     public static String userName;
-    ArrayList<SupportTicket> userTickets = new ArrayList<>();
     final LinearLayoutManager lm = new LinearLayoutManager(Support.this);
+    ArrayList<SupportTicket> userTickets = new ArrayList<>();
     ImageView supportBack, submit;
     EditText message;
     LinearLayout chatBox, hideIfTicketsFound, pb;
@@ -67,8 +64,7 @@ public class Support extends AppCompatActivity {
     User thisUser;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_support);
 
         pb = findViewById(R.id.pb13);
@@ -84,7 +80,7 @@ public class Support extends AppCompatActivity {
         mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         Tools.setupUI(Support.this, findViewById(android.R.id.content));
 
-        thisUser = Repo.getInstance().getUser(Support.this);
+        thisUser = repo.getUser(Support.this);
 
         userName = "";
         userUid = "";
@@ -118,7 +114,7 @@ public class Support extends AppCompatActivity {
             activityRootView.getWindowVisibleDisplayFrame(r);
 
             int heightDiff = activityRootView.getRootView().getHeight() - r.height();
-            if (heightDiff > 0.25*activityRootView.getRootView().getHeight()) {
+            if (heightDiff > 0.25 * activityRootView.getRootView().getHeight()) {
                 messageList.smoothScrollToPosition(messageList.getBottom());
             }
         });
@@ -189,7 +185,7 @@ public class Support extends AppCompatActivity {
                         Toast.makeText(Support.this, (CharSequence) task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 });
-                db.collection("users").document(Repo.getInstance().getUid()).set(thisUser, SetOptions.merge());
+                db.collection("users").document(repo.retrieveUid(Support.this)).set(thisUser, SetOptions.merge());
             }
         });
 
@@ -205,10 +201,10 @@ public class Support extends AppCompatActivity {
         db.collection("tickets").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 userTickets = (ArrayList<SupportTicket>) task.getResult().toObjects(SupportTicket.class);
-                ArrayList <SupportTicket> remove = new ArrayList<>();
-                for (SupportTicket delete: userTickets) {
+                ArrayList<SupportTicket> remove = new ArrayList<>();
+                for (SupportTicket delete : userTickets) {
                     if (delete.getAgentUid() != null) {
-                        if (!delete.getAgentUid().trim().equals(Repo.getInstance().getUid()) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
+                        if (!delete.getAgentUid().trim().equals(repo.retrieveUid(Support.this)) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
                             remove.add(delete);
                             if (!delete.isOpen()) {
                                 delete.setUnreadByAgent(0);
@@ -240,7 +236,7 @@ public class Support extends AppCompatActivity {
         userTickets.sort(Comparator.comparing(SupportTicket::getDateOfLastActivity));
         Collections.reverse(userTickets);
         int counter = 0;
-        for (SupportTicket count: userTickets) {
+        for (SupportTicket count : userTickets) {
             if (count.getUnreadByAgent() > 0) {
                 ++counter;
             }
@@ -262,7 +258,7 @@ public class Support extends AppCompatActivity {
         admin = false;
         customerTicket = null;
 
-        db.collection("tickets").document(Repo.getInstance().getUid()).get().addOnCompleteListener(task -> {
+        db.collection("tickets").document(repo.retrieveUid(Support.this)).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 Log.d(TAG, document.getId() + " => " + document.getData());
@@ -276,8 +272,7 @@ public class Support extends AppCompatActivity {
                         generateMessages(customerTicket);
                     }
                 }
-            }
-            else {
+            } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
             if (customerTicket == null) {

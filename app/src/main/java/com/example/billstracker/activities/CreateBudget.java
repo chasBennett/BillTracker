@@ -15,19 +15,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.popup_classes.DatePicker;
+import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
 
@@ -40,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class CreateBudget extends AppCompatActivity {
+public class CreateBudget extends BaseActivity {
 
     EditText etPayAmount, etSavingsPercentage;
     TextView savingsAmount, billsAverage, disposableIncome, budgetStartDate, budgetEndDate, createForMe, addCategory, savingsError, categoriesError, header;
@@ -54,8 +53,7 @@ public class CreateBudget extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_create_budget);
         Tools.setupUI(CreateBudget.this, findViewById(android.R.id.content));
 
@@ -92,7 +90,7 @@ public class CreateBudget extends AppCompatActivity {
         budgetStartDate.setOnClickListener(v -> getDateFromUser(budgetStartDate, true, DateFormat.makeLong(budgetStartDate.getText().toString())));
         budgetEndDate.setOnClickListener(v -> getDateFromUser(budgetEndDate, false, DateFormat.makeLong(budgetEndDate.getText().toString())));
 
-        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(Repo.getInstance().getUser(CreateBudget.this).getIncome()))));
+        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(repo.getUser(CreateBudget.this).getIncome()))));
         etPayAmount.addTextChangedListener(new MoneyFormatterWatcher(etPayAmount));
 
         etPayAmount.addTextChangedListener(new Watcher() {
@@ -230,7 +228,7 @@ public class CreateBudget extends AppCompatActivity {
             }
         }
         Budget a = null;
-        for (Expense expense : Repo.getInstance().getExpenses()) {
+        for (Expense expense : repo.getExpenses()) {
             boolean found = false;
             for (Category cat : budgetCategories) {
                 if (cat.getCategoryName().equals(expense.getCategory())) {
@@ -253,13 +251,12 @@ public class CreateBudget extends AppCompatActivity {
             budget.setEndDate(end);
             budget.setSavingsPercentage(savings);
             budget.setCategories(budgetCategories);
-        }
-        else {
+        } else {
             a = new Budget(payAmount, payFreq, start, end, id(), savings, budgetCategories);
         }
 
         ArrayList<Budget> remove = new ArrayList<>();
-        for (Budget budget : Repo.getInstance().getUser(CreateBudget.this).getBudgets()) {
+        for (Budget budget : repo.getUser(CreateBudget.this).getBudgets()) {
             if (budget.getStartDate() > start && budget.getStartDate() < end && budget.getBudgetId() != budgetId) {
                 budget.setStartDate(end + 1);
                 if (end + 1 > budget.getEndDate()) {
@@ -279,16 +276,22 @@ public class CreateBudget extends AppCompatActivity {
                 remove.add(budget);
             }
         }
-        Repo.getInstance().getUser(CreateBudget.this).getBudgets().removeAll(remove);
+        repo.getUser(CreateBudget.this).getBudgets().removeAll(remove);
         if (a != null) {
-            Repo.getInstance().getUser(CreateBudget.this).getBudgets().add(a);
+            repo.getUser(CreateBudget.this).getBudgets().add(a);
         }
-        Repo.getInstance().updateUser(CreateBudget.this, user -> {
-            user.setIncome(payAmount);
-            user.setPayFrequency(payFreq);
-        });
-        Intent budget = new Intent(CreateBudget.this, ViewBudget.class);
-        startActivity(budget);
+        repo.editUser(CreateBudget.this)
+                .setIncome(payAmount)
+                .setPayFrequency(payFreq)
+                .save((wasSuccessful, message) -> {
+                    if (wasSuccessful) {
+                        Intent budget = new Intent(CreateBudget.this, ViewBudget.class);
+                        startActivity(budget);
+                    }
+                    else {
+                        Notify.createPopup(CreateBudget.this, "Error: " + message, null);
+                    }
+                });
     }
 
     public void updateValues() {
@@ -306,46 +309,33 @@ public class CreateBudget extends AppCompatActivity {
         TextView disposableLabel = findViewById(R.id.disposableLabel);
 
         if (etPayAmount.getText().length() > 1) {
-            switch (payFrequency.getSelectedItemPosition()) {
-                case 0:
-                    monthlyPay = FixNumber.makeDouble(etPayAmount.getText().toString()) * weeksInMonth;
-                    break;
-                case 1:
-                    monthlyPay = FixNumber.makeDouble(etPayAmount.getText().toString()) * ((double) weeksInMonth / 2);
-                    break;
-                case 2:
-                    monthlyPay = FixNumber.makeDouble(etPayAmount.getText().toString());
-                    break;
-            }
-        }
-        else {
-            switch (Repo.getInstance().getUser(CreateBudget.this).getPayFrequency()) {
-                case 0:
-                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome() * weeksInMonth;
-                    break;
-                case 1:
-                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
-                    break;
-                case 2:
-                    monthlyPay = Repo.getInstance().getUser(CreateBudget.this).getIncome();
-                    break;
-            }
+            monthlyPay = switch (payFrequency.getSelectedItemPosition()) {
+                case 0 -> FixNumber.makeDouble(etPayAmount.getText().toString()) * weeksInMonth;
+                case 1 ->
+                        FixNumber.makeDouble(etPayAmount.getText().toString()) * ((double) weeksInMonth / 2);
+                case 2 -> FixNumber.makeDouble(etPayAmount.getText().toString());
+                default -> monthlyPay;
+            };
+        } else {
+            monthlyPay = switch (repo.getUser(CreateBudget.this).getPayFrequency()) {
+                case 0 ->
+                        repo.getUser(CreateBudget.this).getIncome() * weeksInMonth;
+                case 1 ->
+                        repo.getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
+                case 2 -> repo.getUser(CreateBudget.this).getIncome();
+                default -> monthlyPay;
+            };
         }
         if (etSavingsPercentage.getText().length() > 1) {
             double savingsPercentage = FixNumber.makeDouble(etSavingsPercentage.getText().toString().replaceAll("%", ""));
-            switch (payFrequency.getSelectedItemPosition()) {
-                case 0:
-                    monthlySavings = ((savingsPercentage / 100) * monthlyPay) / weeksInMonth;
-                    break;
-                case 1:
-                    monthlySavings = ((savingsPercentage / 100) * monthlyPay) / ((double) weeksInMonth / 2);
-                    break;
-                case 2:
-                    monthlySavings = ((savingsPercentage / 100) * monthlyPay);
-                    break;
-            }
+            monthlySavings = switch (payFrequency.getSelectedItemPosition()) {
+                case 0 -> ((savingsPercentage / 100) * monthlyPay) / weeksInMonth;
+                case 1 -> ((savingsPercentage / 100) * monthlyPay) / ((double) weeksInMonth / 2);
+                case 2 -> ((savingsPercentage / 100) * monthlyPay);
+                default -> monthlySavings;
+            };
         }
-        for (Payment payment : Repo.getInstance().getPayments()) {
+        for (Payment payment : repo.getPayments()) {
             if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd) {
                 monthlyBills = monthlyBills + payment.getPaymentAmount();
             }
@@ -391,8 +381,7 @@ public class CreateBudget extends AppCompatActivity {
                 error = true;
             } else if (percentage.getText().toString().length() == 1 && percentage.getText().toString().equalsIgnoreCase("%") || percentage.getText().toString().isEmpty()) {
                 error = true;
-            }
-            else {
+            } else {
                 totalPercentage += Integer.parseInt(percentage.getText().toString().replaceAll("%", ""));
             }
         }

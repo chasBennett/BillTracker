@@ -5,7 +5,7 @@ import com.example.billstracker.custom_objects.Payment;
 
 public interface CalculateBalance {
 
-    static double calculateNewBalance (Bill bill) {
+    static double calculateNewBalance(Bill bill) {
         int paymentsPaid = paymentsPaid(bill);
 
         // Principal Reduction = (Total Money Paid) - (Total Interest Paid) - (Total Escrow Paid)
@@ -15,20 +15,21 @@ public interface CalculateBalance {
         return bill.getBalance() - balancePaid;
     }
 
-    static int paymentsPaid (Bill bill) {
+    static int paymentsPaid(Bill bill) {
         int paidPayments = 0;
-        for (Payment payment: Repo.getInstance().getPayments()) {
+        for (Payment payment : Repository.getInstance().getPayments()) {
             if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid()) {
                 ++paidPayments;
             }
         }
         return paidPayments;
     }
-    static double totalPaid (Bill bill) {
+
+    static double totalPaid(Bill bill) {
         return paymentsPaid(bill) * bill.getAmountDue();
     }
 
-    static double interestPaid (Bill bill) {
+    static double interestPaid(Bill bill) {
         double principal = bill.getBalance();
         double periodicPayment = bill.getAmountDue() - bill.getEscrow();
         int totalPayments = numberOfPayments(bill);
@@ -42,9 +43,9 @@ public interface CalculateBalance {
         return (totalLifetimeInterest / totalPayments) * paymentsPaid(bill);
     }
 
-    static int numberOfPayments (Bill bill) {
+    static int numberOfPayments(Bill bill) {
         int numberOfPayments = bill.getPaymentsRemaining();
-        for (Payment pay: Repo.getInstance().getPayments()) {
+        for (Payment pay : Repository.getInstance().getPayments()) {
             if (pay.getBillerName().equals(bill.getBillerName()) && pay.isPaid()) {
                 ++numberOfPayments;
             }
@@ -55,7 +56,7 @@ public interface CalculateBalance {
     /**
      * Calculates accurate APR for amortized loans using a Binary Search solver.
      */
-    static double calculateApr (Bill bil) {
+    static double calculateApr(Bill bil) {
         double principal = bil.getBalance();
         double periodicPayment = bil.getAmountDue() - bil.getEscrow();
         int totalPayments = numberOfPayments(bil);
@@ -63,16 +64,15 @@ public interface CalculateBalance {
         if (principal <= 0 || periodicPayment <= 0 || totalPayments <= 0) return 0.0;
 
         // Determine periods per year based on frequency index
-        double periodsPerYear;
-        switch (bil.getFrequency()) {
-            case 0: periodsPerYear = 365.0; break; // Daily
-            case 1: periodsPerYear = 52.0;  break; // Weekly
-            case 2: periodsPerYear = 26.0;  break; // Bi-weekly
-            case 3: periodsPerYear = 12.0;  break; // Monthly
-            case 4: periodsPerYear = 6.0;   break; // Bi-monthly
-            case 5: periodsPerYear = 4.0;   break; // Quarterly
-            default: periodsPerYear = 1.0;  break;
-        }
+        double periodsPerYear = switch (bil.getFrequency()) {
+            case 0 -> 365.0; // Daily
+            case 1 -> 52.0; // Weekly
+            case 2 -> 26.0; // Bi-weekly
+            case 3 -> 12.0; // Monthly
+            case 4 -> 6.0; // Bi-monthly
+            case 5 -> 4.0; // Quarterly
+            default -> 1.0;
+        };
 
         // If total payments <= principal, there is no interest (0% APR)
         if (periodicPayment * totalPayments <= principal) return 0.0;
@@ -101,7 +101,7 @@ public interface CalculateBalance {
         return mid * periodsPerYear * 100.0;
     }
 
-    static double compoundInterest (double principal, double rate, double time) {
+    static double compoundInterest(double principal, double rate, double time) {
         return principal * (Math.pow((1 + rate / 100), time));
     }
 }

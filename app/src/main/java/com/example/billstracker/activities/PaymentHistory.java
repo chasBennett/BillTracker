@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,28 +25,27 @@ import com.example.billstracker.popup_classes.FilterPayments;
 import com.example.billstracker.recycler_adapters.PaymentsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class PaymentHistory extends AppCompatActivity {
+public class PaymentHistory extends BaseActivity {
 
+    public static ArrayList<Bill> selectedBillers;
+    public static DateRange range;
     ArrayList<Payment> paymentList = new ArrayList<>();
     Context mContext;
     TextView filterPayments;
     Bundle extras;
     ConstraintLayout pb;
-    public static ArrayList <Bill> selectedBillers;
-    public static DateRange range;
     RecyclerView recycler;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_payment_history);
 
         mContext = this;
@@ -67,16 +65,16 @@ public class PaymentHistory extends AppCompatActivity {
 
         if (extras != null) {
             String billId = extras.getString("Bill Id", "");
-            Bill bil = Repo.getInstance().getBillById(billId);
+            Bill bil = repo.getBillById(billId);
             if (bil != null) selectedBillers.add(bil);
-        }
-        else {
-            selectedBillers.addAll(Repo.getInstance().getBills());
+        } else {
+            selectedBillers.addAll(repo.getBills());
         }
         filterPayments.setOnClickListener(v -> filterPayments());
         filterResults();
     }
-    public void filterPayments () {
+
+    public void filterPayments() {
         FilterPayments fp = new FilterPayments(PaymentHistory.this);
         fp.setPositiveButtonListener(v -> {
             pb.setVisibility(View.VISIBLE);
@@ -85,15 +83,15 @@ public class PaymentHistory extends AppCompatActivity {
         });
     }
 
-    public void filterResults () {
+    public void filterResults() {
 
         paymentList.clear();
 
-        for (Payment payment : Repo.getInstance().getPayments()) {
+        for (Payment payment : repo.getPayments()) {
             if (payment.isPaid() || payment.isDateChanged() && payment.getPartialPayment() > 0) {
                 if (payment.getDatePaid() >= range.getStartDate() && payment.getDatePaid() <= range.getEndDate()) {
                     if (!paymentList.contains(payment)) {
-                        for (Bill bill: selectedBillers) {
+                        for (Bill bill : selectedBillers) {
                             if (bill.getBillerName().equals(payment.getBillerName())) {
                                 paymentList.add(payment);
                             }

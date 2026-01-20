@@ -23,11 +23,11 @@ import java.util.ArrayList;
 public class TransactionsRecyclerAdapter extends RecyclerView.Adapter<TransactionsRecyclerAdapter.ViewHolder> {
 
     public static ArrayList<Expense> transactions;
-    private final LayoutInflater mInflater;
     final Budget budget;
-    final ArrayList <Long> headers = new ArrayList<>();
+    final ArrayList<Long> headers = new ArrayList<>();
     final Context context;
-    final ArrayList <String> categories = new ArrayList<>();
+    final ArrayList<String> categories = new ArrayList<>();
+    private final LayoutInflater mInflater;
     Expense transaction;
 
     public TransactionsRecyclerAdapter(Context context1, ArrayList<Expense> data, Budget budget) {
@@ -39,13 +39,12 @@ public class TransactionsRecyclerAdapter extends RecyclerView.Adapter<Transactio
         categories.clear();
 
         if (this.budget != null && this.budget.getCategories() != null && !this.budget.getCategories().isEmpty()) {
-            for (Category category: this.budget.getCategories()) {
+            for (Category category : this.budget.getCategories()) {
                 if (!categories.contains(category.getCategoryName())) {
                     categories.add(category.getCategoryName());
                 }
             }
-        }
-        else {
+        } else {
             categories.add(context.getString(R.string.miscellaneous));
         }
     }
@@ -83,6 +82,10 @@ public class TransactionsRecyclerAdapter extends RecyclerView.Adapter<Transactio
         return transactions.size();
     }
 
+    public Expense getTransaction(int id) {
+        return transactions.get(id);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView description;
         final TextView category;
@@ -100,8 +103,5 @@ public class TransactionsRecyclerAdapter extends RecyclerView.Adapter<Transactio
             dateHeader = itemView.findViewById(R.id.expenseDateHeader);
             transactionIcon = itemView.findViewById(R.id.transactionPartnerName);
         }
-    }
-    public Expense getTransaction(int id) {
-        return transactions.get(id);
     }
 }

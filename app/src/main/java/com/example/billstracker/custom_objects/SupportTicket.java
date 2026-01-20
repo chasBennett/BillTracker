@@ -9,7 +9,7 @@ public class SupportTicket {
     private String userEmail;
     private String agent;
     private String agentUid;
-    private ArrayList <Message> messages;
+    private ArrayList<Message> messages;
     private String notes;
     private boolean open;
     private String id;
@@ -17,7 +17,7 @@ public class SupportTicket {
     private int unreadByUser;
     private int unreadByAgent;
 
-    public SupportTicket(String name, String userUid, String userEmail, String agent, ArrayList <Message> messages, String ignoredNotes, boolean open, String id, int unreadByUser, long dateOfLastActivity, int unreadByAgent, String agentUid) {
+    public SupportTicket(String name, String userUid, String userEmail, String agent, ArrayList<Message> messages, String ignoredNotes, boolean open, String id, int unreadByUser, long dateOfLastActivity, int unreadByAgent, String agentUid) {
 
         setName(name);
         setUserUid(userUid);
@@ -32,7 +32,7 @@ public class SupportTicket {
         setAgentUid(agentUid);
     }
 
-    public SupportTicket () {
+    public SupportTicket() {
 
     }
 

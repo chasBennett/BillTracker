@@ -46,14 +46,14 @@ public class PaymentsRecyclerAdapter extends RecyclerView.Adapter<PaymentsRecycl
         holder.datePaid.setText(DateFormat.makeDateString(payment.getDatePaid()));
         if (payment.isPaid()) {
             holder.paymentAmount.setText(FixNumber.addSymbol(String.valueOf(payment.getPaymentAmount())));
-        }
-        else {
+        } else {
             holder.paymentAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(payment.getPartialPayment()))));
         }
         holder.dateDue.setText(DateFormat.makeDateString(payment.getDueDate()));
 
         holder.itemView.setOnClickListener(view -> {
-            if (mClickListener != null) mClickListener.onItemClick(position, payments.get(position));
+            if (mClickListener != null)
+                mClickListener.onItemClick(position, payments.get(position));
         });
 
     }
@@ -64,6 +64,15 @@ public class PaymentsRecyclerAdapter extends RecyclerView.Adapter<PaymentsRecycl
         return payments.size();
     }
 
+    // allows clicks events to be caught
+    public void setClickListener(ItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface ItemClickListener {
+        void onItemClick(int ignoredPosition, Payment payment);
+    }
 
     // stores and recycles views as they are scrolled off screen
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -77,20 +86,10 @@ public class PaymentsRecyclerAdapter extends RecyclerView.Adapter<PaymentsRecycl
             super(itemView);
 
             billerName = itemView.findViewById(R.id.billerNameBox);
-            dateDue =itemView.findViewById(R.id.paymentDateBox3);
+            dateDue = itemView.findViewById(R.id.paymentDateBox3);
             datePaid = itemView.findViewById(R.id.paymentDateBox);
             paymentAmount = itemView.findViewById(R.id.paymentAmountBox);
         }
-    }
-
-    // allows clicks events to be caught
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(int ignoredPosition, Payment payment);
     }
 
 }

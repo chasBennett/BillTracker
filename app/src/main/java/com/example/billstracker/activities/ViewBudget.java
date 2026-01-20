@@ -3,12 +3,10 @@ package com.example.billstracker.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
@@ -21,7 +19,6 @@ import com.example.billstracker.popup_classes.MonthYearPickerDialog;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -39,7 +36,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ViewBudget extends AppCompatActivity {
+public class ViewBudget extends BaseActivity {
 
     ConstraintLayout pb;
     TextView editBudget;
@@ -77,8 +74,7 @@ public class ViewBudget extends AppCompatActivity {
     SharedPreferences.Editor editor;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_view_budget);
 
         pb = findViewById(R.id.progressBar);
@@ -191,22 +187,20 @@ public class ViewBudget extends AppCompatActivity {
             if (sp.getInt("BudgetFrequency", 0) == 0) {
                 btnDaily.performClick();
                 freq = 0;
-            }
-            else if (sp.getInt("BudgetFrequency", 0) == 1) {
+            } else if (sp.getInt("BudgetFrequency", 0) == 1) {
                 btnWeekly.performClick();
                 freq = 1;
-            }
-            else if (sp.getInt("BudgetFrequency", 0) == 2) {
+            } else if (sp.getInt("BudgetFrequency", 0) == 2) {
                 btnMonthly.performClick();
                 freq = 2;
-            }
-            else {
+            } else {
                 freq = 1;
             }
         }
 
     }
-    public void loadBudget (int frequency) {
+
+    public void loadBudget(int frequency) {
 
         dateIntValue = DateFormat.makeLong(selectedDate);
         monthlyBillAmount = 0;
@@ -219,33 +213,29 @@ public class ViewBudget extends AppCompatActivity {
 
         boolean found = false;
 
-        if (Repo.getInstance().getUser(ViewBudget.this).getBudgets() != null && !Repo.getInstance().getUser(ViewBudget.this).getBudgets().isEmpty()) {
-            for (Budget bud : Repo.getInstance().getUser(ViewBudget.this).getBudgets()) {
+        if (repo.getUser(ViewBudget.this).getBudgets() != null && !repo.getUser(ViewBudget.this).getBudgets().isEmpty()) {
+            for (Budget bud : repo.getUser(ViewBudget.this).getBudgets()) {
                 if (bud.getStartDate() <= dateIntValue && bud.getEndDate() >= dateIntValue) {
                     budget = bud;
                     found = true;
                     break;
                 }
             }
-        }
-        else {
-            Repo.getInstance().getUser(ViewBudget.this).setBudgets(new ArrayList<>());
+        } else {
+            repo.getUser(ViewBudget.this).setBudgets(new ArrayList<>());
         }
         if (!found) {
-            budget = new Budget(Repo.getInstance().getUser(ViewBudget.this).getIncome(), Repo.getInstance().getUser(ViewBudget.this).getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
+            budget = new Budget(repo.getUser(ViewBudget.this).getIncome(), repo.getUser(ViewBudget.this).getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
             editBudget.setText(getString(R.string.create_a_new_budget));
             editBudget.setOnClickListener(view -> startActivity(new Intent(ViewBudget.this, CreateBudget.class)));
-        }
-        else {
+        } else {
             editBudget.setOnClickListener(view -> startActivity(new Intent(ViewBudget.this, CreateBudget.class).putExtra("budgetId", budget.getBudgetId())));
             editBudget.setText(getString(R.string.edit));
             if (budget.getStartDate() > DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()))) {
                 budgetTitle.setText(R.string.future_budget);
-            }
-            else if (budget.getEndDate() < DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()))) {
+            } else if (budget.getEndDate() < DateFormat.makeLong(LocalDate.now(ZoneId.systemDefault()))) {
                 budgetTitle.setText(R.string.previous_budget);
-            }
-            else {
+            } else {
                 budgetTitle.setText(getString(R.string.current_budget));
             }
         }
@@ -253,11 +243,9 @@ public class ViewBudget extends AppCompatActivity {
         monthlyBillAmount = Tools.getBillsAmount(2, selectedDate);
         if (budget.getPayFrequency() == 0) {
             dailyIncome = budget.getPayAmount() / 7;
-        }
-        else if (budget.getPayFrequency() == 1) {
+        } else if (budget.getPayFrequency() == 1) {
             dailyIncome = budget.getPayAmount() / 14;
-        }
-        else {
+        } else {
             dailyIncome = budget.getPayAmount() / daysInMonth;
         }
         dailySavings = (budget.getSavingsPercentage() / 100.0) * dailyIncome;
@@ -266,7 +254,7 @@ public class ViewBudget extends AppCompatActivity {
         calculateValues(frequency);
     }
 
-    public void calculateValues (int frequency) {
+    public void calculateValues(int frequency) {
 
         dateIntValue = DateFormat.makeLong(selectedDate);
         weekStart = DateFormat.makeLong(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)));
@@ -276,8 +264,8 @@ public class ViewBudget extends AppCompatActivity {
         daysInMonth = selectedDate.lengthOfMonth();
 
         spendingAmount = 0;
-        if (Repo.getInstance().getExpenses() != null) {
-            for (Expense expense : Repo.getInstance().getExpenses()) {
+        if (repo.getExpenses() != null) {
+            for (Expense expense : repo.getExpenses()) {
                 switch (frequency) {
                     case 0:
                         if (expense.getDate() >= dateIntValue && expense.getDate() < DateFormat.makeLong(DateFormat.makeLocalDate(dateIntValue).plusDays(1))) {
@@ -300,29 +288,25 @@ public class ViewBudget extends AppCompatActivity {
 
         if (frequency == 0) {
             dateView.setText(String.format(Locale.getDefault(), "%s %d, %d", selectedDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), selectedDate.getDayOfMonth(), selectedDate.getYear()));
-        }
-        else if (frequency == 1) {
+        } else if (frequency == 1) {
             dateView.setText(String.format(Locale.getDefault(), "%s %d - %s %d", selectedDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).getDayOfMonth(), selectedDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), selectedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).getDayOfMonth()));
-        }
-        else {
+        } else {
             dateView.setText(String.format(Locale.getDefault(), "%s %d", selectedDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()), selectedDate.getYear()));
         }
 
         updateUi(frequency);
     }
 
-    public void updateUi (int frequency) {
+    public void updateUi(int frequency) {
 
-        if ((int)((dailyBills * 100) / dailyIncome) == 0 && (dailyBills * 100.0) / dailyIncome > 0) {
+        if ((int) ((dailyBills * 100) / dailyIncome) == 0 && (dailyBills * 100.0) / dailyIncome > 0) {
             billsPercentage.setText("<1%");
-        }
-        else {
+        } else {
             billsPercentage.setText(String.format(Locale.getDefault(), "%d%%", (int) ((dailyBills * 100) / dailyIncome)));
         }
-        if ((int)((dailyDisposable * 100) / dailyIncome) == 0 && (dailyDisposable * 100.0) / dailyIncome > 0) {
+        if ((int) ((dailyDisposable * 100) / dailyIncome) == 0 && (dailyDisposable * 100.0) / dailyIncome > 0) {
             disposablePercentage.setText("<1%");
-        }
-        else {
+        } else {
             disposablePercentage.setText(String.format(Locale.getDefault(), "%d%%", (int) ((dailyDisposable * 100) / dailyIncome)));
         }
         savingsPercentage.setText(String.format(Locale.getDefault(), "%d%%", budget.getSavingsPercentage()));
@@ -364,7 +348,7 @@ public class ViewBudget extends AppCompatActivity {
         pieChart.setDrawEntryLabels(false);
         pieChart.setNoDataText(getString(R.string.noBudgetDataWasFound));
         pieChart.setNoDataTextColor(getResources().getColor(R.color.black, getTheme()));
-        pieChart.setExtraOffsets(5,0,0,0);
+        pieChart.setExtraOffsets(5, 0, 0, 0);
         pieChart.getDescription().setEnabled(false);
         pieChart.setCenterTextColor(ResourcesCompat.getColor(getResources(), R.color.blackAndWhite, getTheme()));
         pieChart.setCenterTextSize(11);
@@ -382,23 +366,22 @@ public class ViewBudget extends AppCompatActivity {
     }
 
     public void loadPieChartData(int period) {
-        ArrayList <PieEntry> entries = new ArrayList<>();
+        ArrayList<PieEntry> entries = new ArrayList<>();
         double totalSpent = 0;
 
-        ArrayList <String> categoryNames = new ArrayList<>();
+        ArrayList<String> categoryNames = new ArrayList<>();
         if (budget.getCategories() != null && !budget.getCategories().isEmpty() && budget.getStartDate() <= dateIntValue && budget.getEndDate() >= dateIntValue) {
             for (Category category : budget.getCategories()) {
                 categoryNames.add(category.getCategoryName());
             }
-        }
-        else {
+        } else {
             budget.setCategories(new ArrayList<>());
             //entries.add(new PieEntry((float) (0), getString(R.string.no_budget_categories_assigned)));
         }
-        if (Repo.getInstance().getExpenses() != null) {
+        if (repo.getExpenses() != null) {
             for (int i = 0; i < categoryNames.size(); ++i) {
                 double totalForCategory = 0;
-                for (Expense expense : Repo.getInstance().getExpenses()) {
+                for (Expense expense : repo.getExpenses()) {
                     if (period == 0) {
                         if (expense.getDate() == dateIntValue && expense.getCategory().equals(categoryNames.get(i))) {
                             totalForCategory = totalForCategory + expense.getAmount();
@@ -424,36 +407,32 @@ public class ViewBudget extends AppCompatActivity {
             if (entries.isEmpty()) {
                 entries.add(new PieEntry((float) (100), ""));
                 pieChart.getLegend().setEnabled(false);
-            }
-            else {
+            } else {
                 pieChart.getLegend().setEnabled(true);
             }
-        }
-        else {
+        } else {
             entries.add(new PieEntry((float) (100), ""));
         }
-        PieDataSet dataSet;
-        switch (period) {
-            case 0:
-                pieChart.setCenterText( getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable - totalSpent)) + "\n\n" +
+        PieDataSet dataSet = switch (period) {
+            case 0 -> {
+                pieChart.setCenterText(getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable - totalSpent)) + "\n\n" +
                         getString(R.string.total_budget) + " " + FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(dailyDisposable))));
-                dataSet = new PieDataSet(entries, "");
-                break;
-            case 1:
-                pieChart.setCenterText( getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable * 7 - totalSpent)) + "\n\n" +
+                yield new PieDataSet(entries, "");
+            }
+            case 1 -> {
+                pieChart.setCenterText(getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable * 7 - totalSpent)) + "\n\n" +
                         getString(R.string.total_budget) + " " + FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(dailyDisposable * 7))));
-                dataSet = new PieDataSet(entries, "");
-                break;
-            default:
-                pieChart.setCenterText( getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable * daysInMonth - totalSpent)) + "\n\n" +
+                yield new PieDataSet(entries, "");
+            }
+            default -> {
+                pieChart.setCenterText(getString(R.string.remaining) + " " + FixNumber.addSymbol(String.valueOf(dailyDisposable * daysInMonth - totalSpent)) + "\n\n" +
                         getString(R.string.total_budget) + " " + FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(dailyDisposable * daysInMonth))));
-                dataSet = new PieDataSet(entries, "");
-                break;
+                yield new PieDataSet(entries, "");
+            }
+        };
 
-        }
-
-        ArrayList <Integer> colors = new ArrayList<>();
-        for (int color: ViewBudget.this.getResources().getIntArray(R.array.pieChartCorresponding)) {
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int color : ViewBudget.this.getResources().getIntArray(R.array.pieChartCorresponding)) {
             colors.add(color);
         }
         dataSet.setColors(colors);
@@ -464,6 +443,7 @@ public class ViewBudget extends AppCompatActivity {
         pieChart.invalidate();
         pieChart.animateY(1400, Easing.EaseInOutQuad);
     }
+
     int id() {
         final String AB = "0123456789";
         SecureRandom rnd = new SecureRandom();

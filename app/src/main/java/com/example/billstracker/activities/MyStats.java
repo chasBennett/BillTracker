@@ -24,11 +24,12 @@ import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.custom_objects.Stat;
 import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
+import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -49,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class MyStats extends AppCompatActivity {
+public class MyStats extends BaseActivity {
 
     Button enterIncome, changeIncome, btnAddNewBiller;
     com.google.android.flexbox.FlexboxLayout bubbles;
@@ -80,12 +81,11 @@ public class MyStats extends AppCompatActivity {
     PieChart pieChart, pieChart1;
     AdView adview;
     User thisUser;
-    ArrayList <Bill> bills;
-    ArrayList <Payment> payments;
+    ArrayList<Bill> bills;
+    ArrayList<Payment> payments;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_my_stats);
 
         pb = findViewById(R.id.progressBar);
@@ -136,15 +136,15 @@ public class MyStats extends AppCompatActivity {
 
     public void initialize() {
 
-        thisUser = Repo.getInstance().getUser(MyStats.this);
-        payments = Repo.getInstance().getPayments();
-        bills = Repo.getInstance().getBills();
+        thisUser = repo.getUser(MyStats.this);
+        payments = repo.getPayments();
+        bills = repo.getBills();
 
-        ArrayList <String> monthsList = new ArrayList<>();
-        ArrayList <Payment> payments = Repo.getInstance().getPayments();
+        ArrayList<String> monthsList = new ArrayList<>();
+        ArrayList<Payment> payments = repo.getPayments();
         if (payments != null) {
             payments.sort(Comparator.comparing(Payment::getDueDate));
-            for (Payment payment: payments) {
+            for (Payment payment : payments) {
                 if (!monthsList.contains(DateFormat.createMonthYearString(DateFormat.makeLocalDate(payment.getDueDate())))) {
                     monthsList.add(DateFormat.createMonthYearString(DateFormat.makeLocalDate(payment.getDueDate())));
                 }
@@ -202,14 +202,18 @@ public class MyStats extends AppCompatActivity {
             cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
             cd.isMoneyInput(true);
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
-            cd.setPositiveButtonListener(v -> {
-                Repo.getInstance().updateUser(MyStats.this, user -> {
-                    user.setPayFrequency(cd.getSpinnerSelection());
-                    user.setIncome(FixNumber.makeDouble(cd.getInput()));
-                });
-                cd.dismissDialog();
-                initialize();
-            });
+            cd.setPositiveButtonListener(v -> repo.editUser(MyStats.this)
+                            .setPayFrequency(cd.getSpinnerSelection())
+                            .setIncome(FixNumber.makeDouble(cd.getInput()))
+                                    .save((wasSuccessful, message) -> {
+                                        if (wasSuccessful) {
+                                            cd.dismissDialog();
+                                            initialize();
+                                        }
+                                        else {
+                                            Notify.createPopup(MyStats.this, "Error: " + message, null);
+                                        }
+                                    }));
             cd.setNegativeButtonListener(v -> cd.dismissDialog());
         });
 
@@ -219,14 +223,18 @@ public class MyStats extends AppCompatActivity {
             cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.isMoneyInput(true);
-            cd.setPositiveButtonListener(v -> {
-                Repo.getInstance().updateUser(MyStats.this, user -> {
-                    user.setPayFrequency(cd.getSpinnerSelection());
-                    user.setIncome(FixNumber.makeDouble(cd.getInput()));
-                });
-                cd.dismissDialog();
-                initialize();
-            });
+            cd.setPositiveButtonListener(v -> repo.editUser(MyStats.this)
+                    .setPayFrequency(cd.getSpinnerSelection())
+                    .setIncome(FixNumber.makeDouble(cd.getInput()))
+                    .save((wasSuccessful, message) -> {
+                        if (wasSuccessful) {
+                            cd.dismissDialog();
+                            initialize();
+                        }
+                        else {
+                            Notify.createPopup(MyStats.this, "Error: " + message, null);
+                        }
+                    }));
             cd.setNegativeButtonListener(v -> cd.dismissDialog());
         });
 
@@ -391,7 +399,7 @@ public class MyStats extends AppCompatActivity {
                 }
             }
         } else {
-            Repo.getInstance().loadLocalData(MyStats.this);
+            repo.loadLocalData(MyStats.this, null);
         }
 
 
@@ -441,10 +449,10 @@ public class MyStats extends AppCompatActivity {
         int payments = 0;
         int totalBillers = 0;
         int billersPaid = 0;
-        ArrayList <Stat> stats = new ArrayList<>();
+        ArrayList<Stat> stats = new ArrayList<>();
 
         if (bills != null) {
-            for (Bill bill: bills) {
+            for (Bill bill : bills) {
                 ++totalBillers;
                 double totalAmount = 0;
                 double lastPaymentAmount = 0;
@@ -454,7 +462,7 @@ public class MyStats extends AppCompatActivity {
                 if (bill.getPaymentsRemaining() == 0) {
                     ++billersPaid;
                 }
-                Payment payment = Repo.getInstance().getPaymentByBillerName(bill.getBillerName());
+                Payment payment = repo.getPaymentByBillerName(bill.getBillerName());
                 if (payment != null) {
                     if (payment.isPaid()) {
                         ++paymentsMade;
@@ -465,8 +473,7 @@ public class MyStats extends AppCompatActivity {
                             dateLastPaid = payment.getDatePaid();
                             lastPaymentAmount = payment.getPaymentAmount();
                         }
-                    }
-                    else {
+                    } else {
                         nextPaymentDue = payment.getDueDate();
                     }
                 }
@@ -519,10 +526,10 @@ public class MyStats extends AppCompatActivity {
             icon.setBackground(null);
             icon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.statistics_removebg_preview, getTheme()));
             icon.setImageTintList(null);
-            scroll.post(() -> scroll.smoothScrollTo(0, statsBox.getTop() -50));
+            scroll.post(() -> scroll.smoothScrollTo(0, statsBox.getTop() - 50));
         });
 
-        for (Stat stat: stats) {
+        for (Stat stat : stats) {
             View bubble = View.inflate(MyStats.this, R.layout.biller_bubble, null);
             TextView billerName = bubble.findViewById(R.id.textView49);
             billerName.setText(String.format(Locale.getDefault(), " %s ", stat.getBillerName()));
@@ -537,8 +544,7 @@ public class MyStats extends AppCompatActivity {
                 } else if (stat.getNextPaymentDueDate() == DateFormat.currentDateAsLong()) {
                     billerName.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.yellow, getTheme())));
                 }
-            }
-            else {
+            } else {
                 billerName.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.payBill, getTheme())));
             }
             bubbles.addView(bubble);
@@ -546,7 +552,8 @@ public class MyStats extends AppCompatActivity {
         }
 
     }
-    public void addListener (View view, Stat stat) {
+
+    public void addListener(View view, Stat stat) {
         view.setOnClickListener(view1 -> {
             paidInFullLayout.setVisibility(View.GONE);
             totalBillersAddedLayout.setVisibility(View.GONE);
@@ -557,20 +564,18 @@ public class MyStats extends AppCompatActivity {
             totalPaymentsMade.setText(String.valueOf(stat.getTotalPaymentsMade()));
             if (stat.getLastPaymentAmount() == 0) {
                 lastPaymentAmount.setText(getString(R.string.no_payments_reported1));
-            }
-            else {
+            } else {
                 lastPaymentAmount.setText(FixNumber.addSymbol(stat.getLastPaymentAmount()));
             }
             if (stat.getNextPaymentDueDate() == 0) {
                 nextPaymentDue.setText(getString(R.string.noPaymentsAreDue));
-            }
-            else {
+            } else {
                 nextPaymentDue.setText(DateFormat.makeDateString(stat.getNextPaymentDueDate()));
             }
             for (Bill bill : bills) {
                 if (bill.getBillerName().equals(stat.getBillerName())) {
                     Tools.loadIcon(icon, bill.getCategory(), bill.getIcon());
-                    icon.setContentPadding(60,60,60,60);
+                    icon.setContentPadding(60, 60, 60, 60);
                 }
             }
             scroll.post(() -> scroll.smoothScrollTo(0, statsBox.getTop() - 50));

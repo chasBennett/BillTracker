@@ -2,7 +2,9 @@ package com.example.billstracker.custom_objects;
 
 import java.util.ArrayList;
 
-/** @noinspection unused*/
+/**
+ * @noinspection unused
+ */
 public class Budget {
 
     private double payAmount;
@@ -11,9 +13,9 @@ public class Budget {
     private long endDate;
     private int budgetId;
     private int savingsPercentage;
-    private ArrayList <Category> categories;
+    private ArrayList<Category> categories;
 
-    public Budget(double payAmount, int payFrequency, long startDate, long endDate, int budgetId, int savingsPercentage, ArrayList <Category> categories) {
+    public Budget(double payAmount, int payFrequency, long startDate, long endDate, int budgetId, int savingsPercentage, ArrayList<Category> categories) {
 
         setPayAmount(payAmount);
         setPayFrequency(payFrequency);

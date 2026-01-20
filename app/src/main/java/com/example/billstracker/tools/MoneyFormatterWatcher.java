@@ -25,8 +25,7 @@ public class MoneyFormatterWatcher implements TextWatcher {
                 edit.post(() -> {
                     if (start) {
                         edit.setSelection(edit.getText().length());
-                    }
-                    else {
+                    } else {
                         edit.setSelection(edit.getText().length() - 2);
                     }
                 });
@@ -35,8 +34,7 @@ public class MoneyFormatterWatcher implements TextWatcher {
         edit.setOnClickListener(view -> {
             if (start) {
                 edit.setSelection(edit.getText().length());
-            }
-            else {
+            } else {
                 edit.setSelection(edit.getText().length() - 2);
             }
         });
@@ -61,8 +59,7 @@ public class MoneyFormatterWatcher implements TextWatcher {
         if (editable.length() < 4) {
             edit.removeTextChangedListener(this);
             edit.setText(formatted);
-        }
-        else {
+        } else {
             String s = editable.toString().replaceAll("\\D", "");
             if (s.isEmpty()) return;
             StringBuilder sb = new StringBuilder(s);
@@ -81,8 +78,7 @@ public class MoneyFormatterWatcher implements TextWatcher {
         }
         if (start) {
             edit.setSelection(edit.getText().length());
-        }
-        else {
+        } else {
             edit.setSelection(edit.getText().length() - 2);
         }
         edit.addTextChangedListener(this);

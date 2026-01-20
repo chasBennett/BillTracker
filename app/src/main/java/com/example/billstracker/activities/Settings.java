@@ -2,12 +2,10 @@ package com.example.billstracker.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -16,13 +14,13 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.Google;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends BaseActivity {
 
     final Context mContext = this;
     LinearLayout back;
@@ -30,8 +28,7 @@ public class Settings extends AppCompatActivity {
     User thisUser;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_settings);
 
         back = findViewById(R.id.backButton);
@@ -48,7 +45,7 @@ public class Settings extends AppCompatActivity {
         LinearLayout shareAccount = findViewById(R.id.llShareAccount);
         TextView uName = findViewById(R.id.replaceWithUsername);
 
-        thisUser = Repo.getInstance().getUser(Settings.this);
+        thisUser = repo.getUser(Settings.this);
         uName.setText(thisUser.getName());
 
         Tools.fixProgressBarLogo(pb);
@@ -66,12 +63,12 @@ public class Settings extends AppCompatActivity {
             cd.setPositiveButtonListener(v -> {
                 cd.dismissDialog();
                 pb.setVisibility(View.VISIBLE);
-                Repo.getInstance().logout(Settings.this);
+                repo.logout(Settings.this);
             });
         });
     }
 
-    public void profileEdit(View view){
+    public void profileEdit(View view) {
         pb.setVisibility(View.VISIBLE);
         Intent edit = new Intent(mContext, EditProfile.class);
         edit.putExtra("Name", thisUser.getName());
@@ -119,7 +116,7 @@ public class Settings extends AppCompatActivity {
     }
 
     private void executeDeletion(AuthCredential credential) {
-        Repo.getInstance().deleteUserAccount(Settings.this, credential, (success, msg) -> {
+        repo.deleteUserAccount(Settings.this, credential, (success, msg) -> {
             pb.setVisibility(View.GONE);
             if (success) {
                 Intent intent = new Intent(mContext, Login.class);

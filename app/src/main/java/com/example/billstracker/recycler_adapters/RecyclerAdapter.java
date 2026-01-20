@@ -32,7 +32,7 @@ import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -81,11 +81,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
 
         todayTotal += pastDue;
-        for (Bill bill : Repo.getInstance().getBills()) {
+        for (Bill bill : Repository.getInstance().getBills()) {
             if (bill.getBillerName().equals(payment.getBillerName())) {
                 bil = bill;
                 if (bill.getPaymentsRemaining() != 0) {
-                    for (Payment pay : Repo.getInstance().getPayments()) {
+                    for (Payment pay : Repository.getInstance().getPayments()) {
                         if (pay.getBillerName().equals(bill.getBillerName()) && pay.getDueDate() > finalPay && !pay.isPaid()) {
                             finalPay = pay.getDueDate();
                         }
@@ -98,10 +98,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                     }
                     todayTotal += pastDue;
                 }
-                if (bill.getAutoPay()) {
+                if (bill.isAutoPay()) {
                     holder.autoPay.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     holder.autoPay.setVisibility(View.GONE);
                 }
                 Tools.loadIcon(holder.icon, bill.getCategory(), bill.getIcon());
@@ -272,7 +271,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             visitWebsite.setOnClickListener(view13 -> {
-                for (Bill bill : Repo.getInstance().getBills()) {
+                for (Bill bill : Repository.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         String address = bill.getWebsite();
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
@@ -289,7 +288,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             });
 
             editBill.setOnClickListener(view1 -> {
-                for (Bill bill : Repo.getInstance().getBills()) {
+                for (Bill bill : Repository.getInstance().getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         activity.startActivity(new Intent(activity, AddBiller.class).putExtra("billerId", bill.getBillsId()));
                         popupWindow.dismiss();

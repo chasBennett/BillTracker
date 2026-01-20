@@ -16,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Partner;
 import com.example.billstracker.custom_objects.User;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,15 +30,15 @@ import java.util.Objects;
 public class AddPartner extends DialogFragment {
 
     public static View.OnClickListener listener1;
-
-    public void setCloseListener(View.OnClickListener listener1) {
-        AddPartner.listener1 = listener1;
-    }
     View addPartner;
     ImageView cancel;
     TextView error;
     TextInputEditText partnerEmail;
     Button sendRequest;
+
+    public void setCloseListener(View.OnClickListener listener1) {
+        AddPartner.listener1 = listener1;
+    }
 
     @SuppressLint("InflateParams")
     @NonNull
@@ -47,7 +47,7 @@ public class AddPartner extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-        addPartner = inflater.inflate(R.layout.add_partner,  null);
+        addPartner = inflater.inflate(R.layout.add_partner, null);
         cancel = addPartner.findViewById(R.id.closeAddPartner);
         partnerEmail = addPartner.findViewById(R.id.partnerEmail);
         sendRequest = addPartner.findViewById(R.id.sendRequest);
@@ -59,7 +59,7 @@ public class AddPartner extends DialogFragment {
 
         sendRequest.setOnClickListener(v -> {
             error.setVisibility(View.GONE);
-            if (partnerEmail.getText() != null && partnerEmail.getText().length() > 0) {
+            if (partnerEmail.getText() != null && !partnerEmail.getText().isEmpty()) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Query queryByEmail = db.collection("users").whereEqualTo("userName", partnerEmail.getText().toString());
                 queryByEmail.get().addOnCompleteListener(task -> {
@@ -73,48 +73,45 @@ public class AddPartner extends DialogFragment {
                                     partners.addAll(requested.getPartners());
                                 }
                                 boolean found = false;
-                                for (Partner par: partners) {
-                                    if (par.getPartnerUid().equals(Repo.getInstance().getUid())) {
+                                for (Partner par : partners) {
+                                    if (par.getPartnerUid().equals(Repository.getInstance().retrieveUid(requireContext()))) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    partners.add(new Partner(Repo.getInstance().getUid(), false, Repo.getInstance().getUser(requireActivity()).getName()));
+                                    partners.add(new Partner(Repository.getInstance().retrieveUid(requireContext()), false, Repository.getInstance().getUser(requireActivity()).getName()));
                                     requested.setPartners(partners);
                                 }
-                                if (Repo.getInstance().getUser(requireActivity()).getPartners() == null) {
-                                    Repo.getInstance().getUser(requireActivity()).setPartners(new ArrayList<>());
+                                if (Repository.getInstance().getUser(requireActivity()).getPartners() == null) {
+                                    Repository.getInstance().getUser(requireActivity()).setPartners(new ArrayList<>());
                                 }
 
                                 db.collection("users").document(document.getId()).set(requested, SetOptions.merge());
                                 found = false;
-                                for (Partner pa: Repo.getInstance().getUser(requireActivity()).getPartners()) {
+                                for (Partner pa : Repository.getInstance().getUser(requireActivity()).getPartners()) {
                                     if (pa.getPartnerUid().equals(requested.getId())) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    Repo.getInstance().getUser(requireActivity()).getPartners().add(new Partner(requested.getId(), true, requested.getName()));
-                                    db.collection("users").document(Repo.getInstance().getUser(requireActivity()).getId()).set(Repo.getInstance().getUser(requireActivity()), SetOptions.merge());
+                                    Repository.getInstance().getUser(requireActivity()).getPartners().add(new Partner(requested.getId(), true, requested.getName()));
+                                    db.collection("users").document(Repository.getInstance().getUser(requireActivity()).getId()).set(Repository.getInstance().getUser(requireActivity()), SetOptions.merge());
                                 }
                                 Notify.createPopup(requireActivity(), getString(R.string.partner_has_been_requested_successfully), null);
                                 listener1.onClick(cancel);
                                 cancel.performClick();
                                 break;
-                            }
-                            else {
+                            } else {
                                 Notify.createDialogPopup(requireDialog(), getString(R.string.anErrorHasOccurred), null);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         error.setVisibility(View.VISIBLE);
                     }
                 });
-            }
-            else {
+            } else {
                 Notify.createDialogPopup(requireDialog(), getString(R.string.email_cannot_be_blank), null);
             }
         });

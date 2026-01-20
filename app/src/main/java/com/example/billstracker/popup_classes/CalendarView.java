@@ -14,11 +14,11 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.billstracker.R;
+import com.example.billstracker.custom_objects.Payment;
+import com.example.billstracker.recycler_adapters.RecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
-import com.example.billstracker.R;
-import com.example.billstracker.recycler_adapters.RecyclerAdapter;
-import com.example.billstracker.custom_objects.Payment;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,7 +27,7 @@ import java.util.Comparator;
 
 public class CalendarView {
 
-    public static void create (Context context, LocalDate date, LinearLayout container, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll) {
+    public static void create(Context context, LocalDate date, LinearLayout container, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll) {
 
         container.removeAllViews();
         container.invalidate();
@@ -75,7 +75,7 @@ public class CalendarView {
                 }
                 double total = 0;
                 boolean paid = true;
-                for (Payment payment: dueThisMonth) {
+                for (Payment payment : dueThisMonth) {
                     if (DateFormat.makeLocalDate(payment.getDueDate()).getDayOfMonth() + 1 == dayCounter) {
                         total = total + payment.getPaymentAmount();
                         paid = payment.isPaid();
@@ -84,26 +84,23 @@ public class CalendarView {
                 if (total > 0) {
                     if (FixNumber.addSymbol((FixNumber.makeDouble(String.valueOf(total)))).length() > 7 && FixNumber.addSymbol((FixNumber.makeDouble(String.valueOf(total)))).contains(".")) {
                         amountDue.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(total))).substring(0, FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(total))).indexOf('.')));
-                    }
-                    else {
+                    } else {
                         amountDue.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(total))));
                     }
                     if (paid) {
                         amountDue.setTextColor(context.getResources().getColor(R.color.payBill, context.getTheme()));
                         dayStatus.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.payBill, context.getTheme())));
-                    }
-                    else {
+                    } else {
                         dayStatus.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.primary, context.getTheme())));
                     }
-                }
-                else {
+                } else {
                     amountDue.setText("");
                     dayStatus.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(android.R.color.transparent, context.getTheme())));
                 }
                 int finalDayCounter = dayCounter;
                 dayBlock.setOnClickListener(v -> {
-                    ArrayList <Payment> recycles = new ArrayList<>();
-                    for (Payment payment: dueThisMonth) {
+                    ArrayList<Payment> recycles = new ArrayList<>();
+                    for (Payment payment : dueThisMonth) {
                         if (DateFormat.makeLocalDate(payment.getDueDate()).getDayOfMonth() == finalDayCounter - 1) {
                             recycles.add(payment);
                         }
@@ -183,8 +180,7 @@ public class CalendarView {
                     }
 
                 });
-            }
-            else {
+            } else {
                 firstWeek = new LinearLayout(context);
                 container.addView(firstWeek);
                 weekCounter = 7;

@@ -1,7 +1,6 @@
 package com.example.billstracker.recycler_adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,16 +24,16 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class BillerNameAdapter extends ArrayAdapter<Biller> {
-    private final ArrayList<Biller> itemsAll;
-    private final Context context;
-    public BillerItemClickListener mClickListener;
-
     // View Types
     private static final int TYPE_BILLER = 0;
     private static final int TYPE_FOOTER = 1;
+    private final ArrayList<Biller> itemsAll;
+    private final Context context;
+    public BillerItemClickListener mClickListener;
 
     public BillerNameAdapter(Context context, int viewResourceId, ArrayList<Biller> items) {
         super(context, viewResourceId, items);
@@ -44,10 +43,6 @@ public class BillerNameAdapter extends ArrayAdapter<Biller> {
 
     public void setClickListener(BillerItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
-    }
-
-    public interface BillerItemClickListener {
-        void onItemClick(int ignoredPosition, Biller biller);
     }
 
     @Override
@@ -157,6 +152,7 @@ public class BillerNameAdapter extends ArrayAdapter<Biller> {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 clear();
                 if (results != null && results.count > 0) {
@@ -173,7 +169,7 @@ public class BillerNameAdapter extends ArrayAdapter<Biller> {
         String LOGO_DEV_KEY = "pk_FRytk_swTsCM4Xi2D3cqeQ";
 
         try {
-            String encodedQuery = Uri.encode(query);
+            String encodedQuery = URLEncoder.encode(query, "UTF-8");
             URL url = new URL("https://api.clearout.io/public/companies/autocomplete?query=" + encodedQuery);
 
             connection = (HttpURLConnection) url.openConnection();
@@ -182,6 +178,8 @@ public class BillerNameAdapter extends ArrayAdapter<Biller> {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) response.append(line);
+
+                Log.d("BillerAPI", "Full JSON Response: " + response.toString());
 
                 JSONObject root = new JSONObject(response.toString());
                 JSONArray data = root.getJSONArray("data");
@@ -213,5 +211,9 @@ public class BillerNameAdapter extends ArrayAdapter<Biller> {
             if (connection != null) connection.disconnect();
         }
         return results;
+    }
+
+    public interface BillerItemClickListener {
+        void onItemClick(int ignoredPosition, Biller biller);
     }
 }

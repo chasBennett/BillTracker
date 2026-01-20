@@ -16,8 +16,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.R;
+import com.example.billstracker.tools.DateFormat;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -29,18 +29,17 @@ import java.util.Objects;
 public class DatePicker extends DialogFragment {
 
     public static View.OnClickListener listener;
-
-    public void setListener(View.OnClickListener listener) {
-        DatePicker.listener = listener;
-    }
-
+    public static LocalDate selection;
     View picker;
     TextView header, cancel, submit, pickedDate;
     ImageView backMonth, forwardMonth;
     LinearLayout calendar;
-    public static LocalDate selection;
     LocalDate savedDate;
     String headerString;
+
+    public void setListener(View.OnClickListener listener) {
+        DatePicker.listener = listener;
+    }
 
     @SuppressLint("InflateParams")
     @NonNull

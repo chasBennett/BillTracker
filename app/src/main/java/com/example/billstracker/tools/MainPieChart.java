@@ -78,17 +78,16 @@ public class MainPieChart {
         double remaining = 0;
         double total = 0;
         int counter = 0;
-        ArrayList <Integer> foundPayments = new ArrayList<>();
+        ArrayList<Integer> foundPayments = new ArrayList<>();
 
-        if (Repo.getInstance().getPayments() != null) {
-            Repo.getInstance().removeDuplicatePayments();
-            for (Payment payment: Repo.getInstance().getPayments()) {
+        if (Repository.getInstance().getPayments() != null) {
+            for (Payment payment : Repository.getInstance().getPayments()) {
                 if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd && !foundPayments.contains(payment.getPaymentId())) {
                     foundPayments.add(payment.getPaymentId());
                     total = total + payment.getPaymentAmount();
                     ++counter;
-                    if (Repo.getInstance().getBills() != null) {
-                        for (Bill bill: Repo.getInstance().getBills()) {
+                    if (Repository.getInstance().getBills() != null) {
+                        for (Bill bill : Repository.getInstance().getBills()) {
                             if (bill.getBillerName().equals(payment.getBillerName())) {
                                 if (!payment.isPaid()) {
                                     remaining = remaining + (payment.getPaymentAmount() - payment.getPartialPayment());
@@ -126,8 +125,8 @@ public class MainPieChart {
             }
         }
 
-        ArrayList <String> strings = DataTools.getCategories(activity);
-        ArrayList <Double> values = new ArrayList<>(Arrays.asList(autoLoans, creditCards, entertainment, insurance, miscellaneous, mortgage, personalLoan, utilities));
+        ArrayList<String> strings = DataTools.getCategories(activity);
+        ArrayList<Double> values = new ArrayList<>(Arrays.asList(autoLoans, creditCards, entertainment, insurance, miscellaneous, mortgage, personalLoan, utilities));
 
         if (counter > 0) {
             if (utilities > 0) {
@@ -154,8 +153,7 @@ public class MainPieChart {
             if (autoLoans > 0) {
                 entries.add(0, new PieEntry((float) ((autoLoans * 100) / total), strings.get(0) + " " + FixNumber.addSymbol(autoLoans), strings.get(0)));
             }
-        }
-        else {
+        } else {
             entries.add(0, new PieEntry(100, "No Bills Added"));
         }
 
@@ -163,11 +161,12 @@ public class MainPieChart {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 if (dueThisMonth != null) {
-                   onTouch (e.getData().toString(), today, later, evenLater, earlier, scroll);
-                   pieChart.highlightValue(null);
-                   pieChart.getOnTouchListener().setLastHighlighted(null);
+                    onTouch(e.getData().toString(), today, later, evenLater, earlier, scroll);
+                    pieChart.highlightValue(null);
+                    pieChart.getOnTouchListener().setLastHighlighted(null);
                 }
             }
+
             @Override
             public void onNothingSelected() {
             }
@@ -177,15 +176,14 @@ public class MainPieChart {
         for (int color : activity.getResources().getIntArray(R.array.pieChartCorresponding)) {
             colors.add(color);
         }
-        ArrayList <Integer> pieChartColors = new ArrayList<>();
+        ArrayList<Integer> pieChartColors = new ArrayList<>();
         if (counter > 0) {
             for (int color : colors) {
                 if (values.get(colors.indexOf(color)) > 0) {
                     pieChartColors.add(color);
                 }
             }
-        }
-        else {
+        } else {
             pieChartColors.add(ResourcesCompat.getColor(activity.getResources(), R.color.payBill, activity.getTheme()));
         }
 
@@ -216,8 +214,7 @@ public class MainPieChart {
         if (counter > 0) {
             pieChart.setCenterText(activity.getString(R.string.remaining3) + FixNumber.addSymbol(remaining) + activity.getString(R.string.total3) + FixNumber.addSymbol(total));
             pieChart.setCenterTextColor(ResourcesCompat.getColor(activity.getResources(), R.color.white, activity.getTheme()));
-        }
-        else {
+        } else {
             pieChart.setCenterText(activity.getString(R.string.nothing_due_this_month));
             pieChart.setCenterTextColor(ResourcesCompat.getColor(activity.getResources(), R.color.white, activity.getTheme()));
         }
@@ -229,9 +226,10 @@ public class MainPieChart {
         pieChart.animateY(1400, Easing.EaseOutCirc);
         pieChart.bringToFront();
         pieChart.setHoleColor(android.R.color.transparent);
-        displayValues (labelsLayout, values, strings, colors, today, later, evenLater, earlier, scroll, counter);
+        displayValues(labelsLayout, values, strings, colors, today, later, evenLater, earlier, scroll, counter);
     }
-    public static void displayValues(LinearLayout layout, ArrayList <Double> values, ArrayList<String> strings, ArrayList<Integer> colors, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll,
+
+    public static void displayValues(LinearLayout layout, ArrayList<Double> values, ArrayList<String> strings, ArrayList<Integer> colors, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll,
                                      int counter) {
         if (layout.getContext() != null) {
             layout.removeAllViews();
@@ -259,8 +257,7 @@ public class MainPieChart {
                         textView.setOnClickListener(view -> onTouch(query, today, later, evenLater, earlier, scroll));
                     }
                 }
-            }
-            else {
+            } else {
                 TextView textView = new TextView(context);
                 Drawable circle = ResourcesCompat.getDrawable(context.getResources(), R.drawable.circle, context.getTheme());
                 if (circle != null) {
@@ -280,10 +277,11 @@ public class MainPieChart {
             }
         }
     }
-    public static void onTouch (String selection, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll) {
+
+    public static void onTouch(String selection, RecyclerView today, RecyclerView later, RecyclerView evenLater, RecyclerView earlier, ScrollView scroll) {
         ArrayList<Payment> recycles = new ArrayList<>(dueThisMonth);
-        ArrayList <String> categories = DataTools.getCategories(scroll.getContext());
-        for (String cat: categories) {
+        ArrayList<String> categories = DataTools.getCategories(scroll.getContext());
+        for (String cat : categories) {
             cat = cat.replaceAll("[^A-Za-z ]", "");
         }
         recycles.sort(Comparator.comparing(Payment::isPaid));
@@ -300,7 +298,7 @@ public class MainPieChart {
             if (adapter != null && adapter.getArrayList() != null) {
                 for (Payment pay : adapter.getArrayList()) {
                     if (recycles.contains(pay)) {
-                        for (Bill bill: Repo.getInstance().getBills()) {
+                        for (Bill bill : Repository.getInstance().getBills()) {
                             if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                 RecyclerView.ViewHolder viewHolder = today.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                 if (viewHolder != null) {
@@ -321,7 +319,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: Repo.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = later.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -343,7 +341,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: Repo.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = evenLater.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -365,7 +363,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill: Repo.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance().getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = earlier.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {

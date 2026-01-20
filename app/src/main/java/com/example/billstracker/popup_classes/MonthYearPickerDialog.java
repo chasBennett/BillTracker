@@ -56,7 +56,7 @@ public class MonthYearPickerDialog extends DialogFragment {
         monthPicker.setMinValue(1);
         monthPicker.setMaxValue(12);
         DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
-        ArrayList <String> monthNames = new ArrayList<>(Arrays.asList(symbols.getShortMonths()));
+        ArrayList<String> monthNames = new ArrayList<>(Arrays.asList(symbols.getShortMonths()));
         monthPicker.setDisplayedValues(monthNames.toArray(new String[0]));
         monthPicker.setValue(cal.get(Calendar.MONTH));
 

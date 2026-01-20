@@ -1,6 +1,8 @@
 package com.example.billstracker.custom_objects;
 
-/** @noinspection unused*/
+/**
+ * @noinspection unused
+ */
 public class Category {
 
     private String categoryName;
@@ -13,7 +15,9 @@ public class Category {
 
     }
 
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public Category() {
 
     }

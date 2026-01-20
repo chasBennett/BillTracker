@@ -5,9 +5,10 @@ import android.text.TextWatcher;
 
 public class Watcher implements TextWatcher {
 
-    public Watcher () {
+    public Watcher() {
 
     }
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 

@@ -12,20 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Message;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class SupportMessageRecyclerAdapter extends RecyclerView.Adapter<SupportMessageRecyclerAdapter.ViewHolder> {
 
-    private final ArrayList <Message> messages;
-    private final LayoutInflater mInflater;
     private static final int SENT = 0;
-    Message message;
     final Context context;
+    private final ArrayList<Message> messages;
+    private final LayoutInflater mInflater;
+    Message message;
 
-    public SupportMessageRecyclerAdapter(Context context1, ArrayList <Message> data) {
+    public SupportMessageRecyclerAdapter(Context context1, ArrayList<Message> data) {
         this.mInflater = LayoutInflater.from(context1);
         this.messages = data;
         context = context1;
@@ -33,10 +33,9 @@ public class SupportMessageRecyclerAdapter extends RecyclerView.Adapter<SupportM
 
     @Override
     public int getItemViewType(int position) {
-        if (messages.get(position).getAuthorId().equals(Repo.getInstance().getUser(context).getId())) {
+        if (messages.get(position).getAuthorId().equals(Repository.getInstance().getUser(context).getId())) {
             return SENT;
-        }
-        else {
+        } else {
             return 1;
         }
     }
@@ -48,8 +47,7 @@ public class SupportMessageRecyclerAdapter extends RecyclerView.Adapter<SupportM
         View view;
         if (viewType == SENT) {
             view = mInflater.inflate(R.layout.sent_message, parent, false);
-        }
-        else {
+        } else {
             view = mInflater.inflate(R.layout.received_message, parent, false);
         }
         return new ViewHolder(view);
@@ -95,7 +93,7 @@ public class SupportMessageRecyclerAdapter extends RecyclerView.Adapter<SupportM
             super(itemView);
 
             chatName = itemView.findViewById(R.id.chatName);
-            chatMessage =itemView.findViewById(R.id.chatMessage);
+            chatMessage = itemView.findViewById(R.id.chatMessage);
             chatTime = itemView.findViewById(R.id.chatTime);
         }
     }

@@ -56,12 +56,12 @@ import java.util.List;
 public interface Tools {
 
 
-    static boolean isDarkMode (Context context) {
+    static boolean isDarkMode(Context context) {
         int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    static void fixToolbar (Activity activity, boolean blueBackground, boolean iconFound) {
+    static void fixToolbar(Activity activity, boolean blueBackground, boolean iconFound) {
         Window window = activity.getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -113,8 +113,7 @@ public interface Tools {
                 }
             }
             window.setStatusBarColor(ResourcesCompat.getColor(activity.getResources(), R.color.whiteAndBlack, activity.getTheme()));
-        }
-        else {
+        } else {
             if (toolbar != null) {
                 toolbar.setBackgroundColor(activity.getResources().getColor(R.color.blueAndBlack, activity.getTheme()));
             }
@@ -144,7 +143,8 @@ public interface Tools {
         }
         wic.setAppearanceLightStatusBars(!blueBackground && !nightMode);
     }
-    static void setOnClickListener (View view, OnClickListener clickListener) {
+
+    static void setOnClickListener(View view, OnClickListener clickListener) {
         if (view != null && view.getContext() != null) {
             Context context = view.getContext();
             View.OnClickListener listener = view1 -> {
@@ -155,11 +155,8 @@ public interface Tools {
             view.setOnClickListener(listener);
         }
     }
-    interface OnClickListener {
-        void onClick(boolean isClicked);
-    }
 
-    static void hideKeyboard (Activity activity) {
+    static void hideKeyboard(Activity activity) {
 
         if (activity.getCurrentFocus() != null && activity.getCurrentFocus().getWindowToken() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -168,7 +165,8 @@ public interface Tools {
             }
         }
     }
-    static void showKeyboard (EditText editText) {
+
+    static void showKeyboard(EditText editText) {
         if (editText != null && editText.getContext() != null) {
             Context context = editText.getContext();
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -176,7 +174,7 @@ public interface Tools {
         }
     }
 
-    static void openEmailApp (Context context) {
+    static void openEmailApp(Context context) {
         List<Intent> emailAppLauncherIntents = new ArrayList<>();
 
         Intent emailAppIntent = new Intent(Intent.ACTION_SENDTO);
@@ -195,7 +193,8 @@ public interface Tools {
         context.startActivity(Intent.createChooser(new Intent(), context.getString(R.string.select_email_app)).putExtra(Intent.EXTRA_INITIAL_INTENTS, emailAppLauncherIntents.toArray(new Parcelable[0])));
         context.startActivity(new Intent(context, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
     }
-    static void spinnerPopup (ArrayList <String> list, ArrayList <Integer> icons, TextView spinner, ItemSelectedListener itemSelectedListener) {
+
+    static void spinnerPopup(ArrayList<String> list, ArrayList<Integer> icons, TextView spinner, ItemSelectedListener itemSelectedListener) {
         if (spinner != null && spinner.getContext() != null) {
             Context context = spinner.getContext();
             PopupWindow popupWindow = new PopupWindow(context);
@@ -262,7 +261,8 @@ public interface Tools {
             }
         }
     }
-    static void setEditTextChecked (EditText editText, boolean isAcceptable) {
+
+    static void setEditTextChecked(EditText editText, boolean isAcceptable) {
         if (editText.getContext() != null) {
             Context context = editText.getContext();
             if (isAcceptable && !editText.getText().toString().isEmpty()) {
@@ -272,22 +272,22 @@ public interface Tools {
             }
         }
     }
-    static boolean isValidString (EditText editText, int minimumLength) {
+
+    static boolean isValidString(EditText editText, int minimumLength) {
         if (editText != null && editText.getText() != null) {
             if (!editText.getText().toString().isEmpty()) {
                 setEditTextChecked(editText, editText.getText().toString().length() >= minimumLength);
                 return editText.getText().toString().length() >= minimumLength;
-            }
-            else {
+            } else {
                 setEditTextChecked(editText, false);
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
-    static void addValidEmailListener (EditText editText) {
+
+    static void addValidEmailListener(EditText editText) {
         editText.addTextChangedListener(new Watcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -295,6 +295,7 @@ public interface Tools {
             }
         });
     }
+
     static boolean isValidEmail(EditText editText) {
         if (editText != null && editText.getText() != null) {
             if (!editText.getText().toString().isEmpty()) {
@@ -304,21 +305,22 @@ public interface Tools {
                 setEditTextChecked(editText, false);
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
-    static void onBackSelected (ComponentActivity activity) {
+
+    static void onBackSelected(ComponentActivity activity) {
         activity.getOnBackPressedDispatcher().onBackPressed();
     }
-    static Budget getBudget (Context context, LocalDate selectedDate) {
-        if (Repo.getInstance().getUser(context) == null) {
-            Repo.getInstance().loadLocalData(context);
+
+    static Budget getBudget(Context context, LocalDate selectedDate) {
+        if (Repository.getInstance().getUser(context) == null) {
+            Repository.getInstance().loadLocalData(context, null);
         }
 
-        if (Repo.getInstance().getUser(context).getBudgets() != null && !Repo.getInstance().getUser(context).getBudgets().isEmpty()) {
-            for (Budget budget : Repo.getInstance().getUser(context).getBudgets()) {
+        if (Repository.getInstance().getUser(context).getBudgets() != null && !Repository.getInstance().getUser(context).getBudgets().isEmpty()) {
+            for (Budget budget : Repository.getInstance().getUser(context).getBudgets()) {
                 if (budget.getStartDate() <= DateFormat.makeLong(selectedDate) && budget.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                     return budget;
                 }
@@ -326,6 +328,7 @@ public interface Tools {
         }
         return null;
     }
+
     static void requestPermissionLauncher(Activity activity, ActivityResultLauncher<String> launcher) {
 
         if (Build.VERSION.SDK_INT >= 33) {
@@ -338,32 +341,32 @@ public interface Tools {
         }
     }
 
-    static void billPaidOff (Context context, Payment payment) {
-        if (Repo.getInstance().getBills() != null) {
+    static void billPaidOff(Context context, Payment payment) {
+        if (Repository.getInstance().getBills() != null) {
             Bill biller = null;
-            for (Bill bill: Repo.getInstance().getBills()) {
+            for (Bill bill : Repository.getInstance().getBills()) {
                 if (bill.getBillerName().equals(payment.getBillerName())) {
                     bill.setPaymentsRemaining(0);
                     biller = bill;
                     break;
                 }
             }
-            if (biller != null && Repo.getInstance().getPayments() != null) {
-                ArrayList <Payment> remove = new ArrayList<>();
-                for (Payment payments: Repo.getInstance().getPayments()) {
+            if (biller != null && Repository.getInstance().getPayments() != null) {
+                ArrayList<Payment> remove = new ArrayList<>();
+                for (Payment payments : Repository.getInstance().getPayments()) {
                     if (payments.getBillerName().equals(biller.getBillerName()) && !payments.isPaid() && payments.isDateChanged()) {
                         remove.add(payments);
                     }
                 }
                 if (!remove.isEmpty()) {
-                    Repo.getInstance().getPayments().removeAll(remove);
+                    Repository.getInstance().getPayments().removeAll(remove);
                 }
             }
-            Repo.getInstance().save(context);
+            Repository.getInstance().saveData(context, (wasSuccessful, message) -> {});
         }
     }
 
-    static void fixLogo (ImageView view) {
+    static void fixLogo(ImageView view) {
         if (view.getContext() != null) {
             Context context = view.getContext();
             if (isDarkMode(context)) {
@@ -374,7 +377,7 @@ public interface Tools {
         }
     }
 
-    static void fixProgressBarLogo (ConstraintLayout pb) {
+    static void fixProgressBarLogo(ConstraintLayout pb) {
         if (pb.getContext() != null) {
             Context context = pb.getContext();
             ImageView view = pb.findViewById(R.id.pbLogo);
@@ -386,11 +389,11 @@ public interface Tools {
         }
     }
 
-    static double getBillsAmount (int frequency, LocalDate selectedDate) {
+    static double getBillsAmount(int frequency, LocalDate selectedDate) {
         double billsAmount = 0;
-        if (Repo.getInstance().getPayments() != null) {
-            if (Repo.getInstance().getPayments() != null) {
-                for (Payment payment : Repo.getInstance().getPayments()) {
+        if (Repository.getInstance().getPayments() != null) {
+            if (Repository.getInstance().getPayments() != null) {
+                for (Payment payment : Repository.getInstance().getPayments()) {
                     switch (frequency) {
                         case 0:
                             if (payment.getDueDate() == DateFormat.makeLong(selectedDate)) {
@@ -412,10 +415,12 @@ public interface Tools {
         }
         return billsAmount;
     }
-    static int createDPValue (Context context, int dp) {
+
+    static int createDPValue(Context context, int dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
+
     static void fadeOutAndRemove(View view, OnCompleteListener listener) {
         AlphaAnimation animation = new AlphaAnimation(1f, 0f);
         animation.setDuration(1200);
@@ -471,7 +476,7 @@ public interface Tools {
         }
     }
 
-    static void loadIcon (ShapeableImageView view, int category, String path) {
+    static void loadIcon(ShapeableImageView view, int category, String path) {
 
         if (view.getContext() != null) {
             Context context = view.getContext();
@@ -487,13 +492,13 @@ public interface Tools {
             }
 
             if (path.contains("default")) {
-                view.setContentPadding(30,30,30,30);
+                view.setContentPadding(30, 30, 30, 30);
                 view.setPadding(0, 0, 0, 0);
                 view.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 Glide.with(context).load(icons.get(category)).into(view);
             } else {
                 view.setImageTintList(null);
-                view.setContentPadding(20,20,20,20);
+                view.setContentPadding(20, 20, 20, 20);
                 view.setPadding(0, 0, 0, 0);
                 view.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 Glide.with(context).load(path).fitCenter().into(view);
@@ -501,40 +506,46 @@ public interface Tools {
         }
     }
 
-
-    static void removePartnerData (String partnerId) {
-        ArrayList <Bill> removeBills = new ArrayList<>();
-        if (Repo.getInstance().getBills() != null) {
-            for (Bill bill: Repo.getInstance().getBills()) {
+    static void removePartnerData(String partnerId) {
+        ArrayList<Bill> removeBills = new ArrayList<>();
+        if (Repository.getInstance().getBills() != null) {
+            for (Bill bill : Repository.getInstance().getBills()) {
                 if (bill.getOwner().equals(partnerId)) {
                     removeBills.add(bill);
                 }
             }
-            Repo.getInstance().getBills().removeAll(removeBills);
+            Repository.getInstance().getBills().removeAll(removeBills);
         }
-        ArrayList <Payment> removePayments = new ArrayList<>();
-        if (Repo.getInstance().getPayments() != null) {
-            for (Payment payment: Repo.getInstance().getPayments()) {
+        ArrayList<Payment> removePayments = new ArrayList<>();
+        if (Repository.getInstance().getPayments() != null) {
+            for (Payment payment : Repository.getInstance().getPayments()) {
                 if (payment.getOwner().equals(partnerId)) {
                     removePayments.add(payment);
                 }
             }
-            Repo.getInstance().getPayments().removeAll(removePayments);
+            Repository.getInstance().getPayments().removeAll(removePayments);
         }
-        ArrayList <Expense> removeExpense = new ArrayList<>();
-        if (Repo.getInstance().getExpenses() != null) {
-            for (Expense expense: Repo.getInstance().getExpenses()) {
+        ArrayList<Expense> removeExpense = new ArrayList<>();
+        if (Repository.getInstance().getExpenses() != null) {
+            for (Expense expense : Repository.getInstance().getExpenses()) {
                 if (expense.getOwner().equals(partnerId)) {
                     removeExpense.add(expense);
                 }
             }
-            Repo.getInstance().getExpenses().removeAll(removeExpense);
+            Repository.getInstance().getExpenses().removeAll(removeExpense);
         }
     }
-    interface ItemSelectedListener {
-        void itemSelected (String item);
+
+
+    interface OnClickListener {
+        void onClick(boolean isClicked);
     }
+
+    interface ItemSelectedListener {
+        void itemSelected(String item);
+    }
+
     interface OnCompleteListener {
-        void isFinished (boolean isFinished);
+        void isFinished(boolean isFinished);
     }
 }

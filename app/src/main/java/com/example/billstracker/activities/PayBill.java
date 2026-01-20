@@ -11,14 +11,12 @@ import static com.example.billstracker.tools.DataTools.changePaymentDueDate;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -36,13 +34,12 @@ import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyTextWatcher;
 import com.example.billstracker.tools.NavController;
 import com.example.billstracker.tools.NotificationManager;
-import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 
 import java.util.Locale;
 
-public class PayBill extends AppCompatActivity {
+public class PayBill extends BaseActivity {
 
     final Context mContext = this;
     TextView paymentDueDate;
@@ -71,8 +68,7 @@ public class PayBill extends AppCompatActivity {
     boolean found;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_pay_bill);
         payBillIcon = findViewById(R.id.payBillIcon);
         tvBillerName = findViewById(R.id.billerName);
@@ -107,18 +103,30 @@ public class PayBill extends AppCompatActivity {
 
     public void startPayBill() {
 
-        if (getIntent().getExtras() != null) {
-            paymentId = getIntent().getExtras().getInt("Payment Id");
-        }
+        int paymentId = getIntent().getIntExtra("paymentId", -1);
 
-        pay = Repo.getInstance().getPaymentById(paymentId);
+        // Force the repository to load if it's currently empty
+        if (repo.getPayments().isEmpty()) {
+            repo.loadLocalData(this, (success, message) -> {
+                // This callback runs once the data is actually ready
+                populateUI(paymentId);
+            });
+        } else {
+            populateUI(paymentId);
+        }
+    }
+    private void populateUI(int paymentId) {
+
+        pay = repo.getPaymentById(paymentId);
 
         if (pay == null) {
-            getOnBackPressedDispatcher().onBackPressed();
-            Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-        }
-        else {
-            bil = Repo.getInstance().getBillByName(pay.getBillerName());
+            // If still null after loading, handle navigation back
+            if (isTaskRoot()) {
+                startActivity(new Intent(this, MainActivity2.class));
+            }
+            finish();
+        } else {
+            bil = repo.getBillByName(pay.getBillerName());
             if (bil != null) {
                 if (bil.getCategory() == 0 || bil.getCategory() == 5 || bil.getCategory() == 6) {
                     paymentsRemainingLayout.setVisibility(View.VISIBLE);
@@ -153,13 +161,12 @@ public class PayBill extends AppCompatActivity {
                 remainingDueLabel.setText(getString(R.string.remaining_this_period));
                 amountDueLabel.setText(getString(R.string.amount_remaining));
                 paymentAmountDue.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(pay.getPaymentAmount() - pay.getPartialPayment()))));
-            }
-            else {
+            } else {
                 remainingDueLabel.setText(getString(R.string.due_this_period));
             }
 
             double balanceForward = 0;
-            Payment payment = Repo.getInstance().getPaymentByBillerName(pay.getBillerName());
+            Payment payment = repo.getPaymentByBillerName(pay.getBillerName());
             if (payment != null) {
                 if (payment.getDueDate() < pay.getDueDate() && !payment.isPaid()) {
                     balanceForward = balanceForward + (payment.getPaymentAmount() - payment.getPartialPayment());
@@ -179,8 +186,7 @@ public class PayBill extends AppCompatActivity {
             webAddress.setOnClickListener(view -> {
                 if (!bil.getWebsite().startsWith("http://") && !bil.getWebsite().startsWith("https://")) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + bil.getWebsite())));
-                }
-                else {
+                } else {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(bil.getWebsite())));
                 }
             });
@@ -192,38 +198,36 @@ public class PayBill extends AppCompatActivity {
                 cd.isMoneyInput(true);
                 cd.setTextWatcher(new MoneyTextWatcher(cd.getEditText()));
                 cd.setPositiveButtonListener(v2 -> {
-                    Payment p = Repo.getInstance().getPaymentById(pay.getPaymentId());
-                    if (p != null) {
-                        Repo.getInstance().updatePayment(p, PayBill.this, payment1 -> {
-                            p.setPartialPayment(FixNumber.makeDouble(cd.getInput()));
-                            p.setDateChanged(true);
-                            pay = p;
-                            cd.dismissDialog();
-                            if (this.pay.getPartialPayment() > 0) {
-                                TextTools.changeMoneyTextValue(displayPartialPayment, this.pay.getPartialPayment(), isSuccessful -> {});
-                            }
-                            else {
-                                TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {}));
-                            }
-                        });
-                    } else {
-                        Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-                    }
+                    repo.editPayment(pay.getPaymentId(), PayBill.this)
+                            .setPartialPayment(FixNumber.makeDouble(cd.getInput()))
+                            .setDateChanged(true)
+                            .save((wasSuccessful, message) -> {
+                                if (wasSuccessful) {
+                                    pay = repo.getPaymentById(pay.getPaymentId());
+                                    cd.dismissDialog();
+                                    if (pay.getPartialPayment() > 0) {
+                                        TextTools.changeMoneyTextValue(displayPartialPayment, pay.getPartialPayment(), isSuccessful -> {
+                                        });
+                                    } else {
+                                        TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
+                                        }));
+                                    }
+                                }
+                                else {
+                                    Notify.createPopup(PayBill.this, "Error: " + message, null);
+                                }
+                            });
                 });
                 cd.setNeutralButtonListener(v3 -> {
-                    Payment p = Repo.getInstance().getPaymentById(pay.getPaymentId());
-                    if (p != null) {
-                        Repo.getInstance().updatePayment(p, PayBill.this, payment2 -> {
-                            p.setPartialPayment(0);
-                            p.setDateChanged(false);
-                            pay = p;
-                            cd.dismissDialog();
-                            TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {}));
-                        });
-                    }
-                    else {
-                        Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-                    }
+                    repo.editPayment(pay.getPaymentId(), PayBill.this)
+                            .setPartialPayment(0)
+                            .setDateChanged(false)
+                            .save((isSuccessful, message) -> {
+                                pay = repo.getPaymentById(pay.getPaymentId());
+                                cd.dismissDialog();
+                                TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful2 -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
+                                }));
+                            });
                 });
             });
 
@@ -232,12 +236,14 @@ public class PayBill extends AppCompatActivity {
                 dp.setListener(v12 -> {
                     if (DatePicker.selection != null) {
                         pay.setDatePaid(DateFormat.makeLong(DatePicker.selection));
-                        Payment pays = Repo.getInstance().getPaymentById(pay.getPaymentId());
-                        if (pays != null) {
-                            Repo.getInstance().updatePayment(pays, PayBill.this, p -> p.setDatePaid(pay.getDatePaid()));
-                        }
-                        dp.dismiss();
-                        TextTools.updateText(paymentDatePaid, DateFormat.makeDateString(DatePicker.selection));
+                        repo.editPayment(pay.getPaymentId(), PayBill.this)
+                                .setDatePaid(pay.getDatePaid())
+                                .save((isSuccessful, message) -> {
+                                    TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful2 -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
+                                    }));
+                                    dp.dismiss();
+                                    TextTools.updateText(paymentDatePaid, DateFormat.makeDateString(DatePicker.selection));
+                                });
                     }
                 });
             });
@@ -257,23 +263,18 @@ public class PayBill extends AppCompatActivity {
                         } else {
                             pb.setVisibility(View.VISIBLE);
                             double newAmountDue = FixNumber.makeDouble(cd.getInput());
-                            Bill bill = Repo.getInstance().getBillById(bil.getBillsId());
-                            if (bill != null) {
-                                Repo.getInstance().updateBill(bil, PayBill.this, bill1 -> {
-                                    bill1.setAmountDue(newAmountDue);
-                                    Repo.getInstance().updatePayment(pay.getPaymentId(), PayBill.this, payment3 -> {
-                                        payment3.setPaymentAmount(newAmountDue);
-                                        pay = payment3;
+                            repo.editBill(bil.getBillerName(), PayBill.this)
+                                    .setAmountDue(newAmountDue);
+                            repo.editPayment(pay.getPaymentId(), PayBill.this)
+                                    .setPaymentAmount(newAmountDue)
+                                    .save((wasSuccessful, message) -> {
+                                        pay = repo.getPaymentById(pay.getPaymentId());
                                         pb.setVisibility(View.GONE);
                                         cd.dismissDialog();
                                         TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {
                                             //startPayBill();
                                         });
                                     });
-                                });
-                            } else {
-                                Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-                            }
                         }
                     });
                     cd.setNeutralButtonListener(v13 -> {
@@ -286,33 +287,24 @@ public class PayBill extends AppCompatActivity {
                             pb.setVisibility(View.VISIBLE);
                             if (pay != null) {
                                 found = false;
-                                Payment pays = Repo.getInstance().getPaymentById(paymentId);
-                                if (pays != null) {
-                                    Repo.getInstance().updatePayment(pays, PayBill.this, payment5 -> {
-                                        payment5.setPaymentAmount(newAmountDue);
-                                        payment5.setDateChanged(true);
-                                        BillerManager.refreshPayments(PayBill.this);
-                                        pb.setVisibility(View.GONE);
-                                        cd.dismissDialog();
-                                        found = true;
-                                    });
-                                    if (!found) {
-                                        pb.setVisibility(View.GONE);
-                                        Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-                                    }
-                                    else {
-                                        TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {
+                                repo.editPayment(paymentId, PayBill.this)
+                                        .setPaymentAmount(newAmountDue)
+                                        .setDateChanged(true)
+                                        .save((wasSuccessful, message) -> {
+                                            BillerManager.refreshPayments(PayBill.this);
+                                            pb.setVisibility(View.GONE);
+                                            cd.dismissDialog();
+                                            found = true;
+                                            TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {
+                                            });
                                         });
-                                    }
-                                }
                             } else {
                                 pb.setVisibility(View.GONE);
                                 Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
                             }
                         }
                     });
-                }
-                else {
+                } else {
                     CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_amount_due), getString(R.string.pleaseEnterYourPaymentAmount), "Update",
                             getString(R.string.cancel), null);
                     cd.setEditText(getString(R.string.payment_amount), String.format(Locale.getDefault(), "  %s", FixNumber.addSymbol(String.valueOf(pay.getPaymentAmount()))), null);
@@ -327,25 +319,17 @@ public class PayBill extends AppCompatActivity {
                             double newAmountDue = FixNumber.makeDouble(cd.getInput());
                             pb.setVisibility(View.VISIBLE);
                             if (pay != null) {
-                                Payment pays = Repo.getInstance().getPaymentById(paymentId);
-                                if (pays != null) {
-                                    found = false;
-                                    Repo.getInstance().updatePayment(pays, PayBill.this, payment4 -> {
-                                        payment4.setPaymentAmount(newAmountDue);
-                                        payment4.setDateChanged(true);
-                                        BillerManager.refreshPayments(PayBill.this);
-                                        pb.setVisibility(View.GONE);
-                                        cd.dismissDialog();
-                                        found = true;
-                                    });
-                                    if (!found) {
-                                        pb.setVisibility(View.GONE);
-                                        Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
-                                    }
-                                    else {
-                                        TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {});
-                                    }
-                                }
+                                repo.editPayment(paymentId, PayBill.this)
+                                        .setPaymentAmount(newAmountDue)
+                                        .setDateChanged(true)
+                                        .save((wasSuccessful, message) -> {
+                                            BillerManager.refreshPayments(PayBill.this);
+                                            pb.setVisibility(View.GONE);
+                                            cd.dismissDialog();
+                                            found = true;
+                                            TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {
+                                            });
+                                        });
                             } else {
                                 pb.setVisibility(View.GONE);
                                 Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
@@ -375,16 +359,16 @@ public class PayBill extends AppCompatActivity {
                     if (!makePayment.isPaid()) {
                         PaymentConfirm pc = new PaymentConfirm(PayBill.this);
                         pc.setConfirmListener(v -> {
-                            Repo.getInstance().sortPaymentsByDueDate();
+                            repo.sortPaymentsByDueDate();
                             while (paymentAmount > 0) {
-                                for (Payment pays : Repo.getInstance().getPayments()) {
+                                for (Payment pays : repo.getPayments()) {
                                     if (pays.getBillerName().equals(pay.getBillerName()) && !pays.isPaid()) {
                                         if (paymentAmount != 0) {
                                             if (paymentAmount < pays.getPaymentAmount() - pays.getPartialPayment()) {
                                                 pays.setPartialPayment(pays.getPartialPayment() + paymentAmount);
                                                 pays.setDateChanged(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(Repo.getInstance().getUid());
+                                                pays.setOwner(repo.retrieveUid(PayBill.this));
                                                 paymentAmount = 0;
                                                 break;
                                             } else {
@@ -393,9 +377,9 @@ public class PayBill extends AppCompatActivity {
                                                 pays.setDateChanged(false);
                                                 pays.setPaid(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(Repo.getInstance().getUid());
+                                                pays.setOwner(repo.retrieveUid(PayBill.this));
                                                 pay = pays;
-                                                for (Bill bill : Repo.getInstance().getBills()) {
+                                                for (Bill bill : repo.getBills()) {
                                                     if (bill.getBillerName().equals(pay.getBillerName())) {
                                                         bill.setPaymentsRemaining(bill.getPaymentsRemaining() - 1);
                                                         bill.setDateLastPaid(newPaymentDate);
@@ -409,8 +393,10 @@ public class PayBill extends AppCompatActivity {
                                     }
                                 }
                             }
-                            Repo.getInstance().save(PayBill.this);
-                            pc.dismissDialog();
+                            repo.saveData(PayBill.this, (wasSuccessful, message) -> {
+
+                            });
+                                    pc.dismissDialog();
                             if (getIntent().getExtras() != null) {
                                 getIntent().getExtras().putInt("Payment Id", pay.getPaymentId());
                                 recreate();
@@ -424,22 +410,23 @@ public class PayBill extends AppCompatActivity {
                     } else {
 
                         pb.setVisibility(View.VISIBLE);
-                        Repo.getInstance().deletePayment(pay.getPaymentId(), PayBill.this);
-                        pb.setVisibility(View.GONE);
-                        pay.setPaid(false);
-                        pay.setDatePaid(0);
-                        Repo.getInstance().save(PayBill.this);
-                        NotificationManager.scheduleNotifications(this);
-                        Notify.createPopup(PayBill.this, getString(R.string.bill_marked_as_unpaid_successfully), null);
-                        if (getIntent().getExtras() != null) {
-                            getIntent().getExtras().putInt("Payment Id", pay.getPaymentId());
-                            recreate();
-                        } else {
-                            startActivity(new Intent(PayBill.this, MainActivity2.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
-                        }
+                        repo.deletePayment(pay.getPaymentId(), PayBill.this, (wasSuccessful, message) -> {
+                            pb.setVisibility(View.GONE);
+                            pay.setPaid(false);
+                            pay.setDatePaid(0);
+                            repo.saveData(PayBill.this, (wasSuccessful1, message1) -> {
+                                NotificationManager.scheduleNotifications(PayBill.this);
+                                Notify.createPopup(PayBill.this, getString(R.string.bill_marked_as_unpaid_successfully), null);
+                                if (getIntent().getExtras() != null) {
+                                    getIntent().getExtras().putInt("Payment Id", pay.getPaymentId());
+                                    recreate();
+                                } else {
+                                    startActivity(new Intent(PayBill.this, MainActivity2.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
+                                }
+                            });
+                        });
                     }
-                }
-                else {
+                } else {
                     Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
                 }
             });
@@ -456,11 +443,11 @@ public class PayBill extends AppCompatActivity {
                         pb.setVisibility(View.VISIBLE);
                         int remaining;
                         remaining = Integer.parseInt(cd.getInput().replaceAll("[^0-9]", ""));
-                        for (Bill bill : Repo.getInstance().getBills()) {
+                        for (Bill bill : repo.getBills()) {
                             if (bill.getBillerName().equals(bil.getBillerName())) {
                                 bill.setPaymentsRemaining(remaining);
                                 bil.setPaymentsRemaining(remaining);
-                                Repo.getInstance().save(PayBill.this);
+                                repo.saveData(PayBill.this, (wasSuccessful, message) -> {});
                                 break;
                             }
                         }
@@ -478,8 +465,7 @@ public class PayBill extends AppCompatActivity {
                         dp.dismiss();
                         if (DateFormat.makeLocalDate(DataTools.getBill(pay.getBillerName()).getDueDate()).isAfter(DatePicker.selection)) {
                             Notify.createPopup(PayBill.this, getString(R.string.payment_due_date_cannot_be_before_the_biller_due_date_of) + DateFormat.makeDateString(DataTools.getBill(pay.getBillerName()).getDueDate()), null);
-                        }
-                        else {
+                        } else {
                             if (DataTools.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
                                 CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_all_payments), getString(R.string.would_you_like_to_apply_this_new_due_date_to_all_occurrences_of_this_bill), getString(R.string.change_all),
                                         getString(R.string.cancel), getString(R.string.just_this_one));
@@ -501,8 +487,7 @@ public class PayBill extends AppCompatActivity {
                                 });
                             }
                         }
-                    }
-                    else {
+                    } else {
                         Notify.createPopup(PayBill.this, getString(R.string.anErrorHasOccurred), null);
                         dp.dismiss();
                     }
@@ -521,7 +506,13 @@ public class PayBill extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        payBillIcon.setContentPadding(50,50,50,50);
+        payBillIcon.setContentPadding(50, 50, 50, 50);
         pb.setVisibility(View.GONE);
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent); // This updates the Activity's intent with the notification's intent
+        startPayBill();    // Re-run the loading logic with the new ID
     }
 }

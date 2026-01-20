@@ -1,6 +1,8 @@
 package com.example.billstracker.custom_objects;
 
-/** @noinspection unused*/
+/**
+ * @noinspection unused
+ */
 public class Message {
 
     private String dateTime;
@@ -17,7 +19,10 @@ public class Message {
         setAgent(agent);
         setMessage(message);
     }
-    /** @noinspection unused*/
+
+    /**
+     * @noinspection unused
+     */
     public Message() {
 
     }

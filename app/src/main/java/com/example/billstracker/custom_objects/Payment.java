@@ -1,5 +1,10 @@
 package com.example.billstracker.custom_objects;
 
+import android.content.Context;
+
+import com.example.billstracker.tools.Repository;
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 public class Payment implements Serializable {
@@ -14,6 +19,8 @@ public class Payment implements Serializable {
     private int paymentId;
     private long datePaid;
     private String owner;
+    private boolean needsSync = false;
+    private boolean needsDelete = false;
 
     public Payment(double paymentAmount, double partialPayment, long dueDate, boolean paid, boolean dateChanged, int paymentNumber, String billerName, int paymentId, long datePaid, String owner) {
 
@@ -27,19 +34,6 @@ public class Payment implements Serializable {
         setPaymentId(paymentId);
         setDatePaid(datePaid);
         setOwner(owner);
-    }
-
-    public void updatePayment (Payment payment) {
-        setPaymentAmount(payment.getPaymentAmount());
-        setPartialPayment(payment.getPartialPayment());
-        setDueDate(payment.getDueDate());
-        setPaid(payment.isPaid());
-        setDateChanged(payment.isDateChanged());
-        setPaymentNumber(payment.getPaymentNumber());
-        setBillerName(payment.getBillerName());
-        setPaymentId(payment.getPaymentId());
-        setDatePaid(payment.getDatePaid());
-        setOwner(payment.getOwner());
     }
 
     public Payment() {
@@ -118,14 +112,97 @@ public class Payment implements Serializable {
     public void setDateChanged(boolean dateChanged) {
         this.dateChanged = dateChanged;
     }
-    public String getOwner () {
+
+    public String getOwner() {
         return owner;
     }
-    public void setOwner (String owner) {
+
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
-    public interface OnSuccessCallback {
-        void isSuccessful(boolean isSuccessful);
+    @Exclude
+    public boolean isNeedsSync() {
+        return needsSync;
+    }
+
+    public void setNeedsSync(boolean needsSync) {
+        this.needsSync = needsSync;
+    }
+
+    @Exclude
+    public boolean isNeedsDelete() { return needsDelete; }
+    public void setNeedsDelete(boolean needsDelete) { this.needsDelete = needsDelete; }
+
+    public static class Builder {
+        private final Payment payment;
+        private final Context context;
+
+        public Builder(Context context, Payment payment) {
+            this.context = context;
+            this.payment = payment;
+        }
+
+        public Builder setPaymentAmount(double amount) {
+            payment.setPaymentAmount(amount);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setPartialPayment(double partial) {
+            payment.setPartialPayment(partial);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setDueDate(long date) {
+            payment.setDueDate(date);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setPaid(boolean paid) {
+            payment.setPaid(paid);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setDateChanged(boolean changed) {
+            payment.setDateChanged(changed);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setPaymentNumber(int num) {
+            payment.setPaymentNumber(num);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setBillerName(String name) {
+            payment.setBillerName(name);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setDatePaid(long date) {
+            payment.setDatePaid(date);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public Builder setOwner(String owner) {
+            payment.setOwner(owner);
+            payment.needsSync = true;
+            return this;
+        }
+
+        public void save(Repository.OnCompleteCallback callback) {
+            if (payment == null) {
+                if (callback != null) callback.onComplete(false, "Payment was not found.");
+                return;
+            }
+            Repository.getInstance().saveData(context, callback);
+        }
     }
 }

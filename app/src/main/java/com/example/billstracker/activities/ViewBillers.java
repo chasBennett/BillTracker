@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -33,7 +31,6 @@ import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repo;
 import com.example.billstracker.tools.Tools;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -41,7 +38,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class ViewBillers extends AppCompatActivity {
+public class ViewBillers extends BaseActivity {
     static int choice;
     static ArrayList<View> views;
     LinearLayout details, billerTiles;
@@ -50,8 +47,7 @@ public class ViewBillers extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_view_billers);
 
         pb = findViewById(R.id.progressBar);
@@ -87,12 +83,12 @@ public class ViewBillers extends AppCompatActivity {
         ArrayList<String> freq = DataTools.getFrequencies(ViewBillers.this);
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String userId = Repo.getInstance().getUid();
+        String userId = repo.retrieveUid(ViewBillers.this);
         views = new ArrayList<>();
         ArrayList<Bill> billsList = new ArrayList<>();
-        if (Repo.getInstance().getBills() != null && !Repo.getInstance().getBills().isEmpty()) {
-            Repo.getInstance().getBills().sort(Comparator.comparing(Bill::getBillerName));
-            for (Bill bill : Repo.getInstance().getBills()) {
+        if (repo.getBills() != null && !repo.getBills().isEmpty()) {
+            repo.getBills().sort(Comparator.comparing(Bill::getBillerName));
+            for (Bill bill : repo.getBills()) {
                 if (!showPaid) {
                     if (!billsList.contains(bill) && bill.getPaymentsRemaining() > 0) {
                         billsList.add(bill);
@@ -114,8 +110,8 @@ public class ViewBillers extends AppCompatActivity {
             if (bills.isRecurring() && bills.getPaymentsRemaining() > 0) {
                 recurring = getString(R.string.yes);
                 long earliest = DateFormat.makeLong(DateFormat.makeLocalDate(bills.getDueDate()).plusYears(1));
-                if (Repo.getInstance().getPayments() != null) {
-                    for (Payment pay : Repo.getInstance().getPayments()) {
+                if (repo.getPayments() != null) {
+                    for (Payment pay : repo.getPayments()) {
                         if (pay.getBillerName().equalsIgnoreCase(bills.getBillerName()) && !pay.isPaid() && pay.getDueDate() < earliest) {
                             earliest = pay.getDueDate();
                         }
@@ -180,7 +176,7 @@ public class ViewBillers extends AppCompatActivity {
                 Button btnDeleteBiller = view.findViewById(R.id.btnDeleteBiller);
                 ShapeableImageView iconView = view.findViewById(R.id.iconView);
                 Tools.loadIcon(iconView, bills.getCategory(), bills.getIcon());
-                iconView.setContentPadding(60,60,60,60);
+                iconView.setContentPadding(60, 60, 60, 60);
                 details.removeAllViews();
                 details.invalidate();
                 details.addView(view);
@@ -240,14 +236,19 @@ public class ViewBillers extends AppCompatActivity {
                     CustomDialog cd = new CustomDialog(ViewBillers.this, getString(R.string.deleteBiller), getString(R.string.confirmDeletion), getString(R.string.deleteBiller), getString(R.string.cancel), null);
                     cd.setPositiveButtonListener(v1 -> {
                         pb.setVisibility(View.VISIBLE);
-                        if (Repo.getInstance().getBills() != null) {
-                            Repo.getInstance().deleteBill(bills.getBillerName(), false, ViewBillers.this);
-                            BillerManager.refreshPayments(ViewBillers.this);
-                            Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);
-                            cd.dismissDialog();
-                            recreate();
-                        }
-                        else {
+                        if (repo.getBills() != null) {
+                            repo.deleteBill(bills.getBillerName(), ViewBillers.this, (wasSuccessful, message) -> {
+                                if (wasSuccessful) {
+                                    BillerManager.refreshPayments(ViewBillers.this);
+                                    Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);
+                                    cd.dismissDialog();
+                                    recreate();
+                                }
+                                else {
+                                    Notify.createPopup(ViewBillers.this, "Error: " + message, null);
+                                }
+                            });
+                        } else {
                             Notify.createPopup(ViewBillers.this, getString(R.string.anErrorHasOccurred), null);
                         }
                     });

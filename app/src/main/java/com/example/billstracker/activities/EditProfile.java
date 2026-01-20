@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.biometric.BiometricManager;
@@ -35,7 +33,7 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.BottomDrawer;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.Repo;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
@@ -50,7 +48,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.UUID;
 
-public class EditProfile extends AppCompatActivity {
+public class EditProfile extends BaseActivity {
 
     final Context mContext = this;
     TextInputEditText enterNewUsername, enterNewName, enterNewPassword, confirmPassword;
@@ -63,16 +61,15 @@ public class EditProfile extends AppCompatActivity {
     com.google.android.material.imageview.ShapeableImageView icon;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     StorageReference storageReference;
-    private Uri filePath;
     boolean name;
     boolean uName;
     boolean pass;
     int differences;
     User thisUser;
+    private Uri filePath;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onDataReady() {
         setContentView(R.layout.activity_edit_profile);
 
         err = findViewById(R.id.showFrequency);
@@ -95,7 +92,7 @@ public class EditProfile extends AppCompatActivity {
 
         Tools.setupUI(EditProfile.this, findViewById(android.R.id.content));
 
-        thisUser = Repo.getInstance().getUser(EditProfile.this);
+        thisUser = repo.getUser(EditProfile.this);
 
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::loadImage);
         storageReference = FirebaseStorage.getInstance().getReference("images");
@@ -135,7 +132,7 @@ public class EditProfile extends AppCompatActivity {
             });
         });
 
-        biometricSwitch2.setChecked(Repo.getInstance().getAllowBiometrics(EditProfile.this));
+        biometricSwitch2.setChecked(repo.getAllowBiometrics(EditProfile.this));
 
         back.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
 
@@ -150,11 +147,11 @@ public class EditProfile extends AppCompatActivity {
 
         biometricSwitch2.setOnCheckedChangeListener((compoundButton, b) -> {
             if (compoundButton.isChecked()) {
-                Repo.getInstance().setAllowBiometrics(true, EditProfile.this);
-                Repo.getInstance().setShowBiometricPrompt(true, EditProfile.this);
+                repo.setAllowBiometrics(true, EditProfile.this);
+                repo.setShowBiometricPrompt(true, EditProfile.this);
             } else {
-                Repo.getInstance().setAllowBiometrics(false, EditProfile.this);
-                Repo.getInstance().setShowBiometricPrompt(false, EditProfile.this);
+                repo.setAllowBiometrics(false, EditProfile.this);
+                repo.setShowBiometricPrompt(false, EditProfile.this);
             }
             Notify.createPopup(EditProfile.this, getString(R.string.your_biometric_preferences_have_been_updated), null);
         });
@@ -176,7 +173,7 @@ public class EditProfile extends AppCompatActivity {
         enterNewPassword.addTextChangedListener(watcher);
         confirmPassword.addTextChangedListener(watcher);
 
-        if (thisUser.getPassword().equals(Repo.getInstance().getUid())) {
+        if (thisUser.getPassword().equals(repo.retrieveUid(EditProfile.this))) {
             TextView error = findViewById(R.id.googleSignInError);
             error.setVisibility(View.VISIBLE);
             editPasswordLayout.setVisibility(View.GONE);
@@ -227,25 +224,23 @@ public class EditProfile extends AppCompatActivity {
             checkNameAndPassword();
         }
     }
-    public void checkNameAndPassword () {
+
+    public void checkNameAndPassword() {
         if (enterNewName.getText() != null) {
             if (enterNewName.getText().toString().equalsIgnoreCase(thisUser.getName())) {
                 name = true;
                 TextTools.setValidBorder(enterNewName, true);
-            }
-            else {
+            } else {
                 if (enterNewName.getText().length() > 2) {
                     name = true;
                     ++differences;
                     TextTools.setValidBorder(enterNewName, true);
-                }
-                else {
+                } else {
                     TextTools.setValidBorder(enterNewName, false);
                     name = false;
                 }
             }
-        }
-        else {
+        } else {
             name = false;
             if (enterNewName.hasFocus()) {
                 TextTools.setValidBorder(enterNewName, false);
@@ -256,8 +251,7 @@ public class EditProfile extends AppCompatActivity {
                 passRequirements.setVisibility(View.GONE);
                 pass = true;
                 TextTools.setValidBorder(enterNewPassword, true);
-            }
-            else {
+            } else {
                 passRequirements.setVisibility(View.VISIBLE);
                 boolean upCase = false, loCase = false, isDigit = false, length = false;
                 String password = enterNewPassword.getText().toString();
@@ -313,8 +307,7 @@ public class EditProfile extends AppCompatActivity {
                             TextTools.setValidBorder(enterNewPassword, true);
                             ++differences;
                         }
-                    }
-                    else {
+                    } else {
                         TextTools.setValidBorder(confirmPassword, false);
                         pass = false;
                     }
@@ -325,8 +318,7 @@ public class EditProfile extends AppCompatActivity {
                     TextTools.setValidBorder(enterNewPassword, false);
                 }
             }
-        }
-        else {
+        } else {
             pass = false;
         }
         if (name && uName && pass && differences > 0) {
@@ -343,30 +335,31 @@ public class EditProfile extends AppCompatActivity {
 
         if (enterNewName.getText() == null || enterNewName.getText().toString().isEmpty()) {
             Notify.createPopup(EditProfile.this, getString(R.string.name_can_t_be_blank), null);
-        }
-        else if (enterNewUsername.getText() == null || enterNewUsername.getText().toString().isEmpty()) {
+        } else if (enterNewUsername.getText() == null || enterNewUsername.getText().toString().isEmpty()) {
             Notify.createPopup(EditProfile.this, getString(R.string.username_can_t_be_blank), null);
-        }
-        else if (enterNewPassword.getText() == null || enterNewPassword.getText().toString().isEmpty()) {
+        } else if (enterNewPassword.getText() == null || enterNewPassword.getText().toString().isEmpty()) {
             Notify.createPopup(EditProfile.this, getString(R.string.password_can_t_be_blank), null);
-        }
-        else {
+        } else {
             String newName = enterNewName.getText().toString();
             String newPassword = enterNewPassword.getText().toString();
             String newUserName = enterNewUsername.getText().toString().toLowerCase();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
-                Repo.getInstance().loadLocalData(EditProfile.this);
+                repo.loadLocalData(EditProfile.this, null);
                 recreate();
             } else {
                 FirebaseTools.updateUser(EditProfile.this, user, newUserName, newName, newPassword, isSuccessful -> {
                     if (isSuccessful) {
                         Notify.createPopup(EditProfile.this, getString(R.string.user_profile_updated_successfully), null);
-                        Repo.getInstance().updateUser(EditProfile.this, user1 -> {
-                            user1.setName(newName);
-                            user1.setUserName(newUserName);
-                            user1.setPassword(newPassword);
-                        });
+                        repo.editUser(EditProfile.this)
+                                .setName(newName)
+                                .setUserName(newUserName)
+                                .setPassword(newPassword)
+                                .save((wasSuccessful, message) -> {
+                                    if (wasSuccessful) {
+                                        recreate();
+                                    }
+                                });
                         submit.setVisibility(View.GONE);
                     } else {
                         Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);

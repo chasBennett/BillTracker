@@ -7,19 +7,21 @@ import java.util.Locale;
 
 public class FixNumber {
 
-    public static String addSymbol (String string) {
+    public static String addSymbol(String string) {
 
         final NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
 
         string = String.format(Locale.getDefault(), String.valueOf(makeDouble(string)));
         return nf.format(Double.parseDouble(string.replaceAll("\\s", "").replaceAll(",", ".")));
     }
-    public static String addSymbol (double dub) {
+
+    public static String addSymbol(double dub) {
         final NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
         String string = String.format(Locale.getDefault(), String.valueOf(makeDouble(dub)));
         return nf.format(Double.parseDouble(string.replaceAll("\\s", "").replaceAll(",", ".")));
     }
-    public static double makeDouble (String string) {
+
+    public static double makeDouble(String string) {
 
         String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();
         string = string.replaceAll(symbol, "").replace(" ", "").replaceAll("\\s", "").replaceAll("\\$", "");
@@ -46,15 +48,13 @@ public class FixNumber {
                     ++findLastComma;
                     if (findLastComma == commaCounter) {
                         sb.append(a);
-                        build =true;
+                        build = true;
                     }
-                }
-                else {
+                } else {
                     if (build && counter3 < 2) {
                         ++counter3;
                         sb.append(a);
-                    }
-                    else if (counter3 < 2) {
+                    } else if (counter3 < 2) {
                         sb.append(a);
                     }
                 }
@@ -72,15 +72,12 @@ public class FixNumber {
         }
         if (!found) {
             string = string + ".00";
-        }
-        else {
-            if (index == string.length() -2) {
+        } else {
+            if (index == string.length() - 2) {
                 string = string + "0";
-            }
-            else if (index == string.length() - 1) {
+            } else if (index == string.length() - 1) {
                 string = string + "00";
-            }
-            else if (index < string.length() - 3) {
+            } else if (index < string.length() - 3) {
                 string = string.substring(0, index + 3);
             }
         }
@@ -91,7 +88,8 @@ public class FixNumber {
         }
         return Double.parseDouble(string.replaceAll(",", "."));
     }
-    public static int makeInt (String string) {
+
+    public static int makeInt(String string) {
 
         String numberString = string.replaceAll("\\D", "");
         if (numberString.isEmpty()) {
@@ -100,7 +98,7 @@ public class FixNumber {
         return Integer.parseInt(numberString);
     }
 
-    public static double makeDouble (double dub) {
+    public static double makeDouble(double dub) {
 
         String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();
         String string = String.valueOf(dub).replaceAll(symbol, "").replace(" ", "").replaceAll("\\s", "").replaceAll("\\$", "");
@@ -127,15 +125,13 @@ public class FixNumber {
                     ++findLastComma;
                     if (findLastComma == commaCounter) {
                         sb.append(a);
-                        build =true;
+                        build = true;
                     }
-                }
-                else {
+                } else {
                     if (build && counter3 < 2) {
                         ++counter3;
                         sb.append(a);
-                    }
-                    else if (counter3 < 2) {
+                    } else if (counter3 < 2) {
                         sb.append(a);
                     }
                 }
@@ -153,15 +149,12 @@ public class FixNumber {
         }
         if (!found) {
             string = string + ".00";
-        }
-        else {
-            if (index == string.length() -2) {
+        } else {
+            if (index == string.length() - 2) {
                 string = string + "0";
-            }
-            else if (index == string.length() - 1) {
+            } else if (index == string.length() - 1) {
                 string = string + "00";
-            }
-            else if (index < string.length() - 3) {
+            } else if (index < string.length() - 3) {
                 string = string.substring(0, index + 3);
             }
         }

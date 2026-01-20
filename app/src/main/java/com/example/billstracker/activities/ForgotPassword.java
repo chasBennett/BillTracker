@@ -84,8 +84,7 @@ public class ForgotPassword extends AppCompatActivity {
                 } else {
                     fpError.setVisibility(View.VISIBLE);
                 }
-            }
-            else {
+            } else {
                 Notify.createPopup(ForgotPassword.this, "The email address field cannot be blank.", null);
             }
         });

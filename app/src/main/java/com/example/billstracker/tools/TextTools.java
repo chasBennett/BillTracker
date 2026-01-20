@@ -81,13 +81,11 @@ public class TextTools {
             if (!leng || !capital || !lowercase || !number) {
                 editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
                 return false;
-            }
-            else {
+            } else {
                 editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textSatisfactory, context.getTheme()));
                 return true;
             }
-        }
-        else {
+        } else {
             editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
             return false;
         }
@@ -98,12 +96,10 @@ public class TextTools {
         if (editText.hasFocus()) {
             if (isValid) {
                 editText.setBackground(AppCompatResources.getDrawable(editText.getContext(), R.drawable.border_stroke_blue));
-            }
-            else {
+            } else {
                 editText.setBackground(AppCompatResources.getDrawable(editText.getContext(), R.drawable.border_error));
             }
-        }
-        else {
+        } else {
             editText.setBackground(AppCompatResources.getDrawable(editText.getContext(), R.drawable.border_stroke));
         }
         editText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -121,17 +117,16 @@ public class TextTools {
             if (string.length() >= minimumLength) {
                 setValidBorder(editText, true);
                 return true;
-            }
-            else {
+            } else {
                 editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
                 return false;
             }
-        }
-        else {
+        } else {
             editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
             return false;
         }
     }
+
     public static void onEnterSelected(EditText editText, InputManager manager) {
         if (editText != null && editText.getContext() != null) {
             Context context = editText.getContext();
@@ -145,7 +140,8 @@ public class TextTools {
             });
         }
     }
-    static void onEnterSelected (TextInputEditText editText, InputManager manager) {
+
+    static void onEnterSelected(TextInputEditText editText, InputManager manager) {
         if (editText != null && editText.getContext() != null) {
             Context context = editText.getContext();
             InputMethodManager mgr = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -158,6 +154,7 @@ public class TextTools {
             });
         }
     }
+
     public static void closeSoftInput(EditText editText) {
         if (editText != null && editText.getContext() != null) {
             Context context = editText.getContext();
@@ -165,7 +162,8 @@ public class TextTools {
             mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
         }
     }
-    static void closeSoftInput (TextInputEditText editText) {
+
+    static void closeSoftInput(TextInputEditText editText) {
         if (editText != null && editText.getContext() != null) {
             Context context = editText.getContext();
             InputMethodManager mgr = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -189,15 +187,13 @@ public class TextTools {
                 view.setTextColor(ResourcesCompat.getColor(view.getContext().getResources(), R.color.payBill, view.getContext().getTheme()));
                 if (typeface.isItalic()) {
                     view.setTypeface(null, Typeface.BOLD_ITALIC);
-                }
-                else {
+                } else {
                     view.setTypeface(null, Typeface.BOLD);
                 }
                 Drawable[] drawables = view.getCompoundDrawables();
                 if (drawables[0] == null) {
                     view.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(view.getContext().getResources(), R.drawable.checkmarksmall, view.getContext().getTheme()), drawables[1], drawables[2], drawables[3]);
-                }
-                else if (drawables[2] == null) {
+                } else if (drawables[2] == null) {
                     view.setCompoundDrawablesWithIntrinsicBounds(drawables[0], drawables[1], ResourcesCompat.getDrawable(view.getContext().getResources(), R.drawable.checkmarksmall, view.getContext().getTheme()), drawables[3]);
                 }
                 TextViewCompat.setCompoundDrawableTintList(view, ColorStateList.valueOf(ResourcesCompat.getColor(view.getContext().getResources(), R.color.payBill, view.getContext().getTheme())));
@@ -235,7 +231,7 @@ public class TextTools {
         view.startAnimation(animation);
     }
 
-    public static void changeMoneyTextValue (TextView textView, double newValue, OnCompleteCallback callback) {
+    public static void changeMoneyTextValue(TextView textView, double newValue, OnCompleteCallback callback) {
         if (textView != null && textView.getContext() != null && textView.getLayout() != null) {
             Layout layout = textView.getLayout();
             Context context = textView.getContext();
@@ -323,8 +319,9 @@ public class TextTools {
     }
 
     public interface InputManager {
-        void selectedKeyIsEnter (boolean isEnter);
+        void selectedKeyIsEnter(boolean isEnter);
     }
+
     public interface OnCompleteCallback {
         void isSuccessful(boolean isSuccessful);
     }
