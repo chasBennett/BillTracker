@@ -83,7 +83,7 @@ public class ViewBillers extends BaseActivity {
         ArrayList<String> freq = DataTools.getFrequencies(ViewBillers.this);
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String userId = repo.retrieveUid(ViewBillers.this);
+        String userId = repo.getUid(ViewBillers.this);
         views = new ArrayList<>();
         ArrayList<Bill> billsList = new ArrayList<>();
         if (repo.getBills() != null && !repo.getBills().isEmpty()) {
@@ -243,8 +243,7 @@ public class ViewBillers extends BaseActivity {
                                     Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);
                                     cd.dismissDialog();
                                     recreate();
-                                }
-                                else {
+                                } else {
                                     Notify.createPopup(ViewBillers.this, "Error: " + message, null);
                                 }
                             });
@@ -252,6 +251,7 @@ public class ViewBillers extends BaseActivity {
                             Notify.createPopup(ViewBillers.this, getString(R.string.anErrorHasOccurred), null);
                         }
                     });
+                    cd.show();
                 });
             });
         }

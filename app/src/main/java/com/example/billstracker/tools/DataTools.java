@@ -5,6 +5,7 @@ import static com.example.billstracker.activities.MainActivity2.dueThisMonth;
 import static com.example.billstracker.activities.MainActivity2.selectedDate;
 import static com.example.billstracker.tools.BillerManager.deleteFuturePayments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import com.example.billstracker.activities.MainActivity2;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Payment;
+import com.example.billstracker.popup_classes.Notify;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,35 +40,72 @@ public interface DataTools {
         return null;
     }
 
-    static void changePaymentDueDate(Payment payment, long newDueDate, boolean changeAll, FirebaseTools.FirebaseCallback callback) {
-        if (changeAll) {
-            if (Repository.getInstance().getBills() != null) {
-                for (Bill bill : Repository.getInstance().getBills()) {
-                    if (bill.getBillerName().equals(payment.getBillerName())) {
-                        bill.setDueDate(newDueDate);
-                    }
+    static void changePaymentDueDate(Context context, Payment payment, long newDueDate, boolean changeAll, FirebaseTools.FirebaseCallback callback) {
+        Repository repo = Repository.getInstance();
+
+        if (repo.getPayments() != null) {
+            for (Payment existingPayment : repo.getPayments()) {
+                if (existingPayment.getBillerName().equals(payment.getBillerName()) &&
+                        existingPayment.getDueDate() == newDueDate &&
+                        existingPayment.getPaymentId() != payment.getPaymentId()) {
+
+                    Notify.createPopup((Activity) context, "A payment for this biller already exists on this date.", null);
+                    callback.isSuccessful(false);
+                    return;
                 }
             }
-            deleteFuturePayments(payment.getBillerName(), newDueDate, isSuccessful -> {
-                if (isSuccessful) {
-                    payment.setDateChanged(false);
-                    payment.setDueDate(newDueDate);
-                    callback.isSuccessful(true);
-                } else {
-                    callback.isSuccessful(false);
-                }
-            });
-        } else {
-            if (Repository.getInstance().getPayments() != null && payment != null) {
-                for (Payment payments : Repository.getInstance().getPayments()) {
-                    if (payments.getPaymentId() == payment.getPaymentId()) {
-                        payments.setDueDate(newDueDate);
-                        payments.setDateChanged(true);
-                        payment.setDueDate(newDueDate);
-                        payment.setDateChanged(true);
-                        callback.isSuccessful(true);
-                        break;
+        }
+
+        if (changeAll) {
+            // Step 1: Update Bill (uses internal context)
+            Bill.Builder bill = repo.editBill(payment.getBillerName(), context);
+            if (bill != null) {
+                bill.setDueDate(newDueDate);
+                bill.save((billSuccess, msg) -> {
+                    if (!billSuccess) {
+                        callback.isSuccessful(false);
+                        return;
                     }
+
+                    deleteFuturePayments(payment.getBillerName(), newDueDate, deleteSuccess -> {
+                        // Step 2: Update specific payment
+                        repo.editPayment(payment.getPaymentId(), context)
+                                .setDueDate(newDueDate)
+                                .setDateChanged(false)
+                                .save((paySuccess, msg2) -> {
+                                    if (paySuccess) {
+                                        syncLocalData(payment, newDueDate, true);
+                                        callback.isSuccessful(true);
+                                    } else {
+                                        callback.isSuccessful(false);
+                                    }
+                                });
+                    });
+                });
+            }
+        } else {
+            repo.editPayment(payment.getPaymentId(), context)
+                    .setDueDate(newDueDate)
+                    .setDateChanged(true)
+                    .save((wasSuccessful, message) -> {
+                        if (wasSuccessful) {
+                            syncLocalData(payment, newDueDate, false);
+                            callback.isSuccessful(true);
+                        } else {
+                            callback.isSuccessful(false);
+                        }
+                    });
+        }
+    }
+
+    private static void syncLocalData(Payment payment, long newDate, boolean updateBill) {
+        payment.setDueDate(newDate);
+        payment.setDateChanged(!updateBill);
+
+        if (updateBill && Repository.getInstance().getBills() != null) {
+            for (Bill bill : Repository.getInstance().getBills()) {
+                if (bill.getBillerName().equals(payment.getBillerName())) {
+                    bill.setDueDate(newDate);
                 }
             }
         }
@@ -117,22 +156,46 @@ public interface DataTools {
     }
 
     static ArrayList<Payment> whatsDueThisMonth(Context context) {
-
         dueThisMonth.clear();
         MainActivity2.pastDue = 0;
+
+        // Calculate the time boundaries for the selected month
         long monthStart = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(1).atStartOfDay()));
         long monthEnd = DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()));
+        long today = DateFormat.currentDateAsLong();
+
         BillerManager.refreshPayments(context);
         ArrayList<Payment> payments = Repository.getInstance().getPayments();
         payments.sort(Comparator.comparing(Payment::getDueDate));
 
         if (!payments.isEmpty()) {
             for (Payment payment : payments) {
-                if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd || payment.getDueDate() < DateFormat.currentDateAsLong() && !payment.isPaid() &&
-                        selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth() ||
-                        payment.getDueDate() < monthStart && !payment.isPaid() && selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(DateFormat.currentDateAsLong()).getMonth()) {
+                long dueDate = payment.getDueDate();
+                boolean isPaid = payment.isPaid();
+
+                // 1. Payments that were due in prior months but are still unpaid (Past Due)
+                // We only show these if the user is looking at the "current" month view
+                boolean isCurrentMonthView = selectedDate.getMonth() == DateFormat.convertIntDateToLocalDate(today).getMonth()
+                        && selectedDate.getYear() == DateFormat.convertIntDateToLocalDate(today).getYear();
+
+                boolean isPastDueFromPrior = dueDate < monthStart && !isPaid && isCurrentMonthView;
+
+                // 2. Payments that fall within the selected month's date range (Due this month)
+                boolean isDueInSelectedMonth = dueDate >= monthStart && dueDate <= monthEnd;
+
+                // 3. Payments that were paid in the selected month
+                // Note: This assumes your Payment object has a getDatePaid() method.
+                // If it doesn't, 'isDueInSelectedMonth' covers items due and paid in the same month.
+                boolean wasPaidInSelectedMonth = isPaid && (dueDate >= monthStart && dueDate <= monthEnd);
+
+                if (isPastDueFromPrior || isDueInSelectedMonth || wasPaidInSelectedMonth) {
                     if (!dueThisMonth.contains(payment)) {
                         dueThisMonth.add(payment);
+
+                        // Increment the pastDue counter for the UI if it's actually late
+                        if (dueDate < today && !isPaid) {
+                            MainActivity2.pastDue++;
+                        }
                     }
                 }
             }

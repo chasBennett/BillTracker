@@ -185,7 +185,7 @@ public class Support extends BaseActivity {
                         Toast.makeText(Support.this, (CharSequence) task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 });
-                db.collection("users").document(repo.retrieveUid(Support.this)).set(thisUser, SetOptions.merge());
+                db.collection("users").document(repo.getUid(Support.this)).set(thisUser, SetOptions.merge());
             }
         });
 
@@ -204,7 +204,7 @@ public class Support extends BaseActivity {
                 ArrayList<SupportTicket> remove = new ArrayList<>();
                 for (SupportTicket delete : userTickets) {
                     if (delete.getAgentUid() != null) {
-                        if (!delete.getAgentUid().trim().equals(repo.retrieveUid(Support.this)) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
+                        if (!delete.getAgentUid().trim().equals(repo.getUid(Support.this)) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
                             remove.add(delete);
                             if (!delete.isOpen()) {
                                 delete.setUnreadByAgent(0);
@@ -258,7 +258,7 @@ public class Support extends BaseActivity {
         admin = false;
         customerTicket = null;
 
-        db.collection("tickets").document(repo.retrieveUid(Support.this)).get().addOnCompleteListener(task -> {
+        db.collection("tickets").document(repo.getUid(Support.this)).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 Log.d(TAG, document.getId() + " => " + document.getData());

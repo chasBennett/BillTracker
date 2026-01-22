@@ -101,7 +101,7 @@ public class ShareAccount extends BaseActivity {
         Partner remoteMe = null;
         if (remoteUser != null && remoteUser.getPartners() != null) {
             for (Partner p : remoteUser.getPartners()) {
-                if (p.getPartnerUid().equals(repo.retrieveUid(ShareAccount.this))) {
+                if (p.getPartnerUid().equals(repo.getUid(ShareAccount.this))) {
                     remoteMe = p;
                     break;
                 }
@@ -131,9 +131,15 @@ public class ShareAccount extends BaseActivity {
     private void updatePartnerAuthorization(Partner partner, boolean authorized) {
         partner.setSharingAuthorized(authorized);
         // Use the Builder to flag the User as needing sync
-        repo.editUser(this).setNeedsSync(true).save((success, message) -> {
-            if (success) listPartners();
-        });
+        User.Builder user = repo.editUser(ShareAccount.this);
+        if (user != null) {
+            user.setNeedsSync(true).save((success, message) -> {
+                if (success) listPartners();
+            });
+        }
+        else {
+            Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
+        }
     }
 
     private void removePartnerCompletely(Partner partner) {
@@ -141,13 +147,18 @@ public class ShareAccount extends BaseActivity {
         Tools.removePartnerData(partner.getPartnerUid());
 
         // Use the Builder to save the user profile without the partner
-        repo.editUser(this).save((success, message) -> {
-            if (success) {
-                // Also remove YOU from THEIR list (Cloud only operation)
-                repo.removeFromRemotePartner(partner.getPartnerUid());
-                listPartners();
-            }
-        });
+        User.Builder user = repo.editUser(ShareAccount.this);
+        if (user != null) {
+            user.save((success, message) -> {
+                if (success) {
+                    repo.removeFromRemotePartner(partner.getPartnerUid());
+                    listPartners();
+                }
+            });
+        }
+        else {
+            Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
+        }
     }
 
     private void fetchPartnerData(String partnerUid) {

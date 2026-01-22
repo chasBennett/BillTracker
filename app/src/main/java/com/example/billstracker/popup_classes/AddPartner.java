@@ -59,7 +59,7 @@ public class AddPartner extends DialogFragment {
 
         sendRequest.setOnClickListener(v -> {
             error.setVisibility(View.GONE);
-            if (partnerEmail.getText() != null && !partnerEmail.getText().isEmpty()) {
+            if (partnerEmail.getText() != null && partnerEmail.getText().length() == 0) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Query queryByEmail = db.collection("users").whereEqualTo("userName", partnerEmail.getText().toString());
                 queryByEmail.get().addOnCompleteListener(task -> {
@@ -74,13 +74,13 @@ public class AddPartner extends DialogFragment {
                                 }
                                 boolean found = false;
                                 for (Partner par : partners) {
-                                    if (par.getPartnerUid().equals(Repository.getInstance().retrieveUid(requireContext()))) {
+                                    if (par.getPartnerUid().equals(Repository.getInstance().getUid(requireContext()))) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    partners.add(new Partner(Repository.getInstance().retrieveUid(requireContext()), false, Repository.getInstance().getUser(requireActivity()).getName()));
+                                    partners.add(new Partner(Repository.getInstance().getUid(requireContext()), false, Repository.getInstance().getUser(requireActivity()).getName()));
                                     requested.setPartners(partners);
                                 }
                                 if (Repository.getInstance().getUser(requireActivity()).getPartners() == null) {

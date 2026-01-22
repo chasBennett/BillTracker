@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -39,6 +38,7 @@ import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
+import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
 import com.google.android.gms.tasks.Task;
@@ -55,6 +55,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class AddBiller extends BaseActivity {
 
@@ -78,6 +79,7 @@ public class AddBiller extends BaseActivity {
     SwitchCompat autoPaySwitch;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     String originalBillerName;
+
     @Override
     protected void onDataReady() {
         setContentView(R.layout.activity_add_biller);
@@ -245,31 +247,29 @@ public class AddBiller extends BaseActivity {
                 bd.dismissDialog();
             });
         });
+        ArrayList<Biller> safeBillers = new ArrayList<>(billers);
+        BillerNameAdapter adapter = new BillerNameAdapter(AddBiller.this, R.layout.biller_search_result, safeBillers);
+        addBillerName.setAdapter(adapter);
 
-            Toast.makeText(AddBiller.this, "test", Toast.LENGTH_LONG).show();
-            ArrayList<Biller> safeBillers = new ArrayList<>(billers);
-            BillerNameAdapter adapter = new BillerNameAdapter(AddBiller.this, R.layout.biller_search_result, safeBillers);
-            addBillerName.setAdapter(adapter);
-
-            adapter.setClickListener((ignoredPosition, bill) -> {
-                Tools.hideKeyboard(AddBiller.this);
-                billerCardName.setText(bill.getBillerName());
-                billerCardWebsite.setText(bill.getWebsite());
-                noBillerWebsite.setVisibility(View.GONE);
-                billerCardWebsite.setVisibility(View.VISIBLE);
-                category = bill.getType();
-                billerCategorySpinner.setText(categories.get(bill.getType()));
-                addBillerName.setText(bill.getBillerName());
-                addBillerWebsite.setText(bill.getWebsite());
-                Glide.with(addBillerIcon).load(bill.getIcon()).into(addBillerIcon);
-                customUri = bill.getIcon();
-                addBillerIcon.setContentPadding(0, 0, 0, 0);
-                addBillerIcon.setImageTintList(null);
-                addBillerName.setSelection(addBillerName.getText().length());
-                customIcon = true;
-                addBillerName.dismissDropDown();
-                addBillerWebsite.requestFocus();
-            });
+        adapter.setClickListener((ignoredPosition, bill) -> {
+            Tools.hideKeyboard(AddBiller.this);
+            billerCardName.setText(bill.getBillerName());
+            billerCardWebsite.setText(bill.getWebsite());
+            noBillerWebsite.setVisibility(View.GONE);
+            billerCardWebsite.setVisibility(View.VISIBLE);
+            category = bill.getType();
+            billerCategorySpinner.setText(categories.get(bill.getType()));
+            addBillerName.setText(bill.getBillerName());
+            addBillerWebsite.setText(bill.getWebsite());
+            Glide.with(addBillerIcon).load(bill.getIcon()).into(addBillerIcon);
+            customUri = bill.getIcon();
+            addBillerIcon.setContentPadding(0, 0, 0, 0);
+            addBillerIcon.setImageTintList(null);
+            addBillerName.setSelection(addBillerName.getText().length());
+            customIcon = true;
+            addBillerName.dismissDropDown();
+            addBillerWebsite.requestFocus();
+        });
 
         addBillerName.setThreshold(1);
 
@@ -460,41 +460,33 @@ public class AddBiller extends BaseActivity {
                 String uri = customUri;
 
                 if (edit) {
-                    Bill biller = repo.getBillById(bill.getBillsId());
-                    if (biller != null) {
-                        repo.editBill(billerName, AddBiller.this)
-                                .setBillerName(billerName)
-                                .setWebsite(webAddress)
-                                .setCategory(category)
-                                .setIcon(uri)
-                                .setAmountDue(paymentAmount)
-                                .setDueDate(dueDate)
-                                .setRecurring(recurring)
-                                .setFrequency(frequency)
-                                .setPaymentsRemaining(paymentsRemaining)
-                                .setBalance(balance)
-                                .setEscrow(escrow)
-                                .setAutoPay(autoPaySwitch.isChecked())
-                                .save((wasSuccessful, message) -> {
-                                    if (wasSuccessful) {
-                                        startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                                    }
-                                    else {
-                                        Notify.createPopup(AddBiller.this, "Error: " + message, null);
-                                    }
-                                });
-                    } else {
-                        pb.setVisibility(View.GONE);
-                        Notify.createPopup(AddBiller.this, getString(R.string.biller_update_failed), null);
-                    }
+                    repo.updateBill(bill.getBillerName(), AddBiller.this, biller -> biller.setBillerName(billerName)
+                            .setWebsite(webAddress)
+                            .setCategory(category)
+                            .setIcon(uri)
+                            .setAmountDue(paymentAmount)
+                            .setDueDate(dueDate)
+                            .setRecurring(recurring)
+                            .setFrequency(frequency)
+                            .setPaymentsRemaining(paymentsRemaining)
+                            .setBalance(balance)
+                            .setEscrow(escrow)
+                            .setAutoPay(autoPaySwitch.isChecked()),
+                            (wasSuccessful, message) -> {
+                        if (wasSuccessful) {
+                            startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                        } else {
+                            Notify.createPopup(AddBiller.this, getString(R.string.biller_update_failed), null);
+                        }
+                    });
+
                 } else {
                     Bill newBiller = new Bill(billerName, paymentAmount, dueDate, 0, billerId, recurring, frequency, webAddress, category, uri, paymentsRemaining,
-                            balance, escrow, repo.retrieveUid(AddBiller.this), autoPaySwitch.isChecked());
+                            balance, escrow, repo.getUid(AddBiller.this), autoPaySwitch.isChecked());
                     repo.addBill(newBiller, AddBiller.this, (wasSuccessful, message) -> {
                         if (wasSuccessful) {
                             startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                        }
-                        else {
+                        } else {
                             Notify.createPopup(AddBiller.this, "Error: " + message, null);
                         }
                     });

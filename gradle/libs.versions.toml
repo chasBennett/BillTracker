@@ -1,8 +1,11 @@
 [versions]
 agp = "8.8.1"
 compiler = "5.0.5"
+compilerVersion = "4.16.0"
+converterGson = "3.0.0"
 credentials = "1.6.0-rc01"
 flexbox = "3.0.0"
+githubGlide = "4.16.0"
 glideVersion = "5.0.5"
 googleid = "<latest version>"
 junit = "4.13.2"
@@ -27,6 +30,8 @@ mpandroidchart = "v3.1.0"
 playServicesAds = "24.9.0"
 playServicesAdsApi = "24.9.0"
 recyclerviewSwipedecorator = "1.4"
+retrofit = "3.0.0"
+securityCrypto = "1.1.0"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -38,7 +43,10 @@ androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersi
 androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+compiler-v4160 = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
@@ -47,6 +55,7 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
+glide-v4160 = { module = "com.github.bumptech.glide:glide", version.ref = "githubGlide" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
@@ -57,6 +66,7 @@ mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
 recyclerview-swipedecorator = { module = "it.xabaras.android:recyclerview-swipedecorator", version.ref = "recyclerviewSwipedecorator" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 # Add others following this pattern...
 
 [plugins]

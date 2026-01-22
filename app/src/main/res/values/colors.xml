@@ -2,6 +2,8 @@
 <resources>
 
     <color name="primary">#0E569D</color>
+    <color name="loginButton">#0E569D</color>
+    <color name="loginBox">#FFFFFF</color>
     <color name="accent">#2598F4</color>
     <color name="blueAndBlack">#084475</color>
     <color name="lightGrey">#AEB1B1</color>
@@ -21,6 +23,10 @@
     <color name="grey">#7A7A7A</color>
     <color name="yellow">#E4C93F</color>
     <color name="red">#AD2323</color>
+
+    <color name="google_background">#FFFFFF</color>
+    <color name="google_text">#000000</color>
+    <color name="google_border">#DDDDDD</color>
 
     <array name="pieChartCorresponding">
         <item>#5E40BE</item>

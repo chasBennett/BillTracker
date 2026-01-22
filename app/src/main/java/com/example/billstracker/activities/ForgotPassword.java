@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.User;
@@ -22,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ForgotPassword extends AppCompatActivity {
 
-    LinearLayout pb;
+    ConstraintLayout pb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,7 @@ public class ForgotPassword extends AppCompatActivity {
                             cd.dismissDialog();
                             getOnBackPressedDispatcher().onBackPressed();
                         });
+                        cd.show();
                     } else {
                         Notify.createPopup(ForgotPassword.this, "Failed to send reset email. Please try again later.", null);
                     }

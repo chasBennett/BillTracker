@@ -20,13 +20,13 @@ import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.custom_objects.Payment;
+import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.DatePicker;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
 
@@ -280,18 +280,23 @@ public class CreateBudget extends BaseActivity {
         if (a != null) {
             repo.getUser(CreateBudget.this).getBudgets().add(a);
         }
-        repo.editUser(CreateBudget.this)
-                .setIncome(payAmount)
-                .setPayFrequency(payFreq)
-                .save((wasSuccessful, message) -> {
-                    if (wasSuccessful) {
-                        Intent budget = new Intent(CreateBudget.this, ViewBudget.class);
-                        startActivity(budget);
-                    }
-                    else {
-                        Notify.createPopup(CreateBudget.this, "Error: " + message, null);
-                    }
-                });
+        User.Builder user = repo.editUser(CreateBudget.this);
+        if (user != null) {
+            repo.editUser(CreateBudget.this)
+                    .setIncome(payAmount)
+                    .setPayFrequency(payFreq)
+                    .save((wasSuccessful, message) -> {
+                        if (wasSuccessful) {
+                            Intent budget = new Intent(CreateBudget.this, ViewBudget.class);
+                            startActivity(budget);
+                        } else {
+                            Notify.createPopup(CreateBudget.this, "Error: " + message, null);
+                        }
+                    });
+        }
+        else {
+            Notify.createPopup(CreateBudget.this, getString(R.string.anErrorHasOccurred), null);
+        }
     }
 
     public void updateValues() {
@@ -318,10 +323,8 @@ public class CreateBudget extends BaseActivity {
             };
         } else {
             monthlyPay = switch (repo.getUser(CreateBudget.this).getPayFrequency()) {
-                case 0 ->
-                        repo.getUser(CreateBudget.this).getIncome() * weeksInMonth;
-                case 1 ->
-                        repo.getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
+                case 0 -> repo.getUser(CreateBudget.this).getIncome() * weeksInMonth;
+                case 1 -> repo.getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
                 case 2 -> repo.getUser(CreateBudget.this).getIncome();
                 default -> monthlyPay;
             };

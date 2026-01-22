@@ -34,6 +34,7 @@ public class FilterPayments {
     TextView startDate, endDate, positiveButton, negativeButton;
     LinearLayout billersList;
     ArrayList<View> tabs = new ArrayList<>();
+
     public FilterPayments(Activity activity) {
 
         setViews(activity);

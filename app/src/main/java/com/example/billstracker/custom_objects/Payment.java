@@ -131,8 +131,13 @@ public class Payment implements Serializable {
     }
 
     @Exclude
-    public boolean isNeedsDelete() { return needsDelete; }
-    public void setNeedsDelete(boolean needsDelete) { this.needsDelete = needsDelete; }
+    public boolean isNeedsDelete() {
+        return needsDelete;
+    }
+
+    public void setNeedsDelete(boolean needsDelete) {
+        this.needsDelete = needsDelete;
+    }
 
     public static class Builder {
         private final Payment payment;

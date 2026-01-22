@@ -1,10 +1,13 @@
 package com.example.billstracker.custom_objects;
 
 import android.content.Context;
+
 import com.example.billstracker.tools.Repository;
 import com.google.firebase.firestore.Exclude;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class User implements Serializable {
 
@@ -88,48 +91,166 @@ public class User implements Serializable {
     }
 
     // --- GETTERS AND SETTERS ---
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public boolean isAdmin() { return admin; }
-    public void setAdmin(boolean admin) { this.admin = admin; }
-    public boolean getRegisteredWithGoogle() { return registeredWithGoogle; }
-    public void setRegisteredWithGoogle(boolean registeredWithGoogle) { this.registeredWithGoogle = registeredWithGoogle; }
-    public String getLastLogin() { return lastLogin; }
-    public void setLastLogin(String lastLogin) { this.lastLogin = lastLogin; }
-    public String getDateRegistered() { return dateRegistered; }
-    public void setDateRegistered(String dateRegistered) { this.dateRegistered = dateRegistered; }
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public ArrayList<Bill> getBills() { return bills; }
-    public void setBills(ArrayList<Bill> bills) { this.bills = bills; }
-    public int getTotalLogins() { return totalLogins; }
-    public void setTotalLogins(int totalLogins) { this.totalLogins = totalLogins; }
-    public String getTicketNumber() { return ticketNumber; }
-    public void setTicketNumber(String ticketNumber) { this.ticketNumber = ticketNumber; }
-    public double getIncome() { return income; }
-    public void setIncome(double income) { this.income = income; }
-    public int getPayFrequency() { return payFrequency; }
-    public void setPayFrequency(int payFrequency) { this.payFrequency = payFrequency; }
-    public String getTermsAcceptedOn() { return termsAcceptedOn; }
-    public void setTermsAcceptedOn(String termsAcceptedOn) { this.termsAcceptedOn = termsAcceptedOn; }
-    public ArrayList<Trophy> getTrophies() { return trophies; }
-    public void setTrophies(ArrayList<Trophy> trophies) { this.trophies = trophies; }
-    public ArrayList<Budget> getBudgets() { return budgets; }
-    public void setBudgets(ArrayList<Budget> budgets) { this.budgets = budgets; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public ArrayList<Partner> getPartners() { return partners; }
-    public void setPartners(ArrayList<Partner> partners) { this.partners = partners; }
-    public int getVersionNumber() { return versionNumber; }
-    public void setVersionNumber(int versionNumber) { this.versionNumber = versionNumber; }
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public boolean getRegisteredWithGoogle() {
+        return registeredWithGoogle;
+    }
+
+    public void setRegisteredWithGoogle(boolean registeredWithGoogle) {
+        this.registeredWithGoogle = registeredWithGoogle;
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public String getDateRegistered() {
+        return dateRegistered;
+    }
+
+    public void setDateRegistered(String dateRegistered) {
+        this.dateRegistered = dateRegistered;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ArrayList<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(ArrayList<Bill> bills) {
+        this.bills = bills;
+    }
+
+    public int getTotalLogins() {
+        return totalLogins;
+    }
+
+    public void setTotalLogins(int totalLogins) {
+        this.totalLogins = totalLogins;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
+
+    public double getIncome() {
+        return income;
+    }
+
+    public void setIncome(double income) {
+        this.income = income;
+    }
+
+    public int getPayFrequency() {
+        return payFrequency;
+    }
+
+    public void setPayFrequency(int payFrequency) {
+        this.payFrequency = payFrequency;
+    }
+
+    public String getTermsAcceptedOn() {
+        return termsAcceptedOn;
+    }
+
+    public void setTermsAcceptedOn(String termsAcceptedOn) {
+        this.termsAcceptedOn = termsAcceptedOn;
+    }
+
+    public ArrayList<Trophy> getTrophies() {
+        return trophies;
+    }
+
+    public void setTrophies(ArrayList<Trophy> trophies) {
+        this.trophies = trophies;
+    }
+
+    public ArrayList<Budget> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(ArrayList<Budget> budgets) {
+        this.budgets = budgets;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public ArrayList<Partner> getPartners() {
+        return partners;
+    }
+
+    public void setPartners(ArrayList<Partner> partners) {
+        this.partners = partners;
+    }
+
+    public int getVersionNumber() {
+        return versionNumber;
+    }
+
+    public void setVersionNumber(int versionNumber) {
+        this.versionNumber = versionNumber;
+    }
 
     @Exclude
-    public boolean isNeedsSync() { return needsSync; }
-    public void setNeedsSync(boolean needsSync) { this.needsSync = needsSync; }
+    public boolean isNeedsSync() {
+        return needsSync;
+    }
+
+    public void setNeedsSync(boolean needsSync) {
+        this.needsSync = needsSync;
+    }
 
     // --- BUILDER CLASS ---
     public static class Builder {
@@ -141,20 +262,162 @@ public class User implements Serializable {
             this.user = user;
         }
 
-        public Builder setUserName(String userName) { user.setUserName(userName); user.setNeedsSync(true); return this; }
-        public Builder setPassword(String password) { user.setPassword(password); user.setNeedsSync(true); return this; }
-        public Builder setName(String name) { user.setName(name); user.setNeedsSync(true); return this; }
-        public Builder setAdmin(boolean admin) { user.setAdmin(admin); user.setNeedsSync(true); return this; }
-        public Builder setRegisteredWithGoogle(boolean registered) { user.setRegisteredWithGoogle(registered); user.setNeedsSync(true); return this; }
-        public Builder setLastLogin(String lastLogin) { user.setLastLogin(lastLogin); user.setNeedsSync(true); return this; }
-        public Builder setDateRegistered(String date) { user.setDateRegistered(date); user.setNeedsSync(true); return this; }
-        public Builder setTotalLogins(int total) { user.setTotalLogins(total); user.setNeedsSync(true); return this; }
-        public Builder setIncome(double income) { user.setIncome(income); user.setNeedsSync(true); return this; }
-        public Builder setPayFrequency(int frequency) { user.setPayFrequency(frequency); user.setNeedsSync(true); return this; }
-        public Builder setPhoneNumber(String phone) { user.setPhoneNumber(phone); user.setNeedsSync(true); return this; }
-        public Builder setVersionNumber(int version) { user.setVersionNumber(version); user.setNeedsSync(true); return this; }
-        public Builder setNeedsSync(boolean needsSync) { user.setNeedsSync(needsSync); return this; }
-        public Builder setId(String id) { user.setId(id); user.setNeedsSync(true); return this; }
+        public Builder setUserName(String userName) {
+            user.setUserName(userName);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setPassword(String password) {
+            user.setPassword(password);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setName(String name) {
+            user.setName(name);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setAdmin(boolean admin) {
+            user.setAdmin(admin);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setRegisteredWithGoogle(boolean registered) {
+            user.setRegisteredWithGoogle(registered);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setLastLogin(String lastLogin) {
+            user.setLastLogin(lastLogin);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setDateRegistered(String date) {
+            user.setDateRegistered(date);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setTotalLogins(int total) {
+            user.setTotalLogins(total);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setIncome(double income) {
+            user.setIncome(income);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setPayFrequency(int frequency) {
+            user.setPayFrequency(frequency);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setPhoneNumber(String phone) {
+            user.setPhoneNumber(phone);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setVersionNumber(int version) {
+            user.setVersionNumber(version);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder setNeedsSync(boolean needsSync) {
+            user.setNeedsSync(needsSync);
+            return this;
+        }
+
+        public Builder setId(String id) {
+            user.setId(id);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        /**
+         * Finds a budget by budgetId and applies the provided actions.
+         *
+         * @param budgetId The ID of the budget to find.
+         * @param actions   A function to apply to the found budget.
+         * @return The Builder instance for method chaining.
+         */
+        public Builder updateBudget(int budgetId, Consumer<Budget> actions) {
+            if (user.getBudgets() != null) {
+                for (Budget b : user.getBudgets()) {
+                    if (b.getBudgetId() == budgetId) {
+                        actions.accept(b);
+                        user.setNeedsSync(true); // Ensure the change is flagged
+                        break;
+                    }
+                }
+            }
+            return this;
+        }
+
+        // --- BUDGET HELPERS ---
+        public Builder addBudget(Budget budget) {
+            if (user.getBudgets() == null) user.setBudgets(new ArrayList<>());
+            user.getBudgets().add(budget);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder deleteBudget(int budgetId) {
+            if (user.getBudgets() != null) {
+                // Remove the budget if the ID matches
+                boolean removed = user.getBudgets().removeIf(b -> b.getBudgetId() == budgetId);
+                if (removed) user.setNeedsSync(true);
+            }
+            return this;
+        }
+
+        // --- PARTNER HELPERS ---
+        public Builder addPartner(Partner partner) {
+            if (user.getPartners() == null) user.setPartners(new ArrayList<>());
+            user.getPartners().add(partner);
+            user.setNeedsSync(true);
+            return this;
+        }
+
+        public Builder deletePartner(String partnerUid) {
+            if (user.getPartners() != null) {
+                boolean removed = user.getPartners().removeIf(p -> p.getPartnerUid().equals(partnerUid));
+                if (removed) user.setNeedsSync(true);
+            }
+            return this;
+        }
+
+        /**
+         * Finds a partner by UID and applies the provided actions.
+         *
+         * @param partnerId The UID of the partner to find.
+         * @param actions   A function to apply to the found partner.
+         *
+         * @return The Builder instance for method chaining.
+         */
+        public Builder updatePartner(String partnerId, java.util.function.Consumer<Partner> actions) {
+            if (user.getPartners() != null) {
+                for (Partner partner : user.getPartners()) {
+                    if (partner.getPartnerUid().equals(partnerId)) {
+                        actions.accept(partner);
+                        user.setNeedsSync(true);
+                        break;
+                    }
+                }
+            }
+            return this;
+        }
 
         public void save(Repository.OnCompleteCallback callback) {
             if (user != null) {

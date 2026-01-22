@@ -4,6 +4,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/accent</item>
+        <item name="android:windowBackground">@drawable/bg_login_gradient</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="editTextBackground">@color/white</item>
         <item name="android:textColor">@color/blackAndWhite</item>
@@ -26,6 +27,21 @@
         <item name="alertDialogTheme">@style/MyDialogStyle</item>
         <item name="buttonStyle">@style/TextButton</item>
         <item name="popupMenuStyle">@style/MyPopupMenu</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="textAppearanceHeadline1">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline2">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline3">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline4">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline5">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline6">@style/AppFontOverride</item>
+        <item name="textAppearanceSubtitle1">@style/AppFontOverride</item>
+        <item name="textAppearanceSubtitle2">@style/AppFontOverride</item>
+        <item name="textAppearanceBody1">@style/AppFontOverride</item>
+        <item name="textAppearanceBody2">@style/AppFontOverride</item>
+        <item name="textAppearanceButton">@style/AppFontOverride</item>
+        <item name="textAppearanceCaption">@style/AppFontOverride</item>
+        <item name="textAppearanceOverline">@style/AppFontOverride</item>
     </style>
 
     <style name="Fullscreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -38,10 +54,32 @@
         <item name="android:windowFullscreen">true</item>
         <item name="buttonStyle">@style/TextButton</item>
         <item name="editTextStyle">@style/TextInputEditTextStyle</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:windowBackground">@drawable/bg_login_gradient</item>
+        <item name="textAppearanceHeadline1">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline2">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline3">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline4">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline5">@style/AppFontOverride</item>
+        <item name="textAppearanceHeadline6">@style/AppFontOverride</item>
+        <item name="textAppearanceSubtitle1">@style/AppFontOverride</item>
+        <item name="textAppearanceSubtitle2">@style/AppFontOverride</item>
+        <item name="textAppearanceBody1">@style/AppFontOverride</item>
+        <item name="textAppearanceBody2">@style/AppFontOverride</item>
+        <item name="textAppearanceButton">@style/AppFontOverride</item>
+        <item name="textAppearanceCaption">@style/AppFontOverride</item>
+        <item name="textAppearanceOverline">@style/AppFontOverride</item>
     </style>
     <style name="Theme.EditProfile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/blueAndBlack</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="AppFontOverride" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
     </style>
     <!-- Base application theme. -->
 </resources>

@@ -16,6 +16,12 @@ import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.exceptions.ClearCredentialException;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.billstracker.activities.Login;
 import com.example.billstracker.custom_objects.Bill;
@@ -43,6 +49,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Repository {
@@ -83,10 +91,10 @@ public class Repository {
      * Initializes Firebase and calls FirebaseAuth.getInstance().useAppLanguage().
      * Then loads the savedUid, thisUser, bills, payments, and expenses from the SharedPreferences branch specific to the saved uid or returns if the uid is null.
      *
-     * @param context The application's context.
+     * @param context  The application's context.
      * @param callback A callback to be executed after the data is loaded.
      */
-    public void initializeBackEnd (Context context, OnCompleteCallback callback) {
+    public void initializeBackEnd(Context context, OnCompleteCallback callback) {
         context = context.getApplicationContext();
         FirebaseApp.initializeApp(context);
         FirebaseAuth.getInstance().useAppLanguage();
@@ -97,81 +105,80 @@ public class Repository {
      * Saves the user's data to a SharedPreferences branch that is specific to their uid.
      * Then it uploads the data to the Firebase Firestore instance.
      * Elements saved include User, Bills, Payments, and Expenses.
+     * If the upload fails, creates a WorkManager instance to schedule a retry.
      *
-     * @param context The application's context.
+     * @param context  The application's context.
      * @param callback A callback to be executed after the data is saved.
      */
     public void saveData(Context context, OnCompleteCallback callback) {
         Context appContext = context.getApplicationContext();
         if (uid == null) {
-            callback.onComplete(false, "User ID is null.");
+            if (callback != null) callback.onComplete(false, "User ID is null.");
             return;
         }
 
-        writeToDisk(appContext, (success, message) -> {});
+        // 1. STEP ONE: Immediate Local Write
+        // We save to disk right away. This ensures that even if the sync fails
+        // or the app crashes, the 'needsSync' flags are stored on the device.
+        writeToDisk(appContext, (success, message) -> {
+            if (!success) {
+                if (callback != null) callback.onComplete(false, message);
+            }
+        });
 
         WriteBatch batch = db.batch();
         boolean hasChanges = false;
-        boolean userNeedsSync = false;
 
-        // These lists track which objects need their flags cleared after success
+        // Lists to track which objects were included in this specific batch
         List<Bill> dirtyBills = new ArrayList<>();
         List<Payment> dirtyPayments = new ArrayList<>();
         List<Expense> dirtyExpenses = new ArrayList<>();
+        boolean userNeedsSync = false;
 
-        // 1. Process User Profile
+        // 2. STEP TWO: Prepare the Cloud Batch
+        // Profile
         if (thisUser != null && thisUser.isNeedsSync()) {
-            DocumentReference userRef = db.collection("users").document(uid);
-            batch.set(userRef, thisUser, SetOptions.merge());
+            batch.set(db.collection("users").document(uid), thisUser, SetOptions.merge());
             userNeedsSync = true;
             hasChanges = true;
         }
 
-        // 2. Process Bills
+        // Bills
         if (bills != null && bills.getBills() != null) {
             for (Bill bill : bills.getBills()) {
-                DocumentReference ref = db.collection("users").document(uid)
-                        .collection("bills").document(bill.getBillerName());
                 if (bill.isNeedsDelete() || bill.isNeedsSync()) {
-                    if (bill.isNeedsDelete()) {
-                        batch.delete(ref);
-                    } else {
-                        batch.set(ref, bill, SetOptions.merge());
-                    }
+                    DocumentReference ref = db.collection("users").document(uid)
+                            .collection("bills").document(bill.getBillerName());
+                    if (bill.isNeedsDelete()) batch.delete(ref);
+                    else batch.set(ref, bill, SetOptions.merge());
                     dirtyBills.add(bill);
                     hasChanges = true;
                 }
             }
         }
 
-        // 3. Process Payments
+        // Payments
         if (payments != null && payments.getPayments() != null) {
             for (Payment p : payments.getPayments()) {
-                DocumentReference ref = db.collection("users").document(uid)
-                        .collection("payments").document(String.valueOf(p.getPaymentId()));
                 if (p.isNeedsDelete() || p.isNeedsSync()) {
-                    if (p.isNeedsDelete()) {
-                        batch.delete(ref);
-                    } else {
-                        batch.set(ref, p, SetOptions.merge());
-                    }
+                    DocumentReference ref = db.collection("users").document(uid)
+                            .collection("payments").document(String.valueOf(p.getPaymentId()));
+                    if (p.isNeedsDelete()) batch.delete(ref);
+                    else batch.set(ref, p, SetOptions.merge());
                     dirtyPayments.add(p);
                     hasChanges = true;
                 }
             }
         }
 
-        // 4. Process Expenses
+        // Expenses
         if (expenses != null && expenses.getExpenses() != null) {
             for (Expense e : expenses.getExpenses()) {
-                DocumentReference ref = db.collection("users").document(uid)
-                        .collection("expenses").document(e.getId());
                 if (e.isNeedsDelete() || e.isNeedsSync()) {
-                    if (e.isNeedsDelete()) {
-                        batch.delete(ref);
-                    } else {
-                        batch.set(ref, e, SetOptions.merge());
-                    }
+                    DocumentReference ref = db.collection("users").document(uid)
+                            .collection("expenses").document(e.getId());
+                    if (e.isNeedsDelete()) batch.delete(ref);
+                    else batch.set(ref, e, SetOptions.merge());
                     dirtyExpenses.add(e);
                     hasChanges = true;
                 }
@@ -179,28 +186,60 @@ public class Repository {
         }
 
         if (!hasChanges) {
-            callback.onComplete(true, "Local data saved. Cloud is already up to date.");
+            if (callback != null) callback.onComplete(true, "Local data saved. Cloud is already up to date.");
             return;
         }
 
+        // 3. STEP THREE: Execute Cloud Sync
         final boolean finalUserNeedsSync = userNeedsSync;
         batch.commit().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                // 4. STEP FOUR: Success Handling
+                // Clear flags in-memory because they are now confirmed in the cloud
                 if (finalUserNeedsSync) thisUser.setNeedsSync(false);
-
                 for (Bill b : dirtyBills) b.setNeedsSync(false);
                 for (Payment p : dirtyPayments) p.setNeedsSync(false);
                 for (Expense e : dirtyExpenses) e.setNeedsSync(false);
 
-                // Re-save to disk to clear the 'needsSync' flags in SharedPreferences
+                // Save the "Clean" state to disk
                 writeToDisk(appContext, (success, msg) -> {
-                    callback.onComplete(true, "Local and Cloud data synced successfully.");
+                    if (callback != null) callback.onComplete(true, "Synced successfully.");
                 });
             } else {
-                String errorMsg = task.getException() != null ? task.getException().getMessage() : "Unknown Error";
-                callback.onComplete(false, "Cloud sync failed: " + errorMsg);
+                // 5. STEP FIVE: Failure Handling (Retain Locally)
+                // We DO NOT clear the flags. Because of Step 1, the disk already has the
+                // data flagged as 'true' for sync. The next time the app opens or saveData
+                // is called, it will attempt to upload these again.
+                scheduleRetry(appContext);
+                String error = task.getException() != null ? task.getException().getMessage() : "Offline";
+                if (callback != null) callback.onComplete(false, "Saved locally. Cloud sync pending: " + error);
             }
         });
+    }
+
+    /**
+     * Re-attempts to sync the user's data with the cloud once internet access is restored.
+     *
+     * @param context The application's context.
+     */
+    private void scheduleRetry(Context context) {
+        // Define constraints: Only run when the network is connected
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        // Create a unique work request
+        OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
+                .setConstraints(constraints)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+                .build();
+
+        // Enqueue unique work so we don't have 10 workers running at once
+        WorkManager.getInstance(context).enqueueUniqueWork(
+                "cloud_sync_retry",
+                ExistingWorkPolicy.REPLACE,
+                syncRequest
+        );
     }
 
     /**
@@ -211,7 +250,7 @@ public class Repository {
     public void loadLocalData(Context context, OnCompleteCallback onComplete) {
         context = context.getApplicationContext();
         if (uid == null) {
-            uid = retrieveUid(context); // Actually assign the value
+            uid = getUid(context); // Actually assign the value
             if (uid == null || uid.isEmpty()) {
                 // Even if there is no UID, we must trigger the callback so the UI finishes loading
                 onComplete.onComplete(false, "No saved user found.");
@@ -248,7 +287,36 @@ public class Repository {
 
     public User.Builder editUser(Context context) {
         User user = thisUser;
+        if (user == null) {
+            return null;
+        }
         return new User.Builder(context, user);
+    }
+
+    /**
+     * Updates the current User profile using a functional action block.
+     *
+     * @param context    The application's context.
+     * @param actions    A function that takes a User.Builder instance and modifies it.
+     */
+    public void updateUser(Context context, java.util.function.Consumer<User.Builder> actions, OnCompleteCallback callback) {
+        // 1. Get the current user instance from the repository
+        User currentUser = this.thisUser;
+
+        if (currentUser != null) {
+            // 2. Initialize the Builder (User.java defines this inner class)
+            User.Builder builder = new User.Builder(context, currentUser);
+
+            // 3. Apply the requested changes via the consumer
+            actions.accept(builder);
+
+            // 4. Trigger the save process
+            builder.save(callback);
+        } else {
+            if (callback != null) {
+                callback.onComplete(false, "Update failed: No active user session found.");
+            }
+        }
     }
 
     /**
@@ -264,6 +332,24 @@ public class Repository {
     }
 
     /**
+     * Updates a bill's information.
+     *
+     * @param billerName The name of the biller.
+     * @param context    The application's context.
+     * @param actions    A function that takes a Bill.Builder instance and modifies it.
+     * @param callback   A callback to be executed after the bill is updated.
+     */
+    public void updateBill(String billerName, Context context, Consumer<Bill.Builder> actions, OnCompleteCallback callback) {
+        Bill.Builder builder = editBill(billerName, context);
+        if (builder != null) {
+            actions.accept(builder);
+            builder.save(callback);
+        } else if (callback != null) {
+            callback.onComplete(false, "Bill could not be found");
+        }
+    }
+
+    /**
      * Creates a new Payment.Builder instance and returns it.
      *
      * @param paymentId The ID of the payment.
@@ -272,6 +358,32 @@ public class Repository {
      */
     public Payment.Builder editPayment(int paymentId, Context context) {
         return new Payment.Builder(context, getPaymentById(paymentId));
+    }
+
+    /**
+     * Updates a payment's information.
+     *
+     * @param identifier The identifier of the payment. This can accept an integer paymentId or a String billerName.
+     * @param context   The application's context.
+     * @param actions   A function that takes an Expense.Builder instance and modifies it.
+     * @param callback  A callback to be executed after the expense is updated.
+     */
+    public void updatePayment(Object identifier, Context context, Consumer<Payment.Builder> actions, OnCompleteCallback callback) {
+        Payment payment = null;
+
+        if (identifier instanceof Integer) {
+            payment = getPaymentById((Integer) identifier);
+        } else if (identifier instanceof String) {
+            payment = getPaymentByBillerName((String) identifier);
+        }
+
+        if (payment != null) {
+            Payment.Builder builder = new Payment.Builder(context, payment);
+            actions.accept(builder);
+            builder.save(callback);
+        } else if (callback != null) {
+            callback.onComplete(false, "Payment not found for identifier: " + identifier);
+        }
     }
 
     /**
@@ -286,13 +398,31 @@ public class Repository {
     }
 
     /**
+     * Updates an expense's information.
+     *
+     * @param expenseId The ID of the expense.
+     * @param context   The application's context.
+     * @param actions   A function that takes an Expense.Builder instance and modifies it.
+     * @param callback  A callback to be executed after the expense is updated.
+     */
+    public void updateExpense(String expenseId, Context context, Consumer<Expense.Builder> actions, OnCompleteCallback callback) {
+        Expense.Builder builder = editExpense(expenseId, context);
+        if (builder != null) {
+            actions.accept(builder);
+            builder.save(callback);
+        } else if (callback != null) {
+            callback.onComplete(false, "Expense not found.");
+        }
+    }
+
+    /**
      * Fetches the user's cloud data and loads it into memory.
      *
-     * @param userUid The user's UID.
-     * @param context The application's context.
+     * @param userUid  The user's UID.
+     * @param context  The application's context.
      * @param callback A callback to be executed after the data is fetched.
-     *
-     * This callback will be executed on the main thread.
+     *                 <p>
+     *                 This callback will be executed on the main thread.
      */
     public void fetchCloudData(String userUid, Context context, OnCompleteCallback callback) {
         this.uid = userUid;
@@ -361,10 +491,16 @@ public class Repository {
         callback.onComplete(true, "Local data saved successfully.");
     }
 
+    public void clearDisk(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(uid, Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
+    }
+
     /**
      * Handles the creation of a new user account.
-     * @param uid The user's UID.
-     * @param context The application's context.
+     *
+     * @param uid      The user's UID.
+     * @param context  The application's context.
      * @param callback A callback to be executed after the user account is created.
      */
     private void handleNewUserCreation(String uid, Context context, OnCompleteCallback callback) {
@@ -414,7 +550,7 @@ public class Repository {
      * @return The user's uid.
      *
      */
-    public String retrieveUid(Context context) {
+    public String getUid(Context context) {
         return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).getString("lastUid", "");
     }
 
@@ -432,7 +568,6 @@ public class Repository {
         payments = null;
         expenses = null;
         bills = null;
-        uid = null;
 
         setStaySignedIn(false, context);
         FirebaseAuth.getInstance().signOut();
@@ -587,8 +722,8 @@ public class Repository {
     /**
      * Saves the user's email and password to a SharedPreferences instance for biometric sign in.
      *
-     * @param context The application's context.
-     * @param email   The user's email.
+     * @param context  The application's context.
+     * @param email    The user's email.
      * @param password The user's password.
      *
      */
@@ -627,7 +762,7 @@ public class Repository {
     /**
      * Loads the user's partner data from Firebase Firestore.
      *
-     * @param userId The user's ID.
+     * @param userId             The user's ID.
      * @param onCompleteCallback A callback to be executed after the data is loaded.
      *
      */
@@ -684,11 +819,11 @@ public class Repository {
     /**
      * Creates a new user account.
      *
-     * @param email The new User's email address.
+     * @param email    The new User's email address.
      * @param password The new User's password.
-     * @param name The new User's name.
-     * @param id The new User's ID.
-     * @param context The application's context.
+     * @param name     The new User's name.
+     * @param id       The new User's ID.
+     * @param context  The application's context.
      * @return A new User.Builder instance.
      */
     public User.Builder addUser(String email, String password, String name, String id, Context context) {
@@ -706,9 +841,9 @@ public class Repository {
     /**
      * Deletes the user's account.
      *
-     * @param context The application's context.
+     * @param context    The application's context.
      * @param credential The user's authentication credential.
-     * @param callback A callback to be executed after the user account is deleted.
+     * @param callback   A callback to be executed after the user account is deleted.
      */
     public void deleteUserAccount(Context context, AuthCredential credential, OnCompleteCallback callback) {
         FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -757,7 +892,7 @@ public class Repository {
     /**
      * Deletes the user's account information from Firebase Firestore.
      *
-     * @param context The application's context.
+     * @param context  The application's context.
      * @param authUser The user's authentication user.
      * @param callback A callback to be executed after the user account is deleted.
      */
@@ -794,10 +929,10 @@ public class Repository {
      * Checks if all sub-collections and the user document are gone.
      * If so, deletes the user document.
      *
-     * @param counter The number of sub-collections processed.
-     * @param target The total number of sub-collections.
+     * @param counter  The number of sub-collections processed.
+     * @param target   The total number of sub-collections.
      * @param authUser The user's authentication user.
-     * @param context The application's context.
+     * @param context  The application's context.
      * @param callback A callback to be executed after the user account is deleted.
      */
     private void checkWipeProgress(int[] counter, int target, FirebaseUser authUser, Context context, OnCompleteCallback callback) {
@@ -817,6 +952,19 @@ public class Repository {
             });
         }
     }
+
+    public String getLastUid (Context context) {
+        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
+                .getString("last_uid", "");
+    }
+
+    public void setLastUid(Context context, String uid) {
+        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
+                .edit()
+                .putString("last_uid", uid)
+                .apply();
+    }
+
 
     public User getUser(Context context) {
         if (thisUser == null) {
@@ -1012,7 +1160,8 @@ public class Repository {
 
                 // Mirror clean state to disk
                 writeToDisk(context, (s, m) -> {
-                    if (callback != null) callback.onComplete(true, "Payment deleted and Bill balance adjusted.");
+                    if (callback != null)
+                        callback.onComplete(true, "Payment deleted and Bill balance adjusted.");
                 });
             } else {
                 if (callback != null) callback.onComplete(false, "Sync failed: " + message);
@@ -1108,7 +1257,8 @@ public class Repository {
 
                 // Mirror clean state to disk (update JSON)
                 writeToDisk(context, (s, m) -> {
-                    if (callback != null) callback.onComplete(true, "Expense deleted successfully.");
+                    if (callback != null)
+                        callback.onComplete(true, "Expense deleted successfully.");
                 });
             } else {
                 if (callback != null) callback.onComplete(false, "Sync failed: " + message);

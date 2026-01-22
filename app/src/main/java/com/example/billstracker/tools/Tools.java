@@ -362,7 +362,8 @@ public interface Tools {
                     Repository.getInstance().getPayments().removeAll(remove);
                 }
             }
-            Repository.getInstance().saveData(context, (wasSuccessful, message) -> {});
+            Repository.getInstance().saveData(context, (wasSuccessful, message) -> {
+            });
         }
     }
 

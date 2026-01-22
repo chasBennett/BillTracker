@@ -45,7 +45,6 @@ import com.example.billstracker.tools.MainPieChart;
 import com.example.billstracker.tools.NavController;
 import com.example.billstracker.tools.NotificationManager;
 import com.example.billstracker.tools.Prefs;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.charts.PieChart;
 import com.google.firebase.auth.FirebaseAuth;
@@ -140,8 +139,8 @@ public class MainActivity2 extends BaseActivity {
 
         CountTickets.countTickets(MainActivity2.this);
 
-        if (repo.retrieveUid(MainActivity2.this) != null) {
-            repo.setSavedChannelId(MainActivity2.this, repo.retrieveUid(MainActivity2.this));
+        if (repo.getUid(MainActivity2.this) != null) {
+            repo.setSavedChannelId(MainActivity2.this, repo.getUid(MainActivity2.this));
         }
 
         pastDue = 0;
@@ -274,7 +273,7 @@ public class MainActivity2 extends BaseActivity {
                             User partnerUser = task.getResult().toObject(User.class);
                             if (partnerUser != null && partnerUser.getPartners() != null && !partnerUser.getPartners().isEmpty()) {
                                 for (Partner part : partnerUser.getPartners()) {
-                                    if (part.getPartnerUid().equals(repo.retrieveUid(MainActivity2.this))) {
+                                    if (part.getPartnerUid().equals(repo.getUid(MainActivity2.this))) {
                                         if (part.getSharingAuthorized()) {
                                             if (!partner.getSharingAuthorized()) {
                                                 Notify.createPartnerRequestNotification(MainActivity2.this, partner, null, new Intent(MainActivity2.this, ShareAccount.class));
@@ -537,7 +536,7 @@ public class MainActivity2 extends BaseActivity {
                     Bill bill = repo.getBillByName(payment.getBillerName());
                     if (bill != null) {
                         Intent history = new Intent(MainActivity2.this, PaymentHistory.class);
-                        history.putExtra("User Id", repo.retrieveUid(MainActivity2.this));
+                        history.putExtra("User Id", repo.getUid(MainActivity2.this));
                         history.putExtra("Bill Id", bill.getBillsId());
                         startActivity(history);
                     }
@@ -587,8 +586,10 @@ public class MainActivity2 extends BaseActivity {
                             payBuilder.setPartialPayment(newPartial)
                                     .setDatePaid(newPaymentDate);
 
-                            billBuilder.setBalance(parentBill.getBalance() - remainingToDistribute)
-                                    .setDateLastPaid(newPaymentDate);
+                            if (billBuilder != null) {
+                                billBuilder.setBalance(parentBill.getBalance() - remainingToDistribute)
+                                        .setDateLastPaid(newPaymentDate);
+                            }
 
                             remainingToDistribute = 0;
                         } else {
@@ -599,9 +600,11 @@ public class MainActivity2 extends BaseActivity {
                                     .setPartialPayment(0) // Reset partial as it's now fully paid
                                     .setDatePaid(newPaymentDate);
 
-                            billBuilder.setPaymentsRemaining(parentBill.getPaymentsRemaining() - 1)
-                                    .setBalance(parentBill.getBalance() - amountNeeded)
-                                    .setDateLastPaid(newPaymentDate);
+                            if (billBuilder != null) {
+                                billBuilder.setPaymentsRemaining(parentBill.getPaymentsRemaining() - 1)
+                                        .setBalance(parentBill.getBalance() - amountNeeded)
+                                        .setDateLastPaid(newPaymentDate);
+                            }
                         }
                     }
                 }
@@ -619,7 +622,16 @@ public class MainActivity2 extends BaseActivity {
             });
 
             // Close/Perimeter listeners remain similar...
-            pc.setCloseListener(v -> { pc.dismissDialog(); BillerManager.refreshPayments(MainActivity2.this); showProgress(); });
+            pc.setCloseListener(v -> {
+                pc.dismissDialog();
+                BillerManager.refreshPayments(MainActivity2.this);
+                showProgress();
+            });
+            pc.setPerimeterListener(view -> {
+                pc.dismissDialog();
+                BillerManager.refreshPayments(MainActivity2.this);
+                showProgress();
+            });
             pc.show();
 
         } else {

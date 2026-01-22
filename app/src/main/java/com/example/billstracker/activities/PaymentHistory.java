@@ -25,7 +25,6 @@ import com.example.billstracker.popup_classes.FilterPayments;
 import com.example.billstracker.recycler_adapters.PaymentsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 
 import java.time.LocalDate;
@@ -123,12 +122,7 @@ public class PaymentHistory extends BaseActivity {
         adapter.setClickListener((position, payment) -> {
             pb.setVisibility(View.VISIBLE);
             Intent pay = new Intent(mContext, PayBill.class);
-            pay.putExtra("Due Date", DateFormat.makeDateString(payment.getDueDate()));
-            pay.putExtra("Biller Name", payment.getBillerName());
-            pay.putExtra("Amount Due", payment.getPaymentAmount());
-            pay.putExtra("Is Paid", payment.isPaid());
-            pay.putExtra("Payment Id", payment.getPaymentId());
-            pay.putExtra("Current Date", DateFormat.currentDateAsLong());
+            pay.putExtra("paymentId", payment.getPaymentId());
             startActivity(pay);
         });
 

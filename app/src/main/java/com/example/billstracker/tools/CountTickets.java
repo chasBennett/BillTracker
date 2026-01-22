@@ -25,7 +25,7 @@ public class CountTickets {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Log.d(TAG, document.getId() + " => data retrieved");
                             SupportTicket ticket = document.toObject(SupportTicket.class);
-                            if (ticket.getAgentUid().equalsIgnoreCase(Repository.getInstance().retrieveUid(view)) || ticket.getAgentUid().equals("Unassigned")) {
+                            if (ticket.getAgentUid().equalsIgnoreCase(Repository.getInstance().getUid(view)) || ticket.getAgentUid().equals("Unassigned")) {
                                 if (ticket.getUnreadByAgent() > 0) {
                                     MainActivity2.tickets = MainActivity2.tickets + ticket.getUnreadByAgent();
                                 }
@@ -34,7 +34,7 @@ public class CountTickets {
                     }
                 });
             } else {
-                db.collection("tickets").document(Repository.getInstance().retrieveUid(view)).get().addOnCompleteListener(task -> {
+                db.collection("tickets").document(Repository.getInstance().getUid(view)).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         SupportTicket ticket = task.getResult().toObject(SupportTicket.class);
                         if (ticket != null) {

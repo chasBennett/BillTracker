@@ -38,6 +38,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.auth.internal.zzaf;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -235,7 +236,45 @@ public class Register extends AppCompatActivity {
                                         UserProfileChangeRequest update = new UserProfileChangeRequest.Builder()
                                                 .setDisplayName(name).build();
                                         user.updateProfile(update);
-                                        sendVerificationEmail(user);
+                                        FirebaseTools.sendVerificationEmail(user, (wasSuccessful, message1) -> {
+                                            if (wasSuccessful) {
+                                                pb.setVisibility(View.GONE);
+                                                CustomDialog cd = new CustomDialog(Register.this, getString(R.string.account_created_successfully), getString(R.string.accountCreatedSuccessfullyMessage), getString(R.string.ok), null, null);
+                                                cd.setPositiveButtonListener(v -> {
+                                                    cd.dismissDialog();
+                                                    pb.setVisibility(View.VISIBLE);
+                                                    FirebaseAuth.getInstance().signOut();
+
+                                                    // Clear Credential Manager State
+                                                    ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
+                                                    CredentialManager manager = CredentialManager.create(Register.this);
+                                                    manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
+                                                        @Override
+                                                        public void onResult(Void unused) {
+                                                        }
+
+                                                        @Override
+                                                        public void onError(@NonNull ClearCredentialException e) {
+                                                            Log.e(TAG, "Couldn't clear user credentials: " + e);
+                                                        }
+                                                    });
+
+                                                    pb.setVisibility(View.GONE);
+                                                    Repository.getInstance().setStaySignedIn(false, Register.this);
+                                                    Register.this.startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
+                                                });
+                                                cd.show();
+                                                pb.setVisibility(View.GONE);
+                                            } else {
+                                                pb.setVisibility(View.GONE);
+                                                Notify.createPopup(Register.this, getString(R.string.anErrorHasOccurred), null);
+                                                finish();
+                                                ActivityOptionsCompat.makeCustomAnimation(Register.this, 0, 0);
+                                                Intent logon = new Intent(Register.this, Login.class);
+                                                logon.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                startActivity(logon);
+                                            }
+                                        });
                                     }
                                 } else {
                                     pb.setVisibility(View.GONE);
@@ -245,46 +284,5 @@ public class Register extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    public void sendVerificationEmail(FirebaseUser user) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        pb.setVisibility(View.GONE);
-                        CustomDialog cd = new CustomDialog(Register.this, getString(R.string.account_created_successfully), getString(R.string.accountCreatedSuccessfullyMessage), getString(R.string.ok), null, null);
-                        cd.setPositiveButtonListener(v -> {
-                            cd.dismissDialog();
-                            pb.setVisibility(View.VISIBLE);
-                            FirebaseAuth.getInstance().signOut();
-
-                            // Clear Credential Manager State
-                            ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
-                            CredentialManager manager = CredentialManager.create(Register.this);
-                            manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
-                                @Override
-                                public void onResult(Void unused) {}
-
-                                @Override
-                                public void onError(@NonNull ClearCredentialException e) {
-                                    Log.e(TAG, "Couldn't clear user credentials: " + e);
-                                }
-                            });
-
-                            pb.setVisibility(View.GONE);
-                            Repository.getInstance().setStaySignedIn(false, Register.this);
-                            startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
-                        });
-                        cd.show();
-                    } else {
-                        pb.setVisibility(View.GONE);
-                        Notify.createPopup(Register.this, getString(R.string.anErrorHasOccurred), null);
-                        finish();
-                        ActivityOptionsCompat.makeCustomAnimation(Register.this, 0, 0);
-                        Intent logon = new Intent(Register.this, Login.class);
-                        logon.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(logon);
-                    }
-                });
     }
 }

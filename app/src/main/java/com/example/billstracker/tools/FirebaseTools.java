@@ -6,6 +6,7 @@ import static java.util.Objects.requireNonNull;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -77,6 +78,31 @@ public interface FirebaseTools {
         });
     }
 
+    static void sendVerificationEmail(FirebaseUser user, OnCompleteCallback callback) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onComplete(true, "Verification email sent.");
+                    } else {
+                        callback.onComplete(false, "Failed to send verification email.");
+                    }
+                });
+    }
+
+    public interface OnCompleteCallback {
+        void onComplete(boolean wasSuccessful, String message);
+
+        default void log(boolean success, String message) {
+            String tag = FirebaseTools.class.getSimpleName();
+            if (success) {
+                Log.i(tag, "[Operation Success] " + message);
+            } else {
+                Log.e(tag, "[Operation Failed] " + message);
+            }
+            onComplete(success, message);
+        }
+    }
+
     static void isRegisteredEmail(TextView errorTextView, String email, FirebaseCallback callback) {
         Context activity = errorTextView.getContext();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -129,7 +155,11 @@ public interface FirebaseTools {
         user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Update Repository profile locally
-                Repository.getInstance().editUser(context).setName(newName).save(null);
+                User.Builder userBuilder = Repository.getInstance().editUser(context);
+                if (userBuilder != null) {
+                    userBuilder.setName(newName)
+                            .save((wasSuccessful, message) -> {});
+                }
                 callback.isSuccessful(true);
             } else {
                 callback.isSuccessful(false);
@@ -150,6 +180,14 @@ public interface FirebaseTools {
         user.updatePassword(newPassword).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Update Repository profile locally
+                User.Builder userBuilder = Repository.getInstance().editUser(context);
+                if (userBuilder != null) {
+                    userBuilder.setPassword(newPassword)
+                            .save((wasSuccessful, message) -> {});
+                }
+                else {
+                    Notify.createPopup((Activity) context, context.getString(R.string.anErrorHasOccurred), null);
+                }
                 Repository.getInstance().editUser(context).setPassword(newPassword).save(null);
                 callback.isSuccessful(true);
             } else {
@@ -169,8 +207,14 @@ public interface FirebaseTools {
                 if (username != null && !username.equals(thisUser.getUserName())) {
                     FirebaseTools.changeUsername(user, username, isSuccessful -> {
                         if (isSuccessful) {
-                            Repository.getInstance().editUser(activity).setUserName(username).save(null);
-                            // Chain to next property (Name)
+                            User.Builder userBuilder = Repository.getInstance().editUser(activity);
+                            if (userBuilder != null) {
+                                userBuilder.setUserName(username)
+                                        .save((wasSuccessful1, message) -> {});
+                            }
+                            else {
+                                Notify.createPopup(activity, activity.getString(R.string.anErrorHasOccurred), null);
+                            }
                             updateNameAndPassword(activity, user, name, password, callback);
                         } else {
                             callback.isSuccessful(false);
@@ -258,7 +302,13 @@ public interface FirebaseTools {
                             if (task1.isSuccessful()) {
                                 FirebaseUser linkedUser = task1.getResult().getUser();
                                 if (linkedUser != null) {
-                                    Repository.getInstance().editUser(activity).setAdmin(false).setId(linkedUser.getUid()).save(null);
+                                    User.Builder userBuilder = Repository.getInstance().editUser(activity);
+                                    if (userBuilder != null) {
+                                        userBuilder.setId(linkedUser.getUid()).save((wasSuccessful, message) -> {});
+                                    }
+                                    else {
+                                        Notify.createPopup(activity, activity.getString(R.string.anErrorHasOccurred), null);
+                                    }
                                 }
                                 callback.onComplete(true, linkedUser);
                             } else {

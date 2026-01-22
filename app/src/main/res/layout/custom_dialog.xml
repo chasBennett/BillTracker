@@ -1,42 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparentBlack"
-    android:clickable="true"
     android:gravity="center"
     android:orientation="vertical"
-    tools:ignore="Overdraw">
+    android:clickable="true">
 
     <ScrollView
         android:id="@+id/dialogScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_margin="20dp"
-        android:background="@drawable/border_styles_no_outline"
-        android:clickable="true"
-        android:gravity="center"
-        android:translationY="1dp">
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:background="@drawable/border_styles_no_outline">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:orientation="vertical"
             android:padding="20dp"
-            android:paddingVertical="25dp">
+            android:paddingVertical="25dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center_horizontal">
 
+            <!-- Logo -->
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:importantForAccessibility="no"
                 app:srcCompat="@drawable/logo_long" />
 
+            <!-- Title -->
             <TextView
                 android:id="@+id/dialogTitle"
                 android:layout_width="match_parent"
@@ -46,14 +44,16 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <!-- Message -->
             <TextView
                 android:id="@+id/dialogMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="20dp"
-                android:textAlignment="center"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
                 android:textSize="14sp" />
 
+            <!-- EditText -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dialogEditTextParent"
                 android:layout_width="match_parent"
@@ -61,6 +61,7 @@
                 android:layout_marginTop="20dp"
                 android:theme="@style/TextInputEditTextStyle"
                 android:visibility="gone"
+                android:gravity="center_vertical"
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="0dp"
                 app:cursorColor="@color/neutralGray"
@@ -86,6 +87,7 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Spinner -->
             <LinearLayout
                 android:id="@+id/dialogSpinnerParent"
                 android:layout_width="match_parent"
@@ -125,6 +127,33 @@
 
             </LinearLayout>
 
+            <!-- PIN Display -->
+            <TextView
+                android:id="@+id/pinDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_horizontal"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <!-- Keypad -->
+            <GridLayout
+                android:id="@+id/keypadLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:alignmentMode="alignMargins"
+                android:columnCount="3"
+                android:columnOrderPreserved="false"
+                android:rowCount="4"
+                android:useDefaultMargins="true"
+                android:visibility="gone">
+
+            </GridLayout>
+
+            <!-- Buttons -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -165,6 +194,7 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

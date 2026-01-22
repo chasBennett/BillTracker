@@ -18,12 +18,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // 1. Get UID from Repository or FirebaseAuth
-        String uid = Repository.getInstance().retrieveUid(BaseActivity.this);
+        String uid = Repository.getInstance().getUid(BaseActivity.this);
 
         // 2. If UID is null, check SharedPreferences for a "user_json" (the ID is usually the filename)
         if (uid == null) {
             // Retrieve from your persistent storage logic
-            uid = Repository.getInstance().retrieveUid(BaseActivity.this);
+            uid = Repository.getInstance().getUid(BaseActivity.this);
         }
 
         // 3. GATEKEEPER LOGIC
@@ -33,7 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else if (!Repository.getInstance().isDataLoaded()) {
             // CASE B: Process Death. UID exists, but static data is wiped.
             // Show a simple loading overlay or just initialize synchronously
-            Repository.getInstance().initializeBackEnd(this, (success, message) -> {
+            Repository.getInstance().initializeBackEnd(BaseActivity.this, (success, message) -> {
                 if (success) {
                     onDataReady(); // Trigger child activity UI setup
                 } else {

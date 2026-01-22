@@ -115,6 +115,7 @@ public class PayBill extends BaseActivity {
             populateUI(paymentId);
         }
     }
+
     private void populateUI(int paymentId) {
 
         pay = repo.getPaymentById(paymentId);
@@ -212,8 +213,7 @@ public class PayBill extends BaseActivity {
                                         TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
                                         }));
                                     }
-                                }
-                                else {
+                                } else {
                                     Notify.createPopup(PayBill.this, "Error: " + message, null);
                                 }
                             });
@@ -229,6 +229,7 @@ public class PayBill extends BaseActivity {
                                 }));
                             });
                 });
+                cd.show();
             });
 
             paymentDatePaid.setOnClickListener(v -> {
@@ -263,8 +264,10 @@ public class PayBill extends BaseActivity {
                         } else {
                             pb.setVisibility(View.VISIBLE);
                             double newAmountDue = FixNumber.makeDouble(cd.getInput());
-                            repo.editBill(bil.getBillerName(), PayBill.this)
-                                    .setAmountDue(newAmountDue);
+                            Bill.Builder bill = repo.editBill(bil.getBillerName(), PayBill.this);
+                            if (bill != null) {
+                                bill.setAmountDue(newAmountDue);
+                            }
                             repo.editPayment(pay.getPaymentId(), PayBill.this)
                                     .setPaymentAmount(newAmountDue)
                                     .save((wasSuccessful, message) -> {
@@ -304,6 +307,7 @@ public class PayBill extends BaseActivity {
                             }
                         }
                     });
+                    cd.show();
                 } else {
                     CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_amount_due), getString(R.string.pleaseEnterYourPaymentAmount), "Update",
                             getString(R.string.cancel), null);
@@ -336,6 +340,7 @@ public class PayBill extends BaseActivity {
                             }
                         }
                     });
+                    cd.show();
                 }
 
             });
@@ -368,7 +373,7 @@ public class PayBill extends BaseActivity {
                                                 pays.setPartialPayment(pays.getPartialPayment() + paymentAmount);
                                                 pays.setDateChanged(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(repo.retrieveUid(PayBill.this));
+                                                pays.setOwner(repo.getUid(PayBill.this));
                                                 paymentAmount = 0;
                                                 break;
                                             } else {
@@ -377,7 +382,7 @@ public class PayBill extends BaseActivity {
                                                 pays.setDateChanged(false);
                                                 pays.setPaid(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(repo.retrieveUid(PayBill.this));
+                                                pays.setOwner(repo.getUid(PayBill.this));
                                                 pay = pays;
                                                 for (Bill bill : repo.getBills()) {
                                                     if (bill.getBillerName().equals(pay.getBillerName())) {
@@ -396,7 +401,7 @@ public class PayBill extends BaseActivity {
                             repo.saveData(PayBill.this, (wasSuccessful, message) -> {
 
                             });
-                                    pc.dismissDialog();
+                            pc.dismissDialog();
                             if (getIntent().getExtras() != null) {
                                 getIntent().getExtras().putInt("Payment Id", pay.getPaymentId());
                                 recreate();
@@ -406,6 +411,7 @@ public class PayBill extends BaseActivity {
                         });
                         pc.setCloseListener(v -> pc.dismissDialog());
                         pc.setPerimeterListener(view1 -> pc.dismissDialog());
+                        pc.show();
 
                     } else {
 
@@ -447,7 +453,8 @@ public class PayBill extends BaseActivity {
                             if (bill.getBillerName().equals(bil.getBillerName())) {
                                 bill.setPaymentsRemaining(remaining);
                                 bil.setPaymentsRemaining(remaining);
-                                repo.saveData(PayBill.this, (wasSuccessful, message) -> {});
+                                repo.saveData(PayBill.this, (wasSuccessful, message) -> {
+                                });
                                 break;
                             }
                         }
@@ -456,6 +463,7 @@ public class PayBill extends BaseActivity {
                         cd.dismissDialog();
                     }
                 });
+                cd.show();
             });
 
             paymentDueDate.setOnClickListener(v -> {
@@ -469,19 +477,20 @@ public class PayBill extends BaseActivity {
                             if (DataTools.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
                                 CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_all_payments), getString(R.string.would_you_like_to_apply_this_new_due_date_to_all_occurrences_of_this_bill), getString(R.string.change_all),
                                         getString(R.string.cancel), getString(R.string.just_this_one));
-                                cd.setPositiveButtonListener(v15 -> changePaymentDueDate(pay, DateFormat.makeLong(DatePicker.selection), true, isSuccessful -> {
+                                cd.setPositiveButtonListener(v15 -> changePaymentDueDate(PayBill.this, pay, DateFormat.makeLong(DatePicker.selection), true, isSuccessful -> {
                                     pay.setDueDate(DateFormat.makeLong(DatePicker.selection));
                                     TextTools.updateText(paymentDueDate, DateFormat.makeDateString(pay.getDueDate()));
                                     cd.dismissDialog();
                                 }));
                                 cd.setNegativeButtonListener(v16 -> cd.dismissDialog());
-                                cd.setNeutralButtonListener(v17 -> changePaymentDueDate(pay, DateFormat.makeLong(DatePicker.selection), false, isSuccessful -> {
+                                cd.setNeutralButtonListener(v17 -> changePaymentDueDate(PayBill.this, pay, DateFormat.makeLong(DatePicker.selection), false, isSuccessful -> {
                                     pay.setDueDate(DateFormat.makeLong(DatePicker.selection));
                                     TextTools.updateText(paymentDueDate, DateFormat.makeDateString(pay.getDueDate()));
                                     cd.dismissDialog();
                                 }));
+                                cd.show();
                             } else {
-                                changePaymentDueDate(pay, DateFormat.makeLong(DatePicker.selection), false, isSuccessful -> {
+                                changePaymentDueDate(PayBill.this, pay, DateFormat.makeLong(DatePicker.selection), false, isSuccessful -> {
                                     pay.setDueDate(DateFormat.makeLong(DatePicker.selection));
                                     TextTools.updateText(paymentDueDate, DateFormat.makeDateString(pay.getDueDate()));
                                 });
@@ -509,6 +518,7 @@ public class PayBill extends BaseActivity {
         payBillIcon.setContentPadding(50, 50, 50, 50);
         pb.setVisibility(View.GONE);
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

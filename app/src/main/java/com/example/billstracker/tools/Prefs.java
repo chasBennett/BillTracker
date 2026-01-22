@@ -29,6 +29,10 @@ public interface Prefs {
     static void setSignedInWithGoogle(Activity activity, boolean value) {
         getEditor(activity).putBoolean("SignedInWithGoogle", value).apply();
     }
+    static boolean getSignedInWithGoogle(Activity activity) {
+        return getPrefs(activity).getBoolean("SignedInWithGoogle", false);
+    }
+
 
     static boolean getNotificationPreference(Activity activity) {
         return getPrefs(activity).getBoolean("NotificationPreference", false);

@@ -257,141 +257,141 @@
                     app:drawableTint="@color/blackAndWhite" />
             </LinearLayout>
 
-                    <LinearLayout
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:elevation="10dp"
+                android:nestedScrollingEnabled="false"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lineChartBox">
+
+                <LinearLayout
+                    android:id="@+id/todayList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@drawable/border_styles_no_outline"
                     android:elevation="10dp"
-                    android:nestedScrollingEnabled="false"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UselessParent">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/todayListRecycler"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/laterThisWeekList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="10dp"
                     android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/lineChartBox">
+                    android:padding="6dp">
 
-                    <LinearLayout
-                        android:id="@+id/todayList"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_marginVertical="5dp"
-                        android:background="@drawable/border_styles_no_outline"
-                        android:elevation="10dp"
-                        android:orientation="vertical">
+                        tools:ignore="UselessParent">
 
-                        <RelativeLayout
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/laterThisWeekListRecycler"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="UselessParent">
+                            android:layout_height="match_parent" />
+                    </RelativeLayout>
+                </LinearLayout>
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/todayListRecycler"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </RelativeLayout>
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/laterThisMonthList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="10dp"
+                    android:orientation="vertical"
+                    android:padding="6dp">
 
-                    <LinearLayout
-                        android:id="@+id/laterThisWeekList"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_marginVertical="5dp"
-                        android:background="@drawable/border_styles_no_outline"
-                        android:elevation="10dp"
-                        android:orientation="vertical"
-                        android:padding="6dp">
+                        tools:ignore="UselessParent">
 
-                        <RelativeLayout
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/laterThisMonthListRecycler"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="UselessParent">
+                            android:layout_height="match_parent" />
+                    </RelativeLayout>
+                </LinearLayout>
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/laterThisWeekListRecycler"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </RelativeLayout>
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/earlierThisMonthList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="10dp"
+                    android:orientation="vertical"
+                    android:padding="6dp">
 
-                    <LinearLayout
-                        android:id="@+id/laterThisMonthList"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_marginVertical="5dp"
-                        android:background="@drawable/border_styles_no_outline"
-                        android:elevation="10dp"
-                        android:orientation="vertical"
-                        android:padding="6dp">
+                        tools:ignore="UselessParent">
 
-                        <RelativeLayout
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/earlierThisMonthListRecycler"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="UselessParent">
+                            android:layout_height="match_parent" />
+                    </RelativeLayout>
+                </LinearLayout>
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/laterThisMonthListRecycler"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </RelativeLayout>
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/noResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="5dp"
+                    android:background="@drawable/border_styles_no_outline"
+                    android:elevation="10dp"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:visibility="visible"
+                    tools:ignore="UseCompoundDrawables">
 
-                    <LinearLayout
-                        android:id="@+id/earlierThisMonthList"
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="50dp"
+                        android:contentDescription="@string/no_results"
+                        app:srcCompat="@drawable/noun_not_found_2503986"
+                        app:tint="@color/grey" />
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="8dp"
-                        android:layout_marginVertical="5dp"
-                        android:background="@drawable/border_styles_no_outline"
-                        android:elevation="10dp"
-                        android:orientation="vertical"
-                        android:padding="6dp">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="UselessParent">
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/earlierThisMonthListRecycler"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </RelativeLayout>
-                    </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/noResults"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="8dp"
-                            android:layout_marginVertical="5dp"
-                            android:background="@drawable/border_styles_no_outline"
-                            android:elevation="10dp"
-                            android:orientation="vertical"
-                            android:padding="10dp"
-                            android:visibility="visible"
-                            tools:ignore="UseCompoundDrawables">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="100dp"
-                                android:layout_marginTop="50dp"
-                                android:contentDescription="@string/no_results"
-                                app:srcCompat="@drawable/noun_not_found_2503986"
-                                app:tint="@color/grey" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="50dp"
-                                android:gravity="center"
-                                android:text="@string/no_bill_payments_are_due_this_month"
-                                android:textColor="@color/blackAndWhite"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                        android:layout_margin="50dp"
+                        android:gravity="center"
+                        android:text="@string/no_bill_payments_are_due_this_month"
+                        android:textColor="@color/blackAndWhite"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
+        </LinearLayout>
     </ScrollView>
 
     <include

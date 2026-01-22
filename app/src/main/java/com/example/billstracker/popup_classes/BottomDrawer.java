@@ -20,6 +20,7 @@ public class BottomDrawer {
     final LinearLayout selectImageButton;
     final LinearLayout closeDrawer;
     final long drawerSlideDuration = 400;
+
     public BottomDrawer(Activity activity) {
 
         viewGroup = activity.findViewById(android.R.id.content);

@@ -14,7 +14,6 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.Google;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -65,6 +64,7 @@ public class Settings extends BaseActivity {
                 pb.setVisibility(View.VISIBLE);
                 repo.logout(Settings.this);
             });
+            cd.show();
         });
     }
 
@@ -98,20 +98,24 @@ public class Settings extends BaseActivity {
                     }
                 });
             });
+            cd.show();
         } else {
             CustomDialog cd = new CustomDialog(Settings.this, "Delete Account",
                     "Enter password to confirm deletion.", "Confirm", "Cancel", null);
             cd.setEditText("Password", null, ResourcesCompat.getDrawable(getResources(), R.drawable.padlock, getTheme()));
 
             cd.setPositiveButtonListener(v -> {
-                String pwd = cd.getEditText().getText().toString();
-                if (!pwd.isEmpty()) {
-                    cd.dismissDialog();
-                    pb.setVisibility(View.VISIBLE);
-                    AuthCredential cred = EmailAuthProvider.getCredential(thisUser.getUserName(), pwd);
-                    executeDeletion(cred);
+                if (cd.getEditText() == null) {
+                    String pwd = cd.getEditText().getText().toString();
+                    if (!pwd.isEmpty()) {
+                        cd.dismissDialog();
+                        pb.setVisibility(View.VISIBLE);
+                        AuthCredential cred = EmailAuthProvider.getCredential(thisUser.getUserName(), pwd);
+                        executeDeletion(cred);
+                    }
                 }
             });
+            cd.show();
         }
     }
 

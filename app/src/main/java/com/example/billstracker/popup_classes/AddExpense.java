@@ -43,6 +43,7 @@ public class AddExpense {
     Spinner expenseCategory;
     TextView expenseDate, submitExpense, cancel, header;
     ArrayList<String> categories;
+
     public AddExpense(Activity activity, Expense expense) {
         this.activity = activity;
         setViews();
@@ -80,9 +81,9 @@ public class AddExpense {
         });
 
         submitExpense.setOnClickListener(v -> {
-            if (expenseDescription.getText() == null || expenseDescription.getText().isEmpty()) {
+            if (expenseDescription.getText() == null || expenseDescription.getText().length() == 0) {
                 Notify.createPopup(activity, activity.getString(R.string.expense_description_cannot_be_blank), null);
-            } else if (expenseAmount.getText() == null || expenseAmount.getText().isEmpty() || FixNumber.makeDouble(expenseAmount.getText().toString()) <= 0.0) {
+            } else if (expenseAmount.getText() == null || expenseAmount.getText().length() == 0 || FixNumber.makeDouble(expenseAmount.getText().toString()) <= 0.0) {
                 Notify.createPopup(activity, activity.getString(R.string.expense_amount_must_be_greater_than_0), null);
             } else {
                 if (expense != null) {
@@ -97,7 +98,7 @@ public class AddExpense {
                     }
                 } else {
                     Expense a = new Expense(expenseDescription.getText().toString(), categories.get(expenseCategory.getSelectedItemPosition()), DateFormat.makeLong(expenseDate.getText().toString()) + 1,
-                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), Repository.getInstance().retrieveUid(activity));
+                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), Repository.getInstance().getUid(activity));
                     Repository.getInstance().getExpenses().add(a);
                 }
                 Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
@@ -105,8 +106,7 @@ public class AddExpense {
                         dismissDialog();
                         listener.onClick(v);
                         Notify.createPopup(activity, activity.getString(R.string.expense_was_saved_successfully), null);
-                    }
-                    else {
+                    } else {
                         Notify.createPopup(activity, message, null);
                     }
                 });

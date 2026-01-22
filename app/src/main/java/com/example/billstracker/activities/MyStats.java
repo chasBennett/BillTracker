@@ -4,7 +4,6 @@ import static com.example.billstracker.activities.MainActivity2.startAddBiller;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,23 +12,23 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
+import com.example.billstracker.custom_objects.Partner;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.custom_objects.Stat;
 import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.NavController;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -199,28 +198,39 @@ public class MyStats extends BaseActivity {
             CustomDialog cd = new CustomDialog(MyStats.this, getString(R.string.my_income), getString(R.string.enter_your_income_details_to_calculate_your_dti), getString(R.string.submit),
                     getString(R.string.cancel), null);
             cd.setEditText(getString(R.string.income_amount), FixNumber.addSymbol(FixNumber.makeDouble(thisUser.getIncome())), AppCompatResources.getDrawable(MyStats.this, R.drawable.payment_amount_icon));
-            cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+            if (cd.getEditText() != null) {
+                cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+            }
             cd.isMoneyInput(true);
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
-            cd.setPositiveButtonListener(v -> repo.editUser(MyStats.this)
-                            .setPayFrequency(cd.getSpinnerSelection())
+            cd.setPositiveButtonListener(v -> {
+                User.Builder user = repo.editUser(MyStats.this);
+                if (user != null) {
+                    user.setPayFrequency(cd.getSpinnerSelection())
                             .setIncome(FixNumber.makeDouble(cd.getInput()))
-                                    .save((wasSuccessful, message) -> {
-                                        if (wasSuccessful) {
-                                            cd.dismissDialog();
-                                            initialize();
-                                        }
-                                        else {
-                                            Notify.createPopup(MyStats.this, "Error: " + message, null);
-                                        }
-                                    }));
+                            .save((wasSuccessful, message) -> {
+                                if (wasSuccessful) {
+                                    cd.dismissDialog();
+                                    initialize();
+                                } else {
+                                    Notify.createPopup(MyStats.this, "Error: " + message, null);
+                                }
+                            });
+                }
+                else {
+                    Notify.createPopup(MyStats.this, getString(R.string.anErrorHasOccurred), null);
+                }
+            });
             cd.setNegativeButtonListener(v -> cd.dismissDialog());
+            cd.show();
         });
 
         changeIncome.setOnClickListener(view -> {
             CustomDialog cd = new CustomDialog(MyStats.this, getString(R.string.my_income), getString(R.string.enter_your_income_details_to_calculate_your_dti), getString(R.string.submit), getString(R.string.cancel), null);
             cd.setEditText(getString(R.string.income_amount), FixNumber.addSymbol(FixNumber.makeDouble(thisUser.getIncome())), AppCompatResources.getDrawable(MyStats.this, R.drawable.payment_amount_icon));
-            cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+            if (cd.getEditText() != null) {
+                cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+            }
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.isMoneyInput(true);
             cd.setPositiveButtonListener(v -> repo.editUser(MyStats.this)
@@ -230,12 +240,12 @@ public class MyStats extends BaseActivity {
                         if (wasSuccessful) {
                             cd.dismissDialog();
                             initialize();
-                        }
-                        else {
+                        } else {
                             Notify.createPopup(MyStats.this, "Error: " + message, null);
                         }
                     }));
             cd.setNegativeButtonListener(v -> cd.dismissDialog());
+            cd.show();
         });
 
         createLists();

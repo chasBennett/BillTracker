@@ -48,8 +48,6 @@ import com.example.billstracker.popup_classes.CustomDialog;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -296,7 +294,7 @@ public class NavController {
             pb.setVisibility(View.VISIBLE);
             Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
             boolean found = false;
-            for (Payment payment: Repository.getInstance().getPayments()) {
+            for (Payment payment : Repository.getInstance().getPayments()) {
                 if (!payment.isPaid()) {
                     activity.startActivity(new Intent(activity, PayBill.class).putExtra("paymentId", payment.getPaymentId()));
                     found = true;
@@ -308,6 +306,7 @@ public class NavController {
                 pb.setVisibility(View.GONE);
                 CustomDialog cd = new CustomDialog(activity, context.getString(R.string.noBillsDue), context.getString(R.string.noUpcomingBills), context.getString(R.string.ok), null, null);
                 cd.setPositiveButtonListener(v -> cd.dismissDialog());
+                cd.show();
             }
         });
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,5 +371,6 @@ public class NavController {
                 progressBar.setVisibility(View.GONE);
             }
         });
+        cd.show();
     }
 }

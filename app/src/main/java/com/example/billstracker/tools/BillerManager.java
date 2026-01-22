@@ -25,14 +25,19 @@ public class BillerManager {
 
         ArrayList<Payment> paymentList = new ArrayList<>();
         Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+        long today = DateFormat.currentDateAsLong(); // Get today's date once for comparison
+
+        // Part 1: Initial filtering of existing payments
         for (Bill bill : Repository.getInstance().getBills()) {
             for (Payment payment : Repository.getInstance().getPayments()) {
                 boolean found = false;
-                if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid() || payment.getBillerName().equals(bill.getBillerName()) && payment.isDateChanged() && payment.getDueDate() >= bill.getDueDate()) {
+                if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid() ||
+                        payment.getBillerName().equals(bill.getBillerName()) && payment.isDateChanged() && payment.getDueDate() >= bill.getDueDate()) {
                     paymentList.add(payment);
                     found = true;
                 } else if (payment.getBillerName().equals(bill.getBillerName()) && !payment.isPaid() && payment.isDateChanged() && payment.getDueDate() < bill.getDueDate()) {
-                    Repository.getInstance().deletePayment(payment.getPaymentId(), context, (wasSuccessful, message) -> {});
+                    Repository.getInstance().deletePayment(payment.getPaymentId(), context, (wasSuccessful, message) -> {
+                    });
                 }
                 if (!bill.isRecurring() && found) {
                     bill.setPaymentsRemaining(0);
@@ -40,11 +45,15 @@ public class BillerManager {
                 }
             }
         }
+
         Set<Payment> set = new LinkedHashSet<>(paymentList);
         Repository.getInstance().getPayments().clear();
         Repository.getInstance().getPayments().addAll(set);
         Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+
         long endDate = DateFormat.makeLong(selectedDate.plusYears(1).withDayOfMonth(1));
+        boolean updatesMade = false;
+
         if (Repository.getInstance().getUser(context) != null && Repository.getInstance().getBills() != null) {
             for (Bill bill : Repository.getInstance().getBills()) {
                 int paymentNumber = 1;
@@ -52,23 +61,48 @@ public class BillerManager {
                 int frequency = bill.getFrequency();
                 int paymentsRemaining = bill.getPaymentsRemaining();
 
+                // Part 2: Generate upcoming payments
                 while (iterateDate <= endDate && paymentsRemaining > 0) {
                     boolean found = false;
                     for (Payment payment : Repository.getInstance().getPayments()) {
-                        if (payment.getBillerName().equals(bill.getBillerName()) && payment.getDueDate() >= iterateDate && payment.getDueDate() <= DateFormat.incrementDate(frequency, iterateDate)) {
-                            found = true;
-                            iterateDate = DateFormat.incrementDate(frequency, iterateDate);
-                            payment.setPaymentNumber(paymentNumber);
-                            ++paymentNumber;
-                            break;
+                        if (payment.getBillerName().equals(bill.getBillerName())) {
+
+                            boolean matchesStandardWindow = payment.getDueDate() >= iterateDate &&
+                                    payment.getDueDate() <= DateFormat.incrementDate(frequency, iterateDate);
+
+                            boolean isSameCycleManual = payment.isDateChanged() &&
+                                    isWithinSameCycle(payment.getDueDate(), iterateDate, frequency);
+
+                            if (matchesStandardWindow || isSameCycleManual) {
+                                // UPDATED LOGIC: Mark as paid only if AutoPay is ON and Due Date <= Today
+                                if (bill.isAutoPay() && payment.getDueDate() <= today) {
+                                    payment.setPaid(true);
+                                    payment.setDatePaid(payment.getDueDate());
+                                    payment.setNeedsSync(true); // Flag for Repository.java
+                                    updatesMade = true;
+                                }
+                                found = true;
+                                iterateDate = DateFormat.incrementDate(frequency, iterateDate);
+                                payment.setPaymentNumber(paymentNumber);
+                                ++paymentNumber;
+                                break;
+                            }
                         }
                     }
+
                     if (!found) {
                         int id = id();
                         while (idExists(id)) {
                             id = id();
                         }
                         Payment payment = new Payment(bill.getAmountDue(), 0, iterateDate, false, false, paymentNumber, bill.getBillerName(), id, 0, bill.getOwner());
+
+                        // UPDATED LOGIC: Mark as paid only if AutoPay is ON and Due Date <= Today
+                        if (bill.isAutoPay() && payment.getDueDate() <= today) {
+                            payment.setPaid(true);
+                            payment.setDatePaid(payment.getDueDate());
+                        }
+
                         ++paymentNumber;
                         Repository.getInstance().getPayments().add(payment);
                         iterateDate = DateFormat.incrementDate(frequency, iterateDate);
@@ -78,6 +112,15 @@ public class BillerManager {
             }
         }
 
+        if (updatesMade) {
+            Repository.getInstance().saveData(context, (wasSuccessful, message) -> {
+                if (wasSuccessful) {
+                    android.util.Log.d("BillerManager", "Autopayments synced: " + message);
+                }
+            });
+        }
+
+        // Part 3: Final cleanup of duplicates
         if (Repository.getInstance().getPayments() != null) {
             ArrayList<Payment> remove = new ArrayList<>();
             for (Payment pay : Repository.getInstance().getPayments()) {
@@ -96,7 +139,8 @@ public class BillerManager {
                 Repository.getInstance().getPayments().removeAll(remove);
             }
         }
-        ArrayList<Bill> remove = new ArrayList<>();
+
+        ArrayList<Bill> removeBills = new ArrayList<>();
         for (Bill bill : Repository.getInstance().getBills()) {
             boolean found = false;
             for (Bill bil : Repository.getInstance().getBills()) {
@@ -104,12 +148,22 @@ public class BillerManager {
                     if (!found) {
                         found = true;
                     } else {
-                        remove.add(bil);
+                        removeBills.add(bil);
                     }
                 }
             }
         }
-        Repository.getInstance().getBills().removeAll(remove);
+    }
+
+    /**
+     * Helper to determine if a manually moved payment still "covers" the current billing period.
+     */
+    private static boolean isWithinSameCycle(long paymentDate, long iterateDate, int frequency) {
+        long difference = Math.abs(paymentDate - iterateDate);
+        // Use a 75% threshold of the billing frequency to identify the same period
+        // e.g., if monthly (30 days), a move within 22 days is considered the same cycle.
+        long cycleThreshold = (long) (DateFormat.getDaysInFrequency(frequency) * 0.75);
+        return difference < cycleThreshold;
     }
 
     public static void deleteFuturePayments(String billerName, long newDueDate, FirebaseTools.FirebaseCallback callback) {

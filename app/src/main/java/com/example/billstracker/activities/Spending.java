@@ -684,7 +684,7 @@ public class Spending extends BaseActivity {
                             budget.getCategories().remove(category);
                             categoriesList.removeView(slider);
                             sliders.remove(categorySlider);
-                            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })
@@ -713,7 +713,7 @@ public class Spending extends BaseActivity {
             categoriesList.addView(slider);
         }
         submit.setOnClickListener(view -> {
-            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
             cats.setVisibility(View.VISIBLE);
             categoriesListLayout.setVisibility(View.GONE);
             categoriesList.removeAllViews();
@@ -769,7 +769,7 @@ public class Spending extends BaseActivity {
                         .setPositiveButton(getString(R.string.remove), (dialogInterface, i) -> {
                             budget.getCategories().remove(newCat);
                             categoriesList.removeView(slider);
-                            FirebaseFirestore.getInstance().collection("users").document(repo.retrieveUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })

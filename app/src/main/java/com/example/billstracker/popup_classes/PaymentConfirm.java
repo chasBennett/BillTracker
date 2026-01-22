@@ -7,6 +7,7 @@ import static com.example.billstracker.tools.DataTools.changePaymentDueDate;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,7 +36,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class PaymentConfirm extends Dialog {
+public class PaymentConfirm {
 
     public static double paymentAmount;
     public static View.OnClickListener confirmListener;
@@ -64,17 +65,16 @@ public class PaymentConfirm extends Dialog {
     final ViewGroup main;
     double finalBalanceForward;
     double balanceForward;
+
     public PaymentConfirm(Activity activity) {
-        super(activity);
+        this.main = activity.findViewById(android.R.id.content);
+        this.confirm = View.inflate(activity, R.layout.payment_confirm, null);
 
-        if (getWindow() != null) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        }
+        confirm.setFocusable(true);
+        confirm.setFocusableInTouchMode(true);
 
-        main = activity.findViewById(android.R.id.content);
-        confirm = View.inflate(activity, R.layout.payment_confirm, null);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         balanceForwardBox = confirm.findViewById(R.id.balanceForwardBox);
         paymentDetails = confirm.findViewById(R.id.paymentDetails);
         paymentConfirmation = confirm.findViewById(R.id.paymentConfirmation);
@@ -96,6 +96,8 @@ public class PaymentConfirm extends Dialog {
         paymentDetails.setVisibility(View.VISIBLE);
         paymentConfirmation.setVisibility(View.GONE);
         confirm.setFocusable(true);
+
+        confirm.requestFocus();
 
         payOtherAmount.setFocusableInTouchMode(true);
 
@@ -127,8 +129,20 @@ public class PaymentConfirm extends Dialog {
                 CustomDialog cd = new CustomDialog(activity, activity.getString(R.string.change_amount_due), activity.getString(R.string.pleaseEnterYourPaymentAmount), activity.getString(R.string.update),
                         activity.getString(R.string.cancel), null);
                 cd.setEditText(activity.getString(R.string.payment_amount), String.format(Locale.getDefault(), "  %s", FixNumber.addSymbol(String.valueOf(makePayment.getPaymentAmount()))), null);
-                cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+                if (cd.getEditText() != null) {
+                    cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+                }
                 cd.isMoneyInput(true);
+                EditText dialogInput = cd.getEditText();
+                if (dialogInput != null) {
+                    dialogInput.requestFocus();
+                    dialogInput.postDelayed(() -> {
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.showSoftInput(dialogInput, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    }, 200); // A small delay ensures the dialog window is fully ready
+                }
                 cd.setPositiveButtonListener(v12 -> {
                     if (cd.getInput().isEmpty()) {
                         Notify.createPopup(activity, activity.getString(R.string.payment_amount_can_t_be_blank), null);
@@ -148,7 +162,8 @@ public class PaymentConfirm extends Dialog {
                                 TextTools.changeMoneyTextValue(payTotalDue, makePayment.getPaymentAmount() + finalBalanceForward1 - makePayment.getPartialPayment(), isSuccessful -> {
                                 });
                                 calculateBalances(activity);
-                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {});
+                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                                });
                                 break;
                             }
                         }
@@ -157,11 +172,14 @@ public class PaymentConfirm extends Dialog {
                 });
                 cd.setNegativeButtonListener(v1 -> cd.dismissDialog());
                 cd.setPerimeterListener(v14 -> cd.dismissDialog());
+                cd.show();
             } else {
                 CustomDialog cd = new CustomDialog(activity, activity.getString(R.string.change_amount_due), activity.getString(R.string.pleaseEnterYourPaymentAmount), activity.getString(R.string.updateAllFutureBills),
                         activity.getString(R.string.cancel), activity.getString(R.string.justThisOccurence));
                 cd.setEditText(activity.getString(R.string.payment_amount), String.format(Locale.getDefault(), "  %s", FixNumber.addSymbol(String.valueOf(makePayment.getPaymentAmount()))), null);
-                cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+                if (cd.getEditText() != null) {
+                    cd.setTextWatcher(new MoneyFormatterWatcher(cd.getEditText()));
+                }
                 cd.isMoneyInput(true);
                 cd.setPositiveButtonListener(v12 -> {
                     double newAmountDue = FixNumber.makeDouble(cd.getInput());
@@ -211,7 +229,8 @@ public class PaymentConfirm extends Dialog {
                                 TextTools.changeMoneyTextValue(payTotalDue, makePayment.getPaymentAmount() + finalBalanceForward1 - makePayment.getPartialPayment(), isSuccessful -> {
                                 });
                                 calculateBalances(activity);
-                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {});
+                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                                });
                                 break;
                             }
                         }
@@ -220,6 +239,7 @@ public class PaymentConfirm extends Dialog {
                 });
                 cd.setNegativeButtonListener(v1 -> cd.dismissDialog());
                 cd.setPerimeterListener(v14 -> cd.dismissDialog());
+                cd.show();
             }
         });
 
@@ -265,7 +285,7 @@ public class PaymentConfirm extends Dialog {
                 balanceForwardBox.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.border_stroke, activity.getTheme()));
                 totalDueBox.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.border_stroke, activity.getTheme()));
                 otherAmountBox.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.border_stroke_blue, activity.getTheme()));
-                updateSelection(2);
+                updateSelection();
                 paymentAmount = FixNumber.makeDouble(payOtherAmount.getText().toString());
             }
         });
@@ -307,7 +327,7 @@ public class PaymentConfirm extends Dialog {
             while (paymentAmount > 0) {
                 for (Payment pays : Repository.getInstance().getPayments()) {
                     if (pays.getBillerName().equals(makePayment.getBillerName()) && !pays.isPaid() && pays.getPaymentNumber() <= makePayment.getPaymentNumber()) {
-                        View tile = View.inflate(getContext(), R.layout.payment_tile, null);
+                        View tile = View.inflate(activity, R.layout.payment_tile, null);
                         TextView billerName = tile.findViewById(R.id.confirmBillerName), paymentNumber = tile.findViewById(R.id.confirmPaymentNumber), dueDate = tile.findViewById(R.id.confirmDueDate),
                                 paidDate = tile.findViewById(R.id.confirmPaidDate), paymentAmounts1 = tile.findViewById(R.id.confirmPaymentAmount), amountRemaining = tile.findViewById(R.id.confirmAmountRemaining);
                         billerName.setText(pays.getBillerName());
@@ -366,7 +386,7 @@ public class PaymentConfirm extends Dialog {
                                 if (makePayment == null) {
                                     activity.recreate();
                                 } else {
-                                    changePaymentDueDate(makePayment, DateFormat.makeLong(chosenDate), true, isSuccessful -> {
+                                    changePaymentDueDate(activity, makePayment, DateFormat.makeLong(chosenDate), true, isSuccessful -> {
                                         if (isSuccessful) {
                                             TextTools.updateText(paymentDueDate, DateFormat.makeDateString(makePayment.getDueDate()));
                                             cd.dismissDialog();
@@ -382,22 +402,28 @@ public class PaymentConfirm extends Dialog {
                                 if (makePayment == null) {
                                     activity.recreate();
                                 } else {
-                                    changePaymentDueDate(makePayment, DateFormat.makeLong(chosenDate), false, isSuccessful -> {
+                                    // Save the OLD date in case we need to revert the UI text
+                                    long oldDate = makePayment.getDueDate();
+
+                                    changePaymentDueDate(activity, makePayment, DateFormat.makeLong(chosenDate), false, isSuccessful -> {
                                         if (isSuccessful) {
                                             TextTools.updateText(paymentDueDate, DateFormat.makeDateString(makePayment.getDueDate()));
                                             cd.dismissDialog();
                                         } else {
-                                            Notify.createPopup(activity, activity.getString(R.string.anErrorHasOccurred), null);
-                                            dp.dismiss();
+                                            // 1. Reset the local object to be absolutely sure
+                                            makePayment.setDueDate(oldDate);
+                                            // 2. Refresh the UI from the now-reset object
+                                            TextTools.updateText(paymentDueDate, DateFormat.makeDateString(makePayment.getDueDate()));
                                         }
                                     });
                                 }
                             });
+                            cd.show();
                         } else {
                             if (makePayment == null) {
                                 activity.recreate();
                             } else {
-                                changePaymentDueDate(makePayment, DateFormat.makeLong(chosenDate), false, isSuccessful -> {
+                                changePaymentDueDate(activity, makePayment, DateFormat.makeLong(chosenDate), false, isSuccessful -> {
                                     if (isSuccessful) {
                                         TextTools.updateText(paymentDueDate, DateFormat.makeDateString(makePayment.getDueDate()));
                                     } else {
@@ -411,6 +437,14 @@ public class PaymentConfirm extends Dialog {
             });
         });
 
+        confirm.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                dismissDialog();
+                return true;
+            }
+            return false;
+        });
+
         confirmPayment.setOnClickListener(v -> {
             if (selection[0] == 0) {
                 paymentAmount = finalBalanceForward;
@@ -422,34 +456,31 @@ public class PaymentConfirm extends Dialog {
             InputMethodManager mgr = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
             mgr.hideSoftInputFromWindow(payOtherAmount.getWindowToken(), 0);
             confirmListener.onClick(v);
-            this.cancel();
+            dismissDialog();
         });
         cancel.setOnClickListener(v -> {
             closeListener.onClick(v);
-            this.cancel();
+            dismissDialog();
         });
-
-        main.addView(confirm);
-
-        confirm.setFocusable(true);
-        confirm.setFocusableInTouchMode(true);
-        confirm.requestFocus();
     }
 
-    private void updateSelection(int index) {
+    public void show() {
+        if (confirm.getParent() == null) {
+            main.addView(confirm);
+
+            // Ensure the view gets focus immediately for single-tap response
+            confirm.post(() -> {
+                confirm.setFocusableInTouchMode(true);
+                confirm.requestFocus();
+            });
+        }
+    }
+
+    private void updateSelection() {
         // Reset all to default gray
         balanceForwardBox.setBackgroundResource(R.drawable.border_stroke);
         totalDueBox.setBackgroundResource(R.drawable.border_stroke);
-        otherAmountBox.setBackgroundResource(R.drawable.border_stroke);
-
-        // Highlight the selected one in blue
-        if (index == 0) {
-            balanceForwardBox.setBackgroundResource(R.drawable.border_stroke_blue);
-        } else if (index == 1) {
-            totalDueBox.setBackgroundResource(R.drawable.border_stroke_blue);
-        } else if (index == 2) {
-            otherAmountBox.setBackgroundResource(R.drawable.border_stroke_blue);
-        }
+        otherAmountBox.setBackgroundResource(R.drawable.border_stroke_blue);
     }
 
     public void setConfirmListener(View.OnClickListener confirmListener) {
@@ -512,10 +543,11 @@ public class PaymentConfirm extends Dialog {
 
     public void dismissDialog() {
         if (confirm != null) {
-            ViewGroup parent = (ViewGroup) confirm.getParent();
             if (payOtherAmount != null) {
                 TextTools.closeSoftInput(payOtherAmount);
             }
+            // Remove the view from the Activity content
+            ViewGroup parent = (ViewGroup) confirm.getParent();
             if (parent != null) {
                 parent.removeView(confirm);
             }

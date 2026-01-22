@@ -21,6 +21,10 @@ public class Typewriter {
             mHandler.removeCallbacks(characterAdder);
             mHandler.postDelayed(characterAdder, mDelay);
         }
+    }
+
+    public void setCharacterDelay(long millis) {
+        mDelay = millis;
     }    private final Runnable characterAdder = new Runnable() {
         @Override
         public void run() {
@@ -33,9 +37,7 @@ public class Typewriter {
         }
     };
 
-    public void setCharacterDelay(long millis) {
-        mDelay = millis;
-    }
+
 
 
 }

@@ -108,6 +108,32 @@ public interface DateFormat {
         };
     }
 
+    /**
+     * Returns the approximate number of days for each frequency type defined in getFrequencies.
+     * This is used to calculate the "same cycle" threshold for manual date changes.
+     */
+    public static int getDaysInFrequency(int frequency) {
+        return switch (frequency) {
+            case 0 -> // One-time
+                    0;
+            case 1 -> // Daily
+                    1;
+            case 2 -> // Weekly
+                    7;
+            case 3 -> // Bi-weekly
+                    14;
+            case 4 -> // Monthly
+                    30;
+            case 5 -> // Bi-monthly (Every 2 months)
+                    60;
+            case 6 -> // Quarterly
+                    91;
+            case 7 -> // Yearly
+                    365;
+            default -> 30; // Default to monthly safety margin
+        };
+    }
+
     static int daysBetween(long date1, long date2) {
         return (int) ChronoUnit.DAYS.between(DateFormat.makeLocalDate(date1), DateFormat.makeLocalDate(date2));
     }

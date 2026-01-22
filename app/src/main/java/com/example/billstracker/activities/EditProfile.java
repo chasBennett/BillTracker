@@ -33,7 +33,6 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.BottomDrawer;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
@@ -173,7 +172,7 @@ public class EditProfile extends BaseActivity {
         enterNewPassword.addTextChangedListener(watcher);
         confirmPassword.addTextChangedListener(watcher);
 
-        if (thisUser.getPassword().equals(repo.retrieveUid(EditProfile.this))) {
+        if (thisUser.getPassword().equals(repo.getUid(EditProfile.this))) {
             TextView error = findViewById(R.id.googleSignInError);
             error.setVisibility(View.VISIBLE);
             editPasswordLayout.setVisibility(View.GONE);
@@ -351,16 +350,20 @@ public class EditProfile extends BaseActivity {
                 FirebaseTools.updateUser(EditProfile.this, user, newUserName, newName, newPassword, isSuccessful -> {
                     if (isSuccessful) {
                         Notify.createPopup(EditProfile.this, getString(R.string.user_profile_updated_successfully), null);
-                        repo.editUser(EditProfile.this)
-                                .setName(newName)
-                                .setUserName(newUserName)
-                                .setPassword(newPassword)
-                                .save((wasSuccessful, message) -> {
-                                    if (wasSuccessful) {
-                                        recreate();
-                                    }
-                                });
-                        submit.setVisibility(View.GONE);
+                        User.Builder userBuilder = repo.editUser(EditProfile.this);
+                        if (userBuilder != null) {
+                            userBuilder.setName(newName)
+                                    .setUserName(newUserName)
+                                    .setPassword(newPassword)
+                                    .save((wasSuccessful, message) -> {
+                                        if (wasSuccessful) {
+                                            recreate();
+                                        }
+                                    });
+                        }
+                        else {
+                            Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);
+                        }
                     } else {
                         Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);
                     }
