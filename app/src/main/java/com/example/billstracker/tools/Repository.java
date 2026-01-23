@@ -59,9 +59,10 @@ public class Repository {
     private final Gson gson = new Gson();
     // In-memory cache
     private final InMemoryCache cache = new InMemoryCache();
+    private final LocalStore localStore = new LocalStore();
     private static final String KEY_CHANNEL_ID = "channel_id";
     private static final String KEY_LAST_UID = "last_uid";
-    private static final String KEY_UID = "uid";
+    public static final String KEY_UID = "uid";
 
     private Repository() {
     }
@@ -80,29 +81,25 @@ public class Repository {
     //----------Local Data Management----------
 
     private void writeToDisk(Context context, OnCompleteCallback callback) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(cache.uid, MODE_PRIVATE).edit();
-        editor.putString("user_json", gson.toJson(cache.thisUser));
-        editor.putString("bills_json", gson.toJson(cache.bills));
-        editor.putString("payments_json", gson.toJson(cache.payments));
-        editor.putString("expenses_json", gson.toJson(cache.expenses));
-        editor.putBoolean("disk_data_complete", true);
-        editor.apply();
+        localStore.writeAll(
+                context,
+                cache.uid,
+                cache.thisUser,
+                cache.bills,
+                cache.payments,
+                cache.expenses
+        );
         callback.onComplete(true, "Local data saved successfully.");
     }
 
     public void clearDisk(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(cache.uid, MODE_PRIVATE);
-        prefs.edit().clear().apply();
-        setNeedsDownload(context, true);
+        if (cache.uid == null) return;
+        localStore.clear(context, cache.uid);
+        localStore.setNeedsDownload(context, cache.uid, true);
     }
 
     public boolean isLocalDiskValid(Context context) {
-        if (cache.uid == null) return false;
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(cache.uid, MODE_PRIVATE);
-
-        return prefs.getBoolean("disk_data_complete", false);
+        return cache.uid != null && localStore.isDiskComplete(context, cache.uid);
     }
 
     /**
@@ -111,7 +108,7 @@ public class Repository {
      * @return True if the user data is loaded, false otherwise.
      */
     public boolean isDataLoaded() {
-        return cache.thisUser != null && cache.bills != null && cache.payments != null && cache.expenses != null;
+        return cache.isLoaded();
     }
 
     public void saveDataForWorker(Context context, ArrayList<Payment> payments, String channelId) {
@@ -165,8 +162,10 @@ public class Repository {
 
     /**
      * Loads the user's data from a sharedPreferences branch that is specific to their uid.
+     * Then loads the savedUid, thisUser, bills, payments, and expenses from the SharedPreferences branch specific to the saved uid or returns if the uid is null.
      *
      * @param context The application's context.
+     * @param onComplete A callback to be executed after the data is loaded.
      */
     public void loadLocalData(Context context, OnCompleteCallback onComplete) {
         context = context.getApplicationContext();
@@ -188,6 +187,7 @@ public class Repository {
 
         if (cache.thisUser == null) {
             cache.thisUser = new User();
+            setNeedsDownload(context, true);
         }
         if (cache.thisUser.getBudgets() == null) cache.thisUser.setBudgets(new ArrayList<>());
         if (cache.thisUser.getPartners() == null) cache.thisUser.setPartners(new ArrayList<>());
@@ -217,6 +217,7 @@ public class Repository {
         context = context.getApplicationContext();
         context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().putString(KEY_UID, uid)
                 .apply();
+        cache.uid = uid;
     }
 
     /**
@@ -230,16 +231,9 @@ public class Repository {
         if (cache.uid != null) {
             return cache.uid;
         }
-        else {
-            cache.uid = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).getString(KEY_UID, null);
-            if (cache.uid != null) {
-                return cache.uid;
-            }
-            else {
-                context.startActivity(new Intent(context, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
-                return null;
-            }
-        }
+        // Just return the value or null; don't force a navigation here
+        cache.uid = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).getString(KEY_UID, null);
+        return cache.uid;
     }
 
     /**
@@ -254,10 +248,8 @@ public class Repository {
             Prefs.setSignedInWithGoogle((Activity) context, false);
         }
 
-        cache.thisUser = null;
-        cache.payments = null;
-        cache.expenses = null;
-        cache.bills = null;
+        cache.uid = null;
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().remove(Repository.KEY_UID).apply();
 
         setStaySignedIn(false, context);
         FirebaseAuth.getInstance().signOut();
@@ -431,11 +423,7 @@ public class Repository {
         context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().clear().apply();
 
         // 3. Nullify memory references to trigger the BaseActivity Gatekeeper
-        cache.thisUser = null;
-        cache.bills = null;
-        cache.payments = null;
-        cache.expenses = null;
-        cache.uid = null;
+        cache.clear();
 
         // 4. Reset biometric states
         setAllowBiometrics(false, context);
@@ -456,8 +444,8 @@ public class Repository {
     public void fetchCloudData(String userUid, Context context, OnCompleteCallback callback) {
         this.cache.uid = userUid;
 
-        boolean diskMissing = !isLocalDiskValid(context);
-        boolean flaggedForDownload = getNeedsDownload(context);
+        boolean diskMissing = !localStore.isDiskComplete(context, cache.uid);
+        boolean flaggedForDownload = localStore.needsDownload(context, cache.uid);
 
         if (diskMissing || flaggedForDownload) {
             Context appContext = context.getApplicationContext();

@@ -1,10 +1,17 @@
 package com.example.billstracker.activities;
 
+import static android.content.ContentValues.TAG;
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,9 +20,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
+import androidx.credentials.ClearCredentialStateRequest;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
@@ -32,11 +44,14 @@ import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class Login extends AppCompatActivity {
 
@@ -243,7 +258,42 @@ public class Login extends AppCompatActivity {
                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_IS_GOOGLE, false).apply();
                     loadWithStoredCredentials();
                 } else {
-                    Notify.createPopup(Login.this, "Please verify your email before logging in.", null);
+                    if (firebaseUser != null) {
+                        CustomDialog cd = new CustomDialog(Login.this, "Verify Email", "Your account was created successfully, and now you need to verify your email by clicking the link in the email that was sent to you.",
+                                getString(R.string.ok), getString(R.string.resendEmail), "Open Email App");
+                        cd.setPositiveButtonListener(v -> {
+                            cd.dismissDialog();
+                            FirebaseAuth.getInstance().signOut();
+
+                            // Clear Credential Manager State
+                            ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
+                            CredentialManager manager = CredentialManager.create(Login.this);
+                            manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
+                                @Override
+                                public void onResult(Void unused) {
+                                }
+
+                                @Override
+                                public void onError(@NonNull ClearCredentialException e) {
+                                    Log.e(TAG, "Couldn't clear user credentials: " + e);
+                                }
+                            });
+                            Repository.getInstance().setStaySignedIn(false, Login.this);
+                        });
+                        cd.setNegativeButtonListener(view -> FirebaseTools.sendVerificationEmail(firebaseUser, (wasSuccessful1, message1) -> {
+                            if (wasSuccessful1) {
+                                Notify.createPopup(Login.this, getString(R.string.verificationEmailSent), null);
+                            } else {
+                                Notify.createPopup(Login.this, getString(R.string.anErrorHasOccurred), null);
+                            }
+                        }));
+                        cd.setNeutralButtonListener(view -> Tools.openEmailApp(Login.this));
+                        cd.show();
+                    }
+                    else {
+                        Notify.createPopup(Login.this, "Account lookup failed. Please try again.", null);
+                    }
+
                 }
             } else {
                 Notify.createPopup(Login.this, "Login failed. Please try again.", null);
@@ -342,20 +392,25 @@ public class Login extends AppCompatActivity {
         isLoading = true;
         binding.progressBar15.progressBar.setVisibility(View.VISIBLE);
 
-        String uid = repo.getUid(this);
-        if (uid == null || uid.isEmpty()) {
+        //SharedPreferences prefs = getSharedPreferences("Global_Preferences", MODE_PRIVATE);
+        String currentUid = repo.getUid(this);
+        String lastUid = repo.getLastUid(this);
+
+        if (currentUid == null || currentUid.isEmpty()) {
             binding.progressBar15.progressBar.setVisibility(View.GONE);
-            Notify.createPopup(this, "Failed to retrieve user data", null);
+            Notify.createPopup(this, "No user logged in.", null);
+            isLoading = false;
             return;
         }
 
-        if (repo.getLastUid(this) != null) {
-            if (!uid.equals(repo.getLastUid(this))) {
-                repo.clearDisk(this);
-            }
+        if (lastUid != null && !currentUid.equals(lastUid)) {
+            repo.clearDisk(this);
         }
 
-        repo.fetchCloudData(uid, this, (success, msg) -> {
+        repo.setUid(currentUid, this);  // update cache
+        repo.setLastUid(this, currentUid); // remember last user
+
+        repo.fetchCloudData(currentUid, this, (success, msg) -> {
             if (success) loadPartnerData();
             else {
                 isLoading = false;
@@ -366,6 +421,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void loadPartnerData() {
+
         User thisUser = repo.getUser(this);
         if (thisUser == null || thisUser.getName() == null) {
             binding.progressBar15.progressBar.setVisibility(View.GONE);
@@ -392,7 +448,6 @@ public class Login extends AppCompatActivity {
     private void finalizeDataAndLaunch() {
         setOwnership();
         repo.setStaySignedIn(binding.staySignedIn.isChecked(), Login.this);
-        launchMainActivity();
     }
 
     private void setOwnership() {
@@ -402,6 +457,7 @@ public class Login extends AppCompatActivity {
             if (repo.getBills() != null) for (Bill bill : repo.getBills()) if (bill.getOwner() == null) bill.setOwner(uid);
             if (repo.getPayments() != null) for (Payment payment : repo.getPayments()) if (payment.getOwner() == null) payment.setOwner(uid);
             if (repo.getExpenses() != null) for (Expense exp : repo.getExpenses()) if (exp.getOwner() == null) exp.setOwner(uid);
+            launchMainActivity();
         }
     }
 

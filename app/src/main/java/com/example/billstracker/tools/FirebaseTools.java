@@ -278,55 +278,6 @@ public interface FirebaseTools {
         });
     }
 
-    /**
-     * Checks for existing user and handles Google/Email credential linking
-     */
-    static void checkForExistingUser(Activity activity, FirebaseSignInResult callback) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            FirebaseFirestore.getInstance().collection("users").whereEqualTo("userName", user.getEmail()).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    User thisUser = null;
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.exists()) {
-                            thisUser = document.toObject(User.class);
-                            break;
-                        }
-                    }
-                    if (thisUser != null && thisUser.getUserName() != null && thisUser.getPassword() != null) {
-                        Repository.getInstance().saveCredentials(activity, thisUser.getUserName(), thisUser.getPassword());
-                        Repository.getInstance().setUid(thisUser.getId(), activity);
-                        AuthCredential credential = EmailAuthProvider.getCredential(thisUser.getUserName(), thisUser.getPassword());
-
-                        user.linkWithCredential(credential).addOnCompleteListener(activity, task1 -> {
-                            if (task1.isSuccessful()) {
-                                FirebaseUser linkedUser = task1.getResult().getUser();
-                                if (linkedUser != null) {
-                                    User.Builder userBuilder = Repository.getInstance().editUser(activity);
-                                    if (userBuilder != null) {
-                                        userBuilder.setId(linkedUser.getUid()).save((wasSuccessful, message) -> {});
-                                    }
-                                    else {
-                                        Notify.createPopup(activity, activity.getString(R.string.anErrorHasOccurred), null);
-                                    }
-                                }
-                                callback.onComplete(true, linkedUser);
-                            } else {
-                                callback.onComplete(true, user);
-                            }
-                        });
-                    } else {
-                        callback.onComplete(true, user);
-                    }
-                } else {
-                    callback.onComplete(true, user);
-                }
-            });
-        } else {
-            callback.onComplete(false, null);
-        }
-    }
-
     interface FirebaseCallback {
         void isSuccessful(boolean isSuccessful);
     }

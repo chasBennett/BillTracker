@@ -38,7 +38,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.auth.internal.zzaf;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -239,7 +238,8 @@ public class Register extends AppCompatActivity {
                                         FirebaseTools.sendVerificationEmail(user, (wasSuccessful, message1) -> {
                                             if (wasSuccessful) {
                                                 pb.setVisibility(View.GONE);
-                                                CustomDialog cd = new CustomDialog(Register.this, getString(R.string.account_created_successfully), getString(R.string.accountCreatedSuccessfullyMessage), getString(R.string.ok), null, null);
+                                                CustomDialog cd = new CustomDialog(Register.this, getString(R.string.account_created_successfully), getString(R.string.accountCreatedSuccessfullyMessage), getString(R.string.ok),
+                                                        null, "Open Email");
                                                 cd.setPositiveButtonListener(v -> {
                                                     cd.dismissDialog();
                                                     pb.setVisibility(View.VISIBLE);
@@ -263,6 +263,7 @@ public class Register extends AppCompatActivity {
                                                     Repository.getInstance().setStaySignedIn(false, Register.this);
                                                     Register.this.startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
                                                 });
+                                                cd.setNeutralButtonListener(view -> Tools.openEmailApp(Register.this));
                                                 cd.show();
                                                 pb.setVisibility(View.GONE);
                                             } else {

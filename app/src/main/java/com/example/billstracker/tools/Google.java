@@ -1,7 +1,6 @@
 package com.example.billstracker.tools;
 
 import static android.content.ContentValues.TAG;
-import static com.example.billstracker.tools.FirebaseTools.checkForExistingUser;
 import static com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
 
 import android.annotation.SuppressLint;
@@ -79,16 +78,8 @@ public interface Google {
     static void firebaseAuthWithGoogle(Activity activity, String idToken, GoogleLoginCallback callback) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(activity, task -> {
-            if (task.isSuccessful()) {
-                checkForExistingUser(activity, (wasSuccessful, user) -> {
-                    if (wasSuccessful) {
-                        Log.d(TAG, "signInWithCredential:success");
-                        callback.onComplete(true, user, idToken);
-                    } else {
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        callback.onComplete(false, null, null);
-                    }
-                });
+            if (task.isSuccessful() && FirebaseAuth.getInstance().getCurrentUser() != null) {
+                callback.onComplete(true, FirebaseAuth.getInstance().getCurrentUser(), idToken);
             } else {
                 Log.w(TAG, "signInWithCredential:failure", task.getException());
                 callback.onComplete(false, null, null);

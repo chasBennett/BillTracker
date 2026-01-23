@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
@@ -44,6 +45,7 @@ import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.custom_objects.Payment;
+import com.example.billstracker.popup_classes.Notify;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -175,23 +177,33 @@ public interface Tools {
     }
 
     static void openEmailApp(Context context) {
-        List<Intent> emailAppLauncherIntents = new ArrayList<>();
-
-        Intent emailAppIntent = new Intent(Intent.ACTION_SENDTO);
-        emailAppIntent.setData(Uri.parse("mailto:"));
-        emailAppIntent.putExtra(Intent.EXTRA_EMAIL, "");
-        emailAppIntent.putExtra(Intent.EXTRA_SUBJECT, "");
+        // 1. Define the base intent for email apps
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:"));
 
         PackageManager packageManager = context.getPackageManager();
+        // MATCH_DEFAULT_ONLY ensures we only get apps that can actually handle the intent
+        List<ResolveInfo> emailApps = packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        List<Intent> intentList = new ArrayList<>();
 
-        List<ResolveInfo> emailApps = packageManager.queryIntentActivities(emailAppIntent, PackageManager.MATCH_ALL);
-
-        for (ResolveInfo resolveInfo : emailApps) {
-            emailAppLauncherIntents.add(packageManager.getLaunchIntentForPackage(resolveInfo.activityInfo.packageName));
+        for (ResolveInfo info : emailApps) {
+            String packageName = info.activityInfo.packageName;
+            Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+            if (launchIntent != null) {
+                intentList.add(launchIntent);
+            }
         }
 
-        context.startActivity(Intent.createChooser(new Intent(), context.getString(R.string.select_email_app)).putExtra(Intent.EXTRA_INITIAL_INTENTS, emailAppLauncherIntents.toArray(new Parcelable[0])));
-        context.startActivity(new Intent(context, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+        if (!intentList.isEmpty()) {
+            // 2. Create the Chooser
+            Intent chooserIntent = Intent.createChooser(intentList.remove(0), context.getString(R.string.select_email_app));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toArray(new Parcelable[0]));
+            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(chooserIntent);
+        } else {
+            Notify.createPopup((Activity) context, "No email apps found", null);
+        }
     }
 
     static void spinnerPopup(ArrayList<String> list, ArrayList<Integer> icons, TextView spinner, ItemSelectedListener itemSelectedListener) {

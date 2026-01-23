@@ -105,14 +105,21 @@ public class Settings extends BaseActivity {
             cd.setEditText("Password", null, ResourcesCompat.getDrawable(getResources(), R.drawable.padlock, getTheme()));
 
             cd.setPositiveButtonListener(v -> {
-                if (cd.getEditText() == null) {
+                if (cd.getEditText() != null) {
                     String pwd = cd.getEditText().getText().toString();
-                    if (!pwd.isEmpty()) {
+                    if (!pwd.isEmpty() && pwd.equals(thisUser.getPassword())) {
                         cd.dismissDialog();
                         pb.setVisibility(View.VISIBLE);
                         AuthCredential cred = EmailAuthProvider.getCredential(thisUser.getUserName(), pwd);
                         executeDeletion(cred);
                     }
+                    else {
+                        Notify.createDialogPopup(cd, "Incorrect password.", null);
+                    }
+                }
+                else {
+                    cd.dismissDialog();
+                    Notify.createPopup(Settings.this, "An unexpected error has occurred", null);
                 }
             });
             cd.show();
