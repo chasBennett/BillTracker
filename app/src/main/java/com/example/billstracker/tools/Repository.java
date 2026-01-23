@@ -1,6 +1,7 @@
 package com.example.billstracker.tools;
 
 import static android.content.ContentValues.TAG;
+import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -58,11 +58,10 @@ public class Repository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final Gson gson = new Gson();
     // In-memory cache
-    private User thisUser;
-    private Payments payments;
-    private Expenses expenses;
-    private Bills bills;
-    private String uid;
+    private final InMemoryCache cache = new InMemoryCache();
+    private static final String KEY_CHANNEL_ID = "channel_id";
+    private static final String KEY_LAST_UID = "last_uid";
+    private static final String KEY_UID = "uid";
 
     private Repository() {
     }
@@ -78,13 +77,76 @@ public class Repository {
         return instance;
     }
 
+    //----------Local Data Management----------
+
+    private void writeToDisk(Context context, OnCompleteCallback callback) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(cache.uid, MODE_PRIVATE).edit();
+        editor.putString("user_json", gson.toJson(cache.thisUser));
+        editor.putString("bills_json", gson.toJson(cache.bills));
+        editor.putString("payments_json", gson.toJson(cache.payments));
+        editor.putString("expenses_json", gson.toJson(cache.expenses));
+        editor.putBoolean("disk_data_complete", true);
+        editor.apply();
+        callback.onComplete(true, "Local data saved successfully.");
+    }
+
+    public void clearDisk(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(cache.uid, MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        setNeedsDownload(context, true);
+    }
+
+    public boolean isLocalDiskValid(Context context) {
+        if (cache.uid == null) return false;
+
+        SharedPreferences prefs =
+                context.getSharedPreferences(cache.uid, MODE_PRIVATE);
+
+        return prefs.getBoolean("disk_data_complete", false);
+    }
+
     /**
      * Checks if the user data is loaded into memory.
      *
      * @return True if the user data is loaded, false otherwise.
      */
     public boolean isDataLoaded() {
-        return thisUser != null && bills != null && payments != null && expenses != null;
+        return cache.thisUser != null && cache.bills != null && cache.payments != null && cache.expenses != null;
+    }
+
+    public void saveDataForWorker(Context context, ArrayList<Payment> payments, String channelId) {
+        SharedPreferences prefs = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        Gson gson = new Gson();
+        editor.putString("payments", gson.toJson(payments));
+        editor.putString("channelId", channelId);
+        editor.apply();
+    }
+
+    public String getSavedChannelId(Context context) {
+        return context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .getString(KEY_CHANNEL_ID, null);
+    }
+
+    public void setSavedChannelId(Context context, String channelId) {
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putString(KEY_CHANNEL_ID, channelId)
+                .apply();
+    }
+
+    public void setNeedsDownload(Context context, boolean value) {
+        if (cache.uid != null) {
+            context.getSharedPreferences(cache.uid, MODE_PRIVATE).edit().putBoolean("needsDownload", value).apply();
+        }
+    }
+
+    public boolean getNeedsDownload(Context context) {
+        if (cache.uid != null) {
+            return context.getSharedPreferences(cache.uid, MODE_PRIVATE).getBoolean("needsDownload", false);
+        }
+        return false;
     }
 
     /**
@@ -102,6 +164,363 @@ public class Repository {
     }
 
     /**
+     * Loads the user's data from a sharedPreferences branch that is specific to their uid.
+     *
+     * @param context The application's context.
+     */
+    public void loadLocalData(Context context, OnCompleteCallback onComplete) {
+        context = context.getApplicationContext();
+        if (cache.uid == null) {
+            cache.uid = getUid(context); // Actually assign the value
+            if (cache.uid == null || cache.uid.isEmpty()) {
+                // Even if there is no UID, we must trigger the callback so the UI finishes loading
+                onComplete.onComplete(false, "No saved user found.");
+                return;
+            }
+        }
+
+        SharedPreferences prefs = context.getSharedPreferences(cache.uid, MODE_PRIVATE);
+        String userJson = prefs.getString("user_json", null);
+
+        if (userJson != null) {
+            cache.thisUser = gson.fromJson(userJson, User.class);
+        }
+
+        if (cache.thisUser == null) {
+            cache.thisUser = new User();
+        }
+        if (cache.thisUser.getBudgets() == null) cache.thisUser.setBudgets(new ArrayList<>());
+        if (cache.thisUser.getPartners() == null) cache.thisUser.setPartners(new ArrayList<>());
+        if (cache.thisUser.getBills() == null) cache.thisUser.setBills(new ArrayList<>());
+
+        cache.bills = gson.fromJson(prefs.getString("bills_json", null), Bills.class);
+        cache.payments = gson.fromJson(prefs.getString("payments_json", null), Payments.class);
+        cache.expenses = gson.fromJson(prefs.getString("expenses_json", null), Expenses.class);
+
+        if (cache.bills == null) cache.bills = new Bills(new ArrayList<>());
+        if (cache.payments == null) cache.payments = new Payments(new ArrayList<>());
+        if (cache.expenses == null) cache.expenses = new Expenses(new ArrayList<>());
+
+        if (onComplete != null) {
+            onComplete.onComplete(true, "Local data loaded successfully.");
+        }
+    }
+
+    /**
+     * Saves the current user's uid to a global SharedPreferences instance for use during future logins.
+     *
+     * @param uid     The user UID.
+     * @param context The application's context
+     *
+     */
+    public void setUid(String uid, Context context) {
+        context = context.getApplicationContext();
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().putString(KEY_UID, uid)
+                .apply();
+    }
+
+    /**
+     * Retrieves the user's uid from a global SharedPreferences instance.
+     *
+     * @param context The application's context.
+     * @return The user's uid.
+     *
+     */
+    public String getUid(Context context) {
+        if (cache.uid != null) {
+            return cache.uid;
+        }
+        else {
+            cache.uid = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).getString(KEY_UID, null);
+            if (cache.uid != null) {
+                return cache.uid;
+            }
+            else {
+                context.startActivity(new Intent(context, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Logs the user out of the application.
+     *
+     * @param context The application's context.
+     *
+     */
+    public void logout(Context context) {
+
+        if (context instanceof Activity) {
+            Prefs.setSignedInWithGoogle((Activity) context, false);
+        }
+
+        cache.thisUser = null;
+        cache.payments = null;
+        cache.expenses = null;
+        cache.bills = null;
+
+        setStaySignedIn(false, context);
+        FirebaseAuth.getInstance().signOut();
+
+        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
+        CredentialManager manager = CredentialManager.create(context);
+
+        manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
+            @Override
+            public void onResult(Void unused) {
+
+                Intent intent = new Intent(context, Login.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("Welcome", true);
+                context.startActivity(intent);
+            }
+
+            @Override
+            public void onError(@NonNull ClearCredentialException e) {
+                Log.e(TAG, "Couldn't clear user credentials: " + e);
+                context.startActivity(new Intent(context, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
+            }
+        });
+    }
+
+    /**
+     * Checks if the user has previously elected to stay signed in.
+     *
+     * @param context The application's context.
+     * @return True if the user chose to stay signed in, false otherwise.
+     *
+     */
+    public boolean getStaySignedIn(Context context) {
+        boolean value = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).getBoolean("stay_signed_in", false);
+        if (value) {
+            cache.uid = context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).getString(KEY_UID, "");
+            return !cache.uid.isEmpty();
+        }
+        return false;
+    }
+
+    /**
+     * Sets the user's preference for whether they want to stay signed in.
+     *
+     * @param value   True if the user previously chose to stay signed in, false otherwise.
+     * @param context The application's context.
+     *
+     */
+    public void setStaySignedIn(boolean value, Context context) {
+        if (!value) {
+            context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                    .edit()
+                    .remove("saved_email")
+                    .remove("saved_password")
+                    .apply();
+        }
+        saveData(context, (wasSuccessful, message) -> Log.d("Repository Message", "Credentials cleared."));
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putBoolean("stay_signed_in", value)
+                .putString(KEY_UID, cache.uid)
+                .apply();
+    }
+
+    // --- ALLOW BIOMETRIC SIGN IN ---
+
+    /**
+     * Checks if the user has previously elected to use biometric authentication.
+     *
+     * @param context The application's context.
+     * @return True if the user chose to use biometric authentication, false otherwise.
+     *
+     */
+    public boolean getAllowBiometrics(Context context) {
+        return context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .getBoolean("allow_biometrics", false);
+    }
+
+    /**
+     * Sets the user's preference for whether they want to use biometric authentication.
+     *
+     * @param value   True if the user chose to allow biometric authentication, false otherwise.
+     * @param context The application's context.
+     *
+     */
+    public void setAllowBiometrics(boolean value, Context context) {
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putBoolean("allow_biometrics", value)
+                .apply();
+    }
+
+    // --- ALLOW BIOMETRIC PROMPT (The "Ask Again" logic) ---
+
+    /**
+     * Checks if the user has previously elected to allow a biometric prompt at sign in.
+     *
+     * @param context The application's context.
+     * @return True if the user chose to allow a biometric prompt, false otherwise.
+     *
+     */
+    public boolean getShowBiometricPrompt(Context context) {
+        return context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .getBoolean("show_biometric_prompt", true);
+    }
+
+    /**
+     * Sets the user's preference for whether they want to allow a biometric prompt at sign in.
+     *
+     * @param value   True if the user chose to allow a biometric prompt, false otherwise.
+     * @param context The application's context.
+     *
+     */
+    public void setShowBiometricPrompt(boolean value, Context context) {
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putBoolean("show_biometric_prompt", value)
+                .apply();
+    }
+
+    /**
+     * Saves the user's email and password to a SharedPreferences instance for biometric sign in.
+     *
+     * @param context  The application's context.
+     * @param email    The user's email.
+     * @param password The user's password.
+     *
+     */
+    public void saveCredentials(Context context, String email, String password) {
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putString("saved_email", email)
+                .putString("saved_password", password)
+                .apply();
+    }
+
+    public String getLastUid (Context context) {
+        return context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .getString(KEY_LAST_UID, "");
+    }
+
+    public void setLastUid(Context context, String uid) {
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
+                .edit()
+                .putString(KEY_LAST_UID, uid)
+                .apply();
+    }
+
+
+    public User getUser(Context context) {
+        if (cache.thisUser == null) {
+            loadLocalData(context, (success, message) -> {
+            });
+        }
+        return cache.thisUser;
+    }
+
+    /**
+     * Deletes the user's local data.
+     *
+     * @param context The application's context.
+     *
+     */
+    private void wipeLocalData(Context context) {
+        // 1. Target the UID-specific file before clearing the UID reference
+        if (cache.uid != null) {
+            context.getSharedPreferences(cache.uid, MODE_PRIVATE).edit().clear().apply();
+        }
+
+        // 2. Clear Global Preferences (credentials, stay signed in)
+        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().clear().apply();
+
+        // 3. Nullify memory references to trigger the BaseActivity Gatekeeper
+        cache.thisUser = null;
+        cache.bills = null;
+        cache.payments = null;
+        cache.expenses = null;
+        cache.uid = null;
+
+        // 4. Reset biometric states
+        setAllowBiometrics(false, context);
+        setShowBiometricPrompt(true, context);
+    }
+
+    //----------Cloud Data Management----------
+
+    /**
+     * Fetches the user's cloud data and loads it into memory.
+     *
+     * @param userUid  The user's UID.
+     * @param context  The application's context.
+     * @param callback A callback to be executed after the data is fetched.
+     *                 <p>
+     *                 This callback will be executed on the main thread.
+     */
+    public void fetchCloudData(String userUid, Context context, OnCompleteCallback callback) {
+        this.cache.uid = userUid;
+
+        boolean diskMissing = !isLocalDiskValid(context);
+        boolean flaggedForDownload = getNeedsDownload(context);
+
+        if (diskMissing || flaggedForDownload) {
+            Context appContext = context.getApplicationContext();
+
+            db.collection("users").document(cache.uid).get().addOnSuccessListener(doc -> {
+                if (doc.exists()) {
+                    this.cache.thisUser = doc.toObject(User.class);
+
+                    final int TOTAL_SUBCOLLECTIONS = 3;
+                    final int[] loadedCount = {0};
+
+                    // This is our final step after all 3 sub-collections are in memory
+                    Runnable checkTaskCompletion = () -> {
+                        loadedCount[0]++;
+                        if (loadedCount[0] == TOTAL_SUBCOLLECTIONS) {
+                            // CRITICAL STRATEGY STEP:
+                            // Mirror the cloud data to local storage immediately
+                            writeToDisk(context, (success, message) -> {
+                                if (success) {
+                                    setNeedsDownload(context, false);
+                                    callback.onComplete(true, "Cloud data synced successfully.");
+                                }
+                                if (!success) {
+                                    callback.onComplete(false, message);
+                                }
+                            });
+                        }
+                    };
+
+                    // Fetch Sub-collections
+                    db.collection("users").document(cache.uid).collection("bills").get()
+                            .addOnSuccessListener(snap -> {
+                                this.cache.bills = new Bills((ArrayList<Bill>) snap.toObjects(Bill.class));
+                                this.cache.bills = new Bills(new ArrayList<>(new HashSet<>(this.cache.bills.getBills())));
+                                checkTaskCompletion.run();
+                            });
+
+                    db.collection("users").document(cache.uid).collection("payments").get()
+                            .addOnSuccessListener(snap -> {
+                                this.cache.payments = new Payments((ArrayList<Payment>) snap.toObjects(Payment.class));
+                                this.cache.payments = new Payments(new ArrayList<>(new HashSet<>(this.cache.payments.getPayments())));
+                                checkTaskCompletion.run();
+                            });
+
+                    db.collection("users").document(cache.uid).collection("expenses").get()
+                            .addOnSuccessListener(snap -> {
+                                this.cache.expenses = new Expenses((ArrayList<Expense>) snap.toObjects(Expense.class));
+                                this.cache.expenses = new Expenses(new ArrayList<>(new HashSet<>(this.cache.expenses.getExpenses())));
+                                checkTaskCompletion.run();
+                            });
+
+                } else {
+                    // HANDLE NEW USER
+                    handleNewUserCreation(userUid, appContext, callback);
+                }
+            }).addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        }
+        else {
+            callback.onComplete(true, "Local data is up to date.");
+        }
+    }
+
+    /**
      * Saves the user's data to a SharedPreferences branch that is specific to their uid.
      * Then it uploads the data to the Firebase Firestore instance.
      * Elements saved include User, Bills, Payments, and Expenses.
@@ -112,7 +531,7 @@ public class Repository {
      */
     public void saveData(Context context, OnCompleteCallback callback) {
         Context appContext = context.getApplicationContext();
-        if (uid == null) {
+        if (cache.uid == null) {
             if (callback != null) callback.onComplete(false, "User ID is null.");
             return;
         }
@@ -137,17 +556,17 @@ public class Repository {
 
         // 2. STEP TWO: Prepare the Cloud Batch
         // Profile
-        if (thisUser != null && thisUser.isNeedsSync()) {
-            batch.set(db.collection("users").document(uid), thisUser, SetOptions.merge());
+        if (cache.thisUser != null && cache.thisUser.isNeedsSync()) {
+            batch.set(db.collection("users").document(cache.uid), cache.thisUser, SetOptions.merge());
             userNeedsSync = true;
             hasChanges = true;
         }
 
         // Bills
-        if (bills != null && bills.getBills() != null) {
-            for (Bill bill : bills.getBills()) {
+        if (cache.bills != null && cache.bills.getBills() != null) {
+            for (Bill bill : cache.bills.getBills()) {
                 if (bill.isNeedsDelete() || bill.isNeedsSync()) {
-                    DocumentReference ref = db.collection("users").document(uid)
+                    DocumentReference ref = db.collection("users").document(cache.uid)
                             .collection("bills").document(bill.getBillerName());
                     if (bill.isNeedsDelete()) batch.delete(ref);
                     else batch.set(ref, bill, SetOptions.merge());
@@ -158,10 +577,10 @@ public class Repository {
         }
 
         // Payments
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment p : payments.getPayments()) {
+        if (cache.payments != null && cache.payments.getPayments() != null) {
+            for (Payment p : cache.payments.getPayments()) {
                 if (p.isNeedsDelete() || p.isNeedsSync()) {
-                    DocumentReference ref = db.collection("users").document(uid)
+                    DocumentReference ref = db.collection("users").document(cache.uid)
                             .collection("payments").document(String.valueOf(p.getPaymentId()));
                     if (p.isNeedsDelete()) batch.delete(ref);
                     else batch.set(ref, p, SetOptions.merge());
@@ -172,10 +591,10 @@ public class Repository {
         }
 
         // Expenses
-        if (expenses != null && expenses.getExpenses() != null) {
-            for (Expense e : expenses.getExpenses()) {
+        if (cache.expenses != null && cache.expenses.getExpenses() != null) {
+            for (Expense e : cache.expenses.getExpenses()) {
                 if (e.isNeedsDelete() || e.isNeedsSync()) {
-                    DocumentReference ref = db.collection("users").document(uid)
+                    DocumentReference ref = db.collection("users").document(cache.uid)
                             .collection("expenses").document(e.getId());
                     if (e.isNeedsDelete()) batch.delete(ref);
                     else batch.set(ref, e, SetOptions.merge());
@@ -186,7 +605,10 @@ public class Repository {
         }
 
         if (!hasChanges) {
-            if (callback != null) callback.onComplete(true, "Local data saved. Cloud is already up to date.");
+            setNeedsDownload(context, false);
+            if (callback != null) {
+                callback.onComplete(true, "Local data saved. Cloud is already up to date.");
+            }
             return;
         }
 
@@ -196,7 +618,7 @@ public class Repository {
             if (task.isSuccessful()) {
                 // 4. STEP FOUR: Success Handling
                 // Clear flags in-memory because they are now confirmed in the cloud
-                if (finalUserNeedsSync) thisUser.setNeedsSync(false);
+                if (finalUserNeedsSync) cache.thisUser.setNeedsSync(false);
                 for (Bill b : dirtyBills) b.setNeedsSync(false);
                 for (Payment p : dirtyPayments) p.setNeedsSync(false);
                 for (Expense e : dirtyExpenses) e.setNeedsSync(false);
@@ -242,51 +664,8 @@ public class Repository {
         );
     }
 
-    /**
-     * Loads the user's data from a sharedPreferences branch that is specific to their uid.
-     *
-     * @param context The application's context.
-     */
-    public void loadLocalData(Context context, OnCompleteCallback onComplete) {
-        context = context.getApplicationContext();
-        if (uid == null) {
-            uid = getUid(context); // Actually assign the value
-            if (uid == null || uid.isEmpty()) {
-                // Even if there is no UID, we must trigger the callback so the UI finishes loading
-                onComplete.onComplete(false, "No saved user found.");
-                return;
-            }
-        }
-
-        SharedPreferences prefs = context.getSharedPreferences(uid, Context.MODE_PRIVATE);
-        String userJson = prefs.getString("user_json", null);
-
-        if (userJson != null) {
-            thisUser = gson.fromJson(userJson, User.class);
-        }
-
-        if (thisUser == null) {
-            thisUser = new User();
-        }
-        if (thisUser.getBudgets() == null) thisUser.setBudgets(new ArrayList<>());
-        if (thisUser.getPartners() == null) thisUser.setPartners(new ArrayList<>());
-        if (thisUser.getBills() == null) thisUser.setBills(new ArrayList<>());
-
-        bills = gson.fromJson(prefs.getString("bills_json", null), Bills.class);
-        payments = gson.fromJson(prefs.getString("payments_json", null), Payments.class);
-        expenses = gson.fromJson(prefs.getString("expenses_json", null), Expenses.class);
-
-        if (bills == null) bills = new Bills(new ArrayList<>());
-        if (payments == null) payments = new Payments(new ArrayList<>());
-        if (expenses == null) expenses = new Expenses(new ArrayList<>());
-
-        if (onComplete != null) {
-            onComplete.onComplete(true, "Local data loaded successfully.");
-        }
-    }
-
     public User.Builder editUser(Context context) {
-        User user = thisUser;
+        User user = cache.thisUser;
         if (user == null) {
             return null;
         }
@@ -301,7 +680,7 @@ public class Repository {
      */
     public void updateUser(Context context, java.util.function.Consumer<User.Builder> actions, OnCompleteCallback callback) {
         // 1. Get the current user instance from the repository
-        User currentUser = this.thisUser;
+        User currentUser = this.cache.thisUser;
 
         if (currentUser != null) {
             // 2. Initialize the Builder (User.java defines this inner class)
@@ -416,87 +795,6 @@ public class Repository {
     }
 
     /**
-     * Fetches the user's cloud data and loads it into memory.
-     *
-     * @param userUid  The user's UID.
-     * @param context  The application's context.
-     * @param callback A callback to be executed after the data is fetched.
-     *                 <p>
-     *                 This callback will be executed on the main thread.
-     */
-    public void fetchCloudData(String userUid, Context context, OnCompleteCallback callback) {
-        this.uid = userUid;
-        Context appContext = context.getApplicationContext();
-
-        db.collection("users").document(uid).get().addOnSuccessListener(doc -> {
-            if (doc.exists()) {
-                this.thisUser = doc.toObject(User.class);
-
-                final int TOTAL_SUBCOLLECTIONS = 3;
-                final int[] loadedCount = {0};
-
-                // This is our final step after all 3 sub-collections are in memory
-                Runnable checkTaskCompletion = () -> {
-                    loadedCount[0]++;
-                    if (loadedCount[0] == TOTAL_SUBCOLLECTIONS) {
-                        // CRITICAL STRATEGY STEP:
-                        // Mirror the cloud data to local storage immediately
-                        writeToDisk(context, (success, message) -> {
-                            if (success) {
-                                callback.onComplete(true, "Cloud data synced successfully.");
-                            }
-                            if (!success) {
-                                callback.onComplete(false, message);
-                            }
-                        });
-                    }
-                };
-
-                // Fetch Sub-collections
-                db.collection("users").document(uid).collection("bills").get()
-                        .addOnSuccessListener(snap -> {
-                            this.bills = new Bills((ArrayList<Bill>) snap.toObjects(Bill.class));
-                            this.bills = new Bills(new ArrayList<>(new HashSet<>(this.bills.getBills())));
-                            checkTaskCompletion.run();
-                        });
-
-                db.collection("users").document(uid).collection("payments").get()
-                        .addOnSuccessListener(snap -> {
-                            this.payments = new Payments((ArrayList<Payment>) snap.toObjects(Payment.class));
-                            this.payments = new Payments(new ArrayList<>(new HashSet<>(this.payments.getPayments())));
-                            checkTaskCompletion.run();
-                        });
-
-                db.collection("users").document(uid).collection("expenses").get()
-                        .addOnSuccessListener(snap -> {
-                            this.expenses = new Expenses((ArrayList<Expense>) snap.toObjects(Expense.class));
-                            this.expenses = new Expenses(new ArrayList<>(new HashSet<>(this.expenses.getExpenses())));
-                            checkTaskCompletion.run();
-                        });
-
-            } else {
-                // HANDLE NEW USER
-                handleNewUserCreation(userUid, appContext, callback);
-            }
-        }).addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
-    }
-
-    private void writeToDisk(Context context, OnCompleteCallback callback) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(uid, Context.MODE_PRIVATE).edit();
-        editor.putString("user_json", gson.toJson(thisUser));
-        editor.putString("bills_json", gson.toJson(bills));
-        editor.putString("payments_json", gson.toJson(payments));
-        editor.putString("expenses_json", gson.toJson(expenses));
-        editor.apply();
-        callback.onComplete(true, "Local data saved successfully.");
-    }
-
-    public void clearDisk(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(uid, Context.MODE_PRIVATE);
-        prefs.edit().clear().apply();
-    }
-
-    /**
      * Handles the creation of a new user account.
      *
      * @param uid      The user's UID.
@@ -509,12 +807,12 @@ public class Repository {
             User newUser = new User(user.getEmail(), uid, user.getDisplayName(), uid);
 
             // Ensure lists aren't null even for new users
-            this.bills = new Bills(new ArrayList<>());
-            this.payments = new Payments(new ArrayList<>());
-            this.expenses = new Expenses(new ArrayList<>());
+            this.cache.bills = new Bills(new ArrayList<>());
+            this.cache.payments = new Payments(new ArrayList<>());
+            this.cache.expenses = new Expenses(new ArrayList<>());
 
             db.collection("users").document(uid).set(newUser).addOnCompleteListener(task -> {
-                this.thisUser = newUser;
+                this.cache.thisUser = newUser;
                 saveData(context, (success, message) -> {
                     if (success) {
                         callback.onComplete(true, "New user account initialized.");
@@ -527,293 +825,6 @@ public class Repository {
         } else {
             callback.onComplete(false, "No authenticated user found.");
         }
-    }
-
-
-    /**
-     * Saves the current user's uid to a global SharedPreferences instance for use during future logins.
-     *
-     * @param uid     The user UID.
-     * @param context The application's context
-     *
-     */
-    public void setUid(String uid, Context context) {
-        context = context.getApplicationContext();
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).edit().putString("lastUid", uid)
-                .apply();
-    }
-
-    /**
-     * Retrieves the user's uid from a global SharedPreferences instance.
-     *
-     * @param context The application's context.
-     * @return The user's uid.
-     *
-     */
-    public String getUid(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).getString("lastUid", "");
-    }
-
-    /**
-     * Logs the user out of the application.
-     *
-     * @param context The application's context.
-     *
-     */
-    public void logout(Context context) {
-
-        Prefs.setSignedInWithGoogle((Activity) context, false);
-
-        thisUser = null;
-        payments = null;
-        expenses = null;
-        bills = null;
-
-        setStaySignedIn(false, context);
-        FirebaseAuth.getInstance().signOut();
-
-        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
-        CredentialManager manager = CredentialManager.create(context);
-
-        manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
-            @Override
-            public void onResult(Void unused) {
-
-                Intent intent = new Intent(context, Login.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("Welcome", true);
-                context.startActivity(intent);
-            }
-
-            @Override
-            public void onError(@NonNull ClearCredentialException e) {
-                Log.e(TAG, "Couldn't clear user credentials: " + e);
-                context.startActivity(new Intent(context, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK));
-            }
-        });
-    }
-
-    /**
-     * Sets the ownership of the user's data.
-     * This includes setting the owner of all bills, payments, and expenses.
-     *
-     */
-    public void setOwnership() {
-        if (uid != null) {
-            if (bills != null && !bills.getBills().isEmpty()) {
-                for (Bill bill : bills.getBills()) {
-                    if (bill.getOwner() == null) {
-                        bill.setOwner(uid);
-                    }
-                }
-            }
-            if (payments != null && !payments.getPayments().isEmpty()) {
-                for (Payment payment : payments.getPayments()) {
-                    if (payment.getOwner() == null) {
-                        payment.setOwner(uid);
-                    }
-                }
-            }
-            if (expenses != null && !expenses.getExpenses().isEmpty()) {
-                for (Expense expense : expenses.getExpenses()) {
-                    if (expense.getOwner() == null) {
-                        expense.setOwner(uid);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks if the user has previously elected to stay signed in.
-     *
-     * @param context The application's context.
-     * @return True if the user chose to stay signed in, false otherwise.
-     *
-     */
-    public boolean getStaySignedIn(Context context) {
-        boolean value = context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).getBoolean("stay_signed_in", false);
-        if (value) {
-            uid = context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).getString("uid", "");
-            return !uid.isEmpty();
-        }
-        return false;
-    }
-
-    /**
-     * Sets the user's preference for whether they want to stay signed in.
-     *
-     * @param value   True if the user previously chose to stay signed in, false otherwise.
-     * @param context The application's context.
-     *
-     */
-    public void setStaySignedIn(boolean value, Context context) {
-        if (!value) {
-            context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                    .edit()
-                    .remove("saved_email")
-                    .remove("saved_password")
-                    .apply();
-        }
-        saveData(context, (wasSuccessful, message) -> Log.d("Repository Message", "Credentials cleared."));
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean("stay_signed_in", value)
-                .putString("uid", uid)
-                .apply();
-    }
-
-    // --- ALLOW BIOMETRIC SIGN IN ---
-
-    /**
-     * Checks if the user has previously elected to use biometric authentication.
-     *
-     * @param context The application's context.
-     * @return True if the user chose to use biometric authentication, false otherwise.
-     *
-     */
-    public boolean getAllowBiometrics(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .getBoolean("allow_biometrics", false);
-    }
-
-    /**
-     * Sets the user's preference for whether they want to use biometric authentication.
-     *
-     * @param value   True if the user chose to allow biometric authentication, false otherwise.
-     * @param context The application's context.
-     *
-     */
-    public void setAllowBiometrics(boolean value, Context context) {
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean("allow_biometrics", value)
-                .apply();
-    }
-
-    // --- ALLOW BIOMETRIC PROMPT (The "Ask Again" logic) ---
-
-    /**
-     * Checks if the user has previously elected to allow a biometric prompt at sign in.
-     *
-     * @param context The application's context.
-     * @return True if the user chose to allow a biometric prompt, false otherwise.
-     *
-     */
-    public boolean getShowBiometricPrompt(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .getBoolean("show_biometric_prompt", true);
-    }
-
-    /**
-     * Sets the user's preference for whether they want to allow a biometric prompt at sign in.
-     *
-     * @param value   True if the user chose to allow a biometric prompt, false otherwise.
-     * @param context The application's context.
-     *
-     */
-    public void setShowBiometricPrompt(boolean value, Context context) {
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean("show_biometric_prompt", value)
-                .apply();
-    }
-
-    /**
-     * Saves the user's email and password to a SharedPreferences instance for biometric sign in.
-     *
-     * @param context  The application's context.
-     * @param email    The user's email.
-     * @param password The user's password.
-     *
-     */
-    public void saveCredentials(Context context, String email, String password) {
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .edit()
-                .putString("saved_email", email)
-                .putString("saved_password", password)
-                .apply();
-    }
-
-    /**
-     * Retrieves the user's email from a SharedPreferences instance.
-     *
-     * @param context The application's context.
-     * @return The user's saved email, or an empty string if not saved.
-     *
-     */
-    public String getSavedEmail(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .getString("saved_email", "");
-    }
-
-    /**
-     * Retrieves the user's password from a SharedPreferences instance.
-     *
-     * @param context The application's context.
-     * @return The user's saved password, or an empty string if not saved.
-     *
-     */
-    public String getSavedPassword(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .getString("saved_password", "");
-    }
-
-    /**
-     * Loads the user's partner data from Firebase Firestore.
-     *
-     * @param userId             The user's ID.
-     * @param onCompleteCallback A callback to be executed after the data is loaded.
-     *
-     */
-    public void loadPartnerData(String userId, OnCompleteCallback onCompleteCallback) {
-        FirebaseFirestore db1 = FirebaseFirestore.getInstance();
-        if (payments == null || payments.getPayments() == null) {
-            payments = new Payments(new ArrayList<>());
-        }
-        db1.collection("users").document(userId).collection("payments").get().addOnCompleteListener(task11 -> {
-            if (task11.isSuccessful() && task11.getResult() != null && !task11.getResult().isEmpty()) {
-                payments.getPayments().addAll(task11.getResult().toObjects(Payment.class));
-            } else {
-                if (payments == null || payments.getPayments() == null) {
-                    payments = new Payments(new ArrayList<>());
-                }
-            }
-            if (bills == null || bills.getBills() == null) {
-                bills = new Bills(new ArrayList<>());
-            }
-            db1.collection("users").document(userId).collection("bills").get().addOnCompleteListener(task111 -> {
-                if (task111.isSuccessful() && task111.getResult() != null && !task111.getResult().isEmpty()) {
-                    bills.getBills().addAll(task111.getResult().toObjects(Bill.class));
-                    Set<Bill> billList = new HashSet<>(bills.getBills());
-                    bills.setBills(new ArrayList<>(billList));
-                } else {
-                    if (thisUser.getBills() != null && !thisUser.getBills().isEmpty()) {
-                        bills.getBills().addAll(thisUser.getBills());
-                        thisUser = new User(thisUser.getUserName(), thisUser.getPassword(), thisUser.getName(), thisUser.isAdmin(), thisUser.getRegisteredWithGoogle(), thisUser.getLastLogin(), thisUser.getDateRegistered(),
-                                thisUser.getId(), thisUser.getBills(), thisUser.getTotalLogins(), thisUser.getTicketNumber(), thisUser.getIncome(), thisUser.getPayFrequency(), thisUser.getTermsAcceptedOn(), thisUser.getTrophies(),
-                                thisUser.getBudgets(), thisUser.getPhoneNumber(), thisUser.getPartners(), thisUser.getVersionNumber());
-                    }
-                    if (bills == null || bills.getBills() == null) {
-                        bills = new Bills(new ArrayList<>());
-                    }
-
-                }
-                if (expenses == null || expenses.getExpenses() == null) {
-                    expenses = new Expenses(new ArrayList<>());
-                }
-                db1.collection("users").document(userId).collection("expenses").get().addOnCompleteListener(task1111 -> {
-                    if (task1111.isSuccessful() && task1111.getResult() != null && !task1111.getResult().isEmpty()) {
-                        expenses.getExpenses().addAll(task1111.getResult().toObjects(Expense.class));
-                    } else {
-                        if (expenses == null || expenses.getExpenses() == null) {
-                            expenses = new Expenses(new ArrayList<>());
-                        }
-                    }
-                    onCompleteCallback.onComplete(true, "Partner data was loaded successfully.");
-                });
-            });
-        });
     }
 
     /**
@@ -831,11 +842,11 @@ public class Repository {
 
         // 1. Initialize the local User using the Safety Constructor
         // This ensures all ArrayLists (bills, budgets, etc.) are non-null
-        this.thisUser = new User(email, password, name, id);
-        this.uid = id;
+        this.cache.thisUser = new User(email, password, name, id);
+        this.cache.uid = id;
 
         // 2. Return the Builder so the Activity can chain additional fields
-        return new User.Builder(context, thisUser);
+        return new User.Builder(context, cache.thisUser);
     }
 
     /**
@@ -847,7 +858,7 @@ public class Repository {
      */
     public void deleteUserAccount(Context context, AuthCredential credential, OnCompleteCallback callback) {
         FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (authUser == null || uid == null) {
+        if (authUser == null || cache.uid == null) {
             callback.onComplete(false, "No active session found.");
             return;
         }
@@ -863,7 +874,7 @@ public class Repository {
     }
 
     public void removeFromRemotePartner(String partnerId) {
-        if (partnerId == null || uid == null) return;
+        if (partnerId == null || cache.uid == null) return;
 
         // 1. Identify the partner's document
         DocumentReference partnerRef = db.collection("users").document(partnerId);
@@ -874,7 +885,7 @@ public class Repository {
             if (partnerUser != null && partnerUser.getPartners() != null) {
                 Partner meAsPartner = null;
                 for (Partner p : partnerUser.getPartners()) {
-                    if (p.getPartnerUid().equals(this.uid)) {
+                    if (p.getPartnerUid().equals(this.cache.uid)) {
                         meAsPartner = p;
                         break;
                     }
@@ -901,7 +912,7 @@ public class Repository {
         final int[] collectionsProcessed = {0};
 
         for (String sub : subCollections) {
-            db.collection("users").document(uid).collection(sub).get().addOnSuccessListener(snapshot -> {
+            db.collection("users").document(cache.uid).collection(sub).get().addOnSuccessListener(snapshot -> {
                 if (snapshot.isEmpty()) {
                     checkWipeProgress(collectionsProcessed, subCollections.length, authUser, context, callback);
                     return;
@@ -939,7 +950,7 @@ public class Repository {
         counter[0]++;
         if (counter[0] == target) {
             // Delete the main user document
-            db.collection("users").document(uid).delete().addOnSuccessListener(aVoid -> {
+            db.collection("users").document(cache.uid).delete().addOnSuccessListener(aVoid -> {
                 // Finally, delete the Auth account
                 authUser.delete().addOnCompleteListener(authDeleteTask -> {
                     if (authDeleteTask.isSuccessful()) {
@@ -953,57 +964,9 @@ public class Repository {
         }
     }
 
-    public String getLastUid (Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .getString("last_uid", "");
-    }
-
-    public void setLastUid(Context context, String uid) {
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE)
-                .edit()
-                .putString("last_uid", uid)
-                .apply();
-    }
-
-
-    public User getUser(Context context) {
-        if (thisUser == null) {
-            loadLocalData(context, (success, message) -> {
-            });
-        }
-        return thisUser;
-    }
-
-    /**
-     * Deletes the user's local data.
-     *
-     * @param context The application's context.
-     *
-     */
-    private void wipeLocalData(Context context) {
-        // 1. Target the UID-specific file before clearing the UID reference
-        if (uid != null) {
-            context.getSharedPreferences(uid, Context.MODE_PRIVATE).edit().clear().apply();
-        }
-
-        // 2. Clear Global Preferences (credentials, stay signed in)
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).edit().clear().apply();
-
-        // 3. Nullify memory references to trigger the BaseActivity Gatekeeper
-        thisUser = null;
-        bills = null;
-        payments = null;
-        expenses = null;
-        uid = null;
-
-        // 4. Reset biometric states
-        setAllowBiometrics(false, context);
-        setShowBiometricPrompt(true, context);
-    }
-
     public ArrayList<Bill> getBills() {
-        if (bills == null) return new ArrayList<>();
-        return bills.getBills();
+        if (cache.bills == null) return new ArrayList<>();
+        return cache.bills.getBills();
     }
 
     /**
@@ -1013,8 +976,8 @@ public class Repository {
      * @return The Bill object with the specified name, or null if not found.
      */
     public Bill getBillByName(String name) {
-        if (bills == null) return null;
-        for (Bill bill : bills.getBills()) {
+        if (cache.bills == null) return null;
+        for (Bill bill : cache.bills.getBills()) {
             if (bill.getBillerName().equalsIgnoreCase(name)) return bill;
         }
         return null;
@@ -1027,18 +990,18 @@ public class Repository {
      * @return The Bill object with the specified ID, or null if not found.
      */
     public Bill getBillById(String billId) {
-        if (bills == null) return null;
-        for (Bill bill : bills.getBills()) {
+        if (cache.bills == null) return null;
+        for (Bill bill : cache.bills.getBills()) {
             if (bill.getBillsId().equalsIgnoreCase(billId)) return bill;
         }
         return null;
     }
 
     public void addBill(Bill bill, Context context, OnCompleteCallback callback) {
-        if (bills == null) bills = new Bills(new ArrayList<>());
-        bills.getBills().add(bill);
+        if (cache.bills == null) cache.bills = new Bills(new ArrayList<>());
+        cache.bills.getBills().add(bill);
 
-        db.collection("users").document(uid).collection("bills")
+        db.collection("users").document(cache.uid).collection("bills")
                 .document(bill.getBillerName()).set(bill, SetOptions.merge());
 
         saveData(context, (wasSuccessful, message) -> {
@@ -1052,7 +1015,7 @@ public class Repository {
     }
 
     public void deleteBill(String billerName, Context context, OnCompleteCallback callback) {
-        if (uid == null || bills == null) {
+        if (cache.uid == null || cache.bills == null) {
             callback.onComplete(false, "Session or data missing.");
             return;
         }
@@ -1067,8 +1030,8 @@ public class Repository {
         toRemove.setNeedsDelete(true);
 
         // 2. Handle associated payments
-        if (payments != null && payments.getPayments() != null) {
-            for (Payment p : payments.getPayments()) {
+        if (cache.payments != null && cache.payments.getPayments() != null) {
+            for (Payment p : cache.payments.getPayments()) {
                 if (p.getBillerName().equalsIgnoreCase(billerName)) {
                     p.setNeedsDelete(true);
                 }
@@ -1079,9 +1042,9 @@ public class Repository {
         saveData(context, (success, message) -> {
             if (success) {
                 // Only remove from the local memory lists AFTER cloud success
-                bills.getBills().removeIf(Bill::isNeedsDelete);
-                if (payments != null) {
-                    payments.getPayments().removeIf(Payment::isNeedsDelete);
+                cache.bills.getBills().removeIf(Bill::isNeedsDelete);
+                if (cache.payments != null) {
+                    cache.payments.getPayments().removeIf(Payment::isNeedsDelete);
                 }
 
                 // Mirror the 'clean' state to disk (removing the deleted items from JSON)
@@ -1095,20 +1058,20 @@ public class Repository {
     }
 
     public void sortBills() {
-        bills.setBills((ArrayList<Bill>) bills.getBills().stream().distinct().collect(Collectors.toList()));
+        cache.bills.setBills((ArrayList<Bill>) cache.bills.getBills().stream().distinct().collect(Collectors.toList()));
     }
 
     public void sortPaymentsByDueDate() {
-        payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
+        cache.payments.getPayments().sort(Comparator.comparing(Payment::getDueDate));
     }
 
     // --- PAYMENT OPERATIONS ---
 
     public void addPayment(Payment payment, Context context, OnCompleteCallback callback) {
-        if (payments == null) payments = new Payments(new ArrayList<>());
-        payments.getPayments().add(payment);
+        if (cache.payments == null) cache.payments = new Payments(new ArrayList<>());
+        cache.payments.getPayments().add(payment);
 
-        db.collection("users").document(uid).collection("payments")
+        db.collection("users").document(cache.uid).collection("payments")
                 .document(String.valueOf(payment.getPaymentId())).set(payment, SetOptions.merge());
 
         saveData(context, (wasSuccessful, message) -> {
@@ -1122,7 +1085,7 @@ public class Repository {
     }
 
     public void deletePayment(int paymentId, Context context, OnCompleteCallback callback) {
-        if (uid == null || payments == null) {
+        if (cache.uid == null || cache.payments == null) {
             if (callback != null) callback.onComplete(false, "Session or data missing.");
             return;
         }
@@ -1156,7 +1119,7 @@ public class Repository {
         saveData(context, (success, message) -> {
             if (success) {
                 // Remove from local memory only after cloud success
-                payments.getPayments().removeIf(Payment::isNeedsDelete);
+                cache.payments.getPayments().removeIf(Payment::isNeedsDelete);
 
                 // Mirror clean state to disk
                 writeToDisk(context, (s, m) -> {
@@ -1169,58 +1132,40 @@ public class Repository {
         });
     }
 
-    public void saveDataForWorker(Context context, ArrayList<Payment> payments, String channelId) {
-        SharedPreferences prefs = context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        Gson gson = new Gson();
-        editor.putString("payments", gson.toJson(payments));
-        editor.putString("channelId", channelId);
-        editor.apply();
-    }
-
-    public String getSavedChannelId(Context context) {
-        return context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).getString("1234567890", "1234567890");
-    }
-
-    public void setSavedChannelId(Context context, String channelId) {
-        context.getSharedPreferences("Global_Preferences", Context.MODE_PRIVATE).edit().putString("1234567890", "1234567890").apply();
-    }
-
     public Payment getPaymentById(int id) {
-        if (payments == null) return null;
-        for (Payment p : payments.getPayments()) {
+        if (cache.payments == null) return null;
+        for (Payment p : cache.payments.getPayments()) {
             if (p.getPaymentId() == id) return p;
         }
         return null;
     }
 
     public Payment getPaymentByBillerName(String billerName) {
-        if (payments == null) return null;
-        for (Payment p : payments.getPayments()) {
+        if (cache.payments == null) return null;
+        for (Payment p : cache.payments.getPayments()) {
             if (p.getBillerName().equals(billerName)) return p;
         }
         return null;
     }
 
     public ArrayList<Payment> getPayments() {
-        if (payments == null || payments.getPayments() == null) {
-            payments = new Payments(new ArrayList<>());
+        if (cache.payments == null || cache.payments.getPayments() == null) {
+            cache.payments = new Payments(new ArrayList<>());
         }
-        return payments.getPayments();
+        return cache.payments.getPayments();
     }
 
     // --- EXPENSE OPERATIONS ---
 
     public void addExpense(Expense expense, Context context, OnCompleteCallback callback) {
-        if (expenses == null) expenses = new Expenses(new ArrayList<>());
+        if (cache.expenses == null) cache.expenses = new Expenses(new ArrayList<>());
 
         // Generate ID if missing (using BillerManager.id logic)
         if (expense.getId() == null) expense.setId(String.valueOf(BillerManager.id()));
 
-        expenses.getExpenses().add(expense);
+        cache.expenses.getExpenses().add(expense);
 
-        db.collection("users").document(uid).collection("expenses")
+        db.collection("users").document(cache.uid).collection("expenses")
                 .document(expense.getId()).set(expense, SetOptions.merge());
 
         saveData(context, (wasSuccessful, message) -> {
@@ -1234,7 +1179,7 @@ public class Repository {
     }
 
     public void deleteExpense(String expenseId, Context context, OnCompleteCallback callback) {
-        if (uid == null || expenses == null) {
+        if (cache.uid == null || cache.expenses == null) {
             if (callback != null) callback.onComplete(false, "Session or data missing.");
             return;
         }
@@ -1253,7 +1198,7 @@ public class Repository {
         saveData(context, (success, message) -> {
             if (success) {
                 // Remove from local memory only after cloud confirmation
-                expenses.getExpenses().removeIf(Expense::isNeedsDelete);
+                cache.expenses.getExpenses().removeIf(Expense::isNeedsDelete);
 
                 // Mirror clean state to disk (update JSON)
                 writeToDisk(context, (s, m) -> {
@@ -1267,18 +1212,18 @@ public class Repository {
     }
 
     public Expense getExpenseById(String id) {
-        if (expenses == null) return null;
-        for (Expense e : expenses.getExpenses()) {
+        if (cache.expenses == null) return null;
+        for (Expense e : cache.expenses.getExpenses()) {
             if (e.getId() != null && e.getId().equals(id)) return e;
         }
         return null;
     }
 
     public ArrayList<Expense> getExpenses() {
-        if (expenses == null || expenses.getExpenses() == null) {
-            expenses = new Expenses(new ArrayList<>());
+        if (cache.expenses == null || cache.expenses.getExpenses() == null) {
+            cache.expenses = new Expenses(new ArrayList<>());
         }
-        return expenses.getExpenses();
+        return cache.expenses.getExpenses();
     }
 
     public interface OnCompleteCallback {
