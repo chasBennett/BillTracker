@@ -193,14 +193,17 @@ public class MainPieChart {
         lineChartLoading.setVisibility(View.GONE);
         pieChartLayout.setVisibility(View.VISIBLE);
         pieChart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
-        int progress;
+        final double[] progress = {0};
         if (remaining == 0) {
-            progress = 100;
+            progress[0] = 100;
         } else {
-            progress = 100 - ((int) (remaining) * 100) / ((int) total);
+            progress[0] = 100 - ((remaining) * 100) / (total);
         }
         pb.post(() -> {
-            ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", progress);
+            if (progress[0] < 1) {
+                progress[0] = 0;
+            }
+            ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", (int) progress[0]);
             animation.setDuration(500);
             animation.setInterpolator(new AccelerateDecelerateInterpolator());
             animation.start();

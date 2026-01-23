@@ -95,11 +95,12 @@ public class Repository {
     public void clearDisk(Context context) {
         if (cache.uid == null) return;
         localStore.clear(context, cache.uid);
-        localStore.setNeedsDownload(context, cache.uid, true);
-    }
-
-    public boolean isLocalDiskValid(Context context) {
-        return cache.uid != null && localStore.isDiskComplete(context, cache.uid);
+        //localStore.setNeedsDownload(context, cache.uid, true);
+        String lastUid = getLastUid(context);
+        String uid = getUid(context);
+        cache.clear();
+        setLastUid(context, lastUid);
+        setUid(uid, context);
     }
 
     /**
@@ -137,13 +138,6 @@ public class Repository {
         if (cache.uid != null) {
             context.getSharedPreferences(cache.uid, MODE_PRIVATE).edit().putBoolean("needsDownload", value).apply();
         }
-    }
-
-    public boolean getNeedsDownload(Context context) {
-        if (cache.uid != null) {
-            return context.getSharedPreferences(cache.uid, MODE_PRIVATE).getBoolean("needsDownload", false);
-        }
-        return false;
     }
 
     /**
@@ -249,7 +243,6 @@ public class Repository {
         }
 
         cache.uid = null;
-        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE).edit().remove(Repository.KEY_UID).apply();
 
         setStaySignedIn(false, context);
         FirebaseAuth.getInstance().signOut();
@@ -345,18 +338,6 @@ public class Repository {
     // --- ALLOW BIOMETRIC PROMPT (The "Ask Again" logic) ---
 
     /**
-     * Checks if the user has previously elected to allow a biometric prompt at sign in.
-     *
-     * @param context The application's context.
-     * @return True if the user chose to allow a biometric prompt, false otherwise.
-     *
-     */
-    public boolean getShowBiometricPrompt(Context context) {
-        return context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
-                .getBoolean("show_biometric_prompt", true);
-    }
-
-    /**
      * Sets the user's preference for whether they want to allow a biometric prompt at sign in.
      *
      * @param value   True if the user chose to allow a biometric prompt, false otherwise.
@@ -367,22 +348,6 @@ public class Repository {
         context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
                 .edit()
                 .putBoolean("show_biometric_prompt", value)
-                .apply();
-    }
-
-    /**
-     * Saves the user's email and password to a SharedPreferences instance for biometric sign in.
-     *
-     * @param context  The application's context.
-     * @param email    The user's email.
-     * @param password The user's password.
-     *
-     */
-    public void saveCredentials(Context context, String email, String password) {
-        context.getSharedPreferences("Global_Preferences", MODE_PRIVATE)
-                .edit()
-                .putString("saved_email", email)
-                .putString("saved_password", password)
                 .apply();
     }
 
@@ -448,6 +413,9 @@ public class Repository {
         boolean flaggedForDownload = localStore.needsDownload(context, cache.uid);
 
         if (diskMissing || flaggedForDownload) {
+            this.cache.bills = new Bills(new ArrayList<>());
+            this.cache.payments = new Payments(new ArrayList<>());
+            this.cache.expenses = new Expenses(new ArrayList<>());
             Context appContext = context.getApplicationContext();
 
             db.collection("users").document(cache.uid).get().addOnSuccessListener(doc -> {

@@ -1,8 +1,6 @@
 package com.example.billstracker.activities;
 
 import static android.content.ContentValues.TAG;
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +9,6 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
@@ -44,10 +40,8 @@ import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -77,7 +71,8 @@ public class Login extends AppCompatActivity {
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_IS_GOOGLE = "is_google";
     private static final String KEY_PIN = "user_pin";
-    private boolean welcome = false;
+    private static boolean welcome = false;
+    private static boolean changeUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +86,8 @@ public class Login extends AppCompatActivity {
         setupBiometricPrompt();
 
         googleLogin = false;
+        starting = false;
+        welcome = false;
 
         if (!NotificationManagerCompat.from(getApplicationContext()).areNotificationsEnabled())
             Tools.requestPermissionLauncher(Login.this, launcher);
@@ -108,7 +105,7 @@ public class Login extends AppCompatActivity {
                 prefs.edit().putString(KEY_PIN, null).apply();
                 prefs.edit().putBoolean(KEY_IS_GOOGLE, false).apply();
             }
-            else if (extras.getBoolean("Welcome")) {
+            else if (extras.getBoolean("Welcome", false)) {
                 welcome = true;
             }
         }
@@ -128,13 +125,14 @@ public class Login extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             String email = prefs.getString(KEY_EMAIL, null);
             String password = prefs.getString(KEY_PASSWORD, null);
-            String uid = repo.getUid(this);
+            String lastUid = repo.getLastUid(this);
 
             if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
                 if (!prefs.getBoolean(KEY_IS_GOOGLE, false)) {
                     signInWithEmailAndPassword(email, password);
                 } else {
-                    if (uid != null && !uid.isEmpty()) {
+                    if (lastUid != null && !lastUid.isEmpty()) {
+                        repo.setUid(lastUid, this);
                         loadWithStoredCredentials();
                     }
                 }
@@ -209,26 +207,42 @@ public class Login extends AppCompatActivity {
         binding.biometricButton.setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             String email = prefs.getString(KEY_EMAIL, null);
-            String password = prefs.getString(KEY_PASSWORD, null);
             boolean isGoogleUser = prefs.getBoolean(KEY_IS_GOOGLE, false);
+            String lastUid = repo.getLastUid(this);
 
-            if (!biometricEligible || email == null || password == null || email.isEmpty() || password.isEmpty()) {
+            // 1. Basic check: do we have credentials saved at all?
+            if (email == null || email.isEmpty()) {
                 Notify.createPopup(this, "Please login to enable this feature", null);
                 return;
             }
 
+            // 2. Handle Google Users (PIN Login)
             if (isGoogleUser) {
-                promptPinLogin();
-            } else {
-                biometricPrompt.authenticate(promptInfo);
+                if (lastUid != null && !lastUid.isEmpty()) {
+                    repo.setUid(lastUid, this);
+                    promptPinLogin();
+                } else {
+                    Notify.createPopup(this, "Session expired. Please sign in with Google again.", null);
+                }
+            }
+            // 3. Handle Email/Password Users (Biometric Login)
+            else {
+                if (biometricEligible) {
+                    biometricPrompt.authenticate(promptInfo);
+                } else {
+                    promptPinLogin(); // Fallback to PIN if biometric isn't set up
+                }
             }
         });
 
         binding.googleButton.setOnClickListener(v -> Google.launchGoogleSignIn(Login.this, (wasSuccessful, user, token) -> {
             if (wasSuccessful && user != null) {
                 repo.setUid(user.getUid(), Login.this);
-                googleLogin = true;
-                saveCredentials(user.getEmail(), "GOOGLE_USER", true);
+                if (repo.getUid(this) != null && !repo.getUid(this).isEmpty() && repo.getLastUid(this) != null && !repo.getLastUid(this).isEmpty() && !repo.getUid(this).equals(repo.getLastUid(this))) {
+                    changeUser = true;
+                }
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_IS_GOOGLE, true).apply();
+                saveCredentials(user.getEmail(), KEY_IS_GOOGLE, true);
                 promptPinSetupIfNeeded(this::loadWithStoredCredentials);
             }
         }));
@@ -254,6 +268,9 @@ public class Login extends AppCompatActivity {
                 if (firebaseUser != null && firebaseUser.isEmailVerified()) {
                     saveCredentials(username, password, false);
                     repo.setUid(firebaseUser.getUid(), Login.this);
+                    if (repo.getLastUid(this) != null && !repo.getLastUid(this).isEmpty() && !repo.getUid(this).equals(repo.getLastUid(this))) {
+                        changeUser = true;
+                    }
                     repo.setStaySignedIn(binding.staySignedIn.isChecked(), Login.this);
                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_IS_GOOGLE, false).apply();
                     loadWithStoredCredentials();
@@ -307,7 +324,7 @@ public class Login extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String email = prefs.getString(KEY_EMAIL, null);
         String password = prefs.getString(KEY_PASSWORD, null);
-        String uid = repo.getUid(this);
+        String lastUid = repo.getLastUid(this);
 
         if (prefs.getBoolean(KEY_IS_GOOGLE, false)) {
             binding.biometricButton.setText(getString(R.string.pin_login));
@@ -318,13 +335,15 @@ public class Login extends AppCompatActivity {
             if (biometricEligible) {
                 biometricPrompt.authenticate(promptInfo);
             } else {
-                if (uid != null && !uid.isEmpty()) {
+                if (lastUid != null && !lastUid.isEmpty()) {
+                    repo.setUid(lastUid, this);
                     promptPinLogin();
                 }
             }
         }
         else {
-            if (!welcome && uid != null && !uid.isEmpty() && prefs.getBoolean(KEY_IS_GOOGLE, false)) {
+            if (!welcome && lastUid != null && prefs.getString(KEY_PIN, null) != null && !lastUid.isEmpty() && prefs.getBoolean(KEY_IS_GOOGLE, false)) {
+                repo.setUid(lastUid, this);
                 promptPinLogin();
             }
         }
@@ -378,6 +397,7 @@ public class Login extends AppCompatActivity {
             String enteredPin = cd.getInput();
             if (enteredPin.equals(storedPin)) {
                 cd.dismissDialog();
+                prefs.edit().putBoolean(KEY_IS_GOOGLE, true).apply();
                 loadWithStoredCredentials();
             } else {
                 Notify.createDialogPopup(cd, "Incorrect PIN", null);
@@ -392,9 +412,7 @@ public class Login extends AppCompatActivity {
         isLoading = true;
         binding.progressBar15.progressBar.setVisibility(View.VISIBLE);
 
-        //SharedPreferences prefs = getSharedPreferences("Global_Preferences", MODE_PRIVATE);
         String currentUid = repo.getUid(this);
-        String lastUid = repo.getLastUid(this);
 
         if (currentUid == null || currentUid.isEmpty()) {
             binding.progressBar15.progressBar.setVisibility(View.GONE);
@@ -403,14 +421,28 @@ public class Login extends AppCompatActivity {
             return;
         }
 
-        if (lastUid != null && !currentUid.equals(lastUid)) {
+        if (changeUser) {
             repo.clearDisk(this);
+            changeUser = false;
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            if (prefs.getBoolean(KEY_IS_GOOGLE, false)) {
+                prefs.edit().putString(KEY_PIN, null).apply();
+                promptPinSetupIfNeeded(this::checkIfCloudDataNeeded);
+            }
+            else {
+                checkIfCloudDataNeeded();
+            }
         }
+        else {
+            checkIfCloudDataNeeded();
+        }
+    }
 
-        repo.setUid(currentUid, this);  // update cache
-        repo.setLastUid(this, currentUid); // remember last user
-
-        repo.fetchCloudData(currentUid, this, (success, msg) -> {
+    private void checkIfCloudDataNeeded () {
+        if (repo.getUser(this) == null || repo.getUser(this).getName() == null) {
+            repo.setNeedsDownload(this, true);
+        }
+        repo.fetchCloudData(repo.getUid(this), this, (success, msg) -> {
             if (success) loadPartnerData();
             else {
                 isLoading = false;
@@ -421,9 +453,9 @@ public class Login extends AppCompatActivity {
     }
 
     private void loadPartnerData() {
-
         User thisUser = repo.getUser(this);
-        if (thisUser == null || thisUser.getName() == null) {
+        if (thisUser == null) {
+            isLoading = false;
             binding.progressBar15.progressBar.setVisibility(View.GONE);
             Notify.createPopup(this, "Error loading user profile.", null);
             return;
@@ -439,10 +471,16 @@ public class Login extends AppCompatActivity {
             for (Partner partner : thisUser.getPartners()) {
                 FirebaseTools.getPartner(this, partner, wasSuccessful -> {
                     loadedPartners[0]++;
-                    if (loadedPartners[0] == totalPartners) finalizeDataAndLaunch();
+                    // Only launch when the LAST partner is fetched
+                    if (loadedPartners[0] == totalPartners) {
+                        finalizeDataAndLaunch();
+                    }
                 });
             }
-        } else finalizeDataAndLaunch();
+        } else {
+            // No partners? Launch immediately.
+            finalizeDataAndLaunch();
+        }
     }
 
     private void finalizeDataAndLaunch() {
@@ -458,6 +496,9 @@ public class Login extends AppCompatActivity {
             if (repo.getPayments() != null) for (Payment payment : repo.getPayments()) if (payment.getOwner() == null) payment.setOwner(uid);
             if (repo.getExpenses() != null) for (Expense exp : repo.getExpenses()) if (exp.getOwner() == null) exp.setOwner(uid);
             launchMainActivity();
+        }
+        else {
+            Notify.createPopup(this, "Error loading user profile.", null);
         }
     }
 
@@ -483,8 +524,12 @@ public class Login extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        // 1. If we are already finishing or transition started, BAIL.
+        if (isFinishing() || starting || isLoading) return;
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null && repo.getStaySignedIn(this)) {
+            // Only trigger auto-sign in if we haven't already
             checkForAutoSignIn();
         }
     }

@@ -145,15 +145,6 @@ public class MainActivity2 extends BaseActivity {
 
         pastDue = 0;
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null && repo.getUser(MainActivity2.this) != null && repo.getUser(MainActivity2.this).getUserName() != null &&
-                repo.getUser(MainActivity2.this).getPassword() != null) {
-            FirebaseTools.signInWithEmailAndPassword(MainActivity2.this, repo.getUser(MainActivity2.this).getUserName(), repo.getUser(MainActivity2.this).getPassword(), wasSuccessful -> {
-                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-                    startActivity(new Intent(MainActivity2.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                }
-            });
-        }
-
         nc.navController(MainActivity2.this, MainActivity2.this, pb, "main");
         selectedMonth.setOnClickListener(v -> {
             MonthYearPickerDialog pd = new MonthYearPickerDialog();
