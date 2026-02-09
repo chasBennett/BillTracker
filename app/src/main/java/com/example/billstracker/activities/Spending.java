@@ -37,6 +37,7 @@ import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.recycler_adapters.CategoriesRecyclerAdapter;
 import com.example.billstracker.recycler_adapters.TransactionsRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.NavController;
 import com.example.billstracker.tools.Tools;
@@ -417,9 +418,9 @@ public class Spending extends BaseActivity {
         weekEnd = LocalDate.from(selectedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).atStartOfDay());
         categories.clear();
 
-        if (repo.getUser(Spending.this).getBudgets() != null) {
-            if (!repo.getUser(Spending.this).getBudgets().isEmpty()) {
-                for (Budget bud : repo.getUser(Spending.this).getBudgets()) {
+        if (repo.getUser().getBudgets() != null) {
+            if (!repo.getUser().getBudgets().isEmpty()) {
+                for (Budget bud : repo.getUser().getBudgets()) {
                     if (bud.getStartDate() <= DateFormat.makeLong(selectedDate) && bud.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                         budget = bud;
                         break;
@@ -428,7 +429,7 @@ public class Spending extends BaseActivity {
             }
         }
         if (budget == null) {
-            budget = new Budget(repo.getUser(Spending.this).getIncome(), repo.getUser(Spending.this).getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
+            budget = new Budget(repo.getUser().getIncome(), repo.getUser().getPayFrequency(), DateFormat.makeLong(selectedDate.withDayOfMonth(1).minusMonths(6)),
                     DateFormat.makeLong(LocalDate.from(selectedDate.withDayOfMonth(selectedDate.lengthOfMonth()).atStartOfDay()).plusMonths(6)), id(), 20, new ArrayList<>());
         }
         dailyIncome = switch (budget.getPayFrequency()) {
@@ -438,7 +439,7 @@ public class Spending extends BaseActivity {
             default -> dailyIncome;
         };
 
-        monthlyBills = Tools.getBillsAmount(2, selectedDate);
+        monthlyBills = Tools.getBillsAmount(Spending.this, 2, selectedDate);
 
         if (budget.getCategories() != null) {
             if (!budget.getCategories().isEmpty()) {
@@ -602,9 +603,9 @@ public class Spending extends BaseActivity {
                         snackButton.setOnClickListener(v -> {
                             repo.getExpenses().add(transaction);
                             repo.getExpenses().sort(Comparator.comparing(Expense::getDate).reversed());
-                            repo.saveData(Spending.this, (wasSuccessful, message1) -> listExpenses());
+                            FirebaseTools.saveData(Spending.this, (wasSuccessful, message1) -> listExpenses());
                         });
-                        repo.saveData(Spending.this, (wasSuccessful, message1) -> {
+                        FirebaseTools.saveData(Spending.this, (wasSuccessful, message1) -> {
                             adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
                             listExpenses();
                         });
@@ -684,7 +685,7 @@ public class Spending extends BaseActivity {
                             budget.getCategories().remove(category);
                             categoriesList.removeView(slider);
                             sliders.remove(categorySlider);
-                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid()).set(repo.getUser(), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })
@@ -713,7 +714,7 @@ public class Spending extends BaseActivity {
             categoriesList.addView(slider);
         }
         submit.setOnClickListener(view -> {
-            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+            FirebaseFirestore.getInstance().collection("users").document(repo.getUid()).set(repo.getUser(), SetOptions.merge());
             cats.setVisibility(View.VISIBLE);
             categoriesListLayout.setVisibility(View.GONE);
             categoriesList.removeAllViews();
@@ -769,7 +770,7 @@ public class Spending extends BaseActivity {
                         .setPositiveButton(getString(R.string.remove), (dialogInterface, i) -> {
                             budget.getCategories().remove(newCat);
                             categoriesList.removeView(slider);
-                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid(Spending.this)).set(repo.getUser(Spending.this), SetOptions.merge());
+                            FirebaseFirestore.getInstance().collection("users").document(repo.getUid()).set(repo.getUser(), SetOptions.merge());
                         })
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                         })

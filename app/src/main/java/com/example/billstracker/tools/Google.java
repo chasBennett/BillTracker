@@ -1,14 +1,20 @@
 package com.example.billstracker.tools;
 
 import static android.content.ContentValues.TAG;
+import static com.example.billstracker.tools.Keys.KEY_CANCELED_BY_USER;
+import static com.example.billstracker.tools.Keys.KEY_COULD_NOT_CLEAR_GOOGLE_CREDENTIALS;
+import static com.example.billstracker.tools.Keys.KEY_ERROR;
+import static com.example.billstracker.tools.Keys.KEY_GOOGLE_CREDENTIALS_CLEARED;
 import static com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.CancellationSignal;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
@@ -17,6 +23,7 @@ import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.PasswordCredential;
 import androidx.credentials.PublicKeyCredential;
+import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.example.billstracker.R;
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
@@ -29,6 +36,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.concurrent.Executors;
 
 public interface Google {
+
+    public static final String TAG = "GoogleTools";
 
     @SuppressLint("CredentialManagerMisuse")
     static void launchGoogleSignIn(Activity activity, GoogleLoginCallback callback) {
@@ -44,13 +53,63 @@ public interface Google {
 
             @Override
             public void onError(@NonNull androidx.credentials.exceptions.GetCredentialException e) {
-                if (e.getMessage() != null) {
-                    Log.e(TAG, e.getMessage());
+                Log.e(TAG, KEY_ERROR + e.getClass().getName());
+
+                if (e instanceof androidx.credentials.exceptions.GetCredentialCancellationException) {
+                    callback.onComplete(false, null, KEY_CANCELED_BY_USER);
+                } else {
+                    callback.onComplete(false, null, e.getMessage());
                 }
-                Log.e(TAG, "Credential retrieval failed");
-                callback.onComplete(false, null, null);
             }
         });
+    }
+
+    static void clearCredentials(Context context, Repository.OnCompleteCallback callback) {
+        ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
+        CredentialManager manager = CredentialManager.create(context);
+        manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
+            @Override
+            public void onResult(Void unused) {
+                callback.onComplete(true, KEY_GOOGLE_CREDENTIALS_CLEARED);
+                Log.i(TAG, KEY_GOOGLE_CREDENTIALS_CLEARED);
+            }
+
+            @Override
+            public void onError(@NonNull ClearCredentialException e) {
+                callback.onComplete(false, KEY_COULD_NOT_CLEAR_GOOGLE_CREDENTIALS + e);
+                Log.e(TAG, KEY_COULD_NOT_CLEAR_GOOGLE_CREDENTIALS + e);
+            }
+        });
+    }
+
+    // Inside Google.java
+    static void attemptSilentSignIn(Activity activity, GoogleLoginCallback callback) {
+        GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(true)
+                .setServerClientId(activity.getString(R.string.default_web_client_id))
+                .setAutoSelectEnabled(true)
+                .build();
+
+        GetCredentialRequest request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build();
+
+        CredentialManager.create(activity).getCredentialAsync(
+                activity,
+                request,
+                new CancellationSignal(),
+                Executors.newSingleThreadExecutor(),
+                new CredentialManagerCallback<>() {
+                    @Override
+                    public void onResult(GetCredentialResponse response) {
+                        handleSignIn(activity, response.getCredential(), callback);
+                    }
+
+                    @Override
+                    public void onError(@NonNull androidx.credentials.exceptions.GetCredentialException e) {
+                        callback.onComplete(false, null, null);
+                    }
+                });
     }
 
     static void handleSignIn(Activity activity, Credential credential, GoogleLoginCallback callback) {

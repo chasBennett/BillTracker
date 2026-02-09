@@ -49,9 +49,6 @@ public class CustomDialog extends Dialog {
     @Nullable
     private LinearLayout keypadLayout;
 
-    @Nullable
-    private TextView pinDisplay; // optional masked display
-
     /* =======================
        Optional listeners
        ======================= */
@@ -149,8 +146,6 @@ public class CustomDialog extends Dialog {
 
             contentLayout.addView(keypadLayout, 2);
         }
-
-        pinDisplay = findViewById(R.id.pinDisplay); // optional
     }
 
     private void bindViews(Activity activity) {

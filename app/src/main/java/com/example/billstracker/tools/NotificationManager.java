@@ -19,7 +19,7 @@ public class NotificationManager {
                     "Notifications", android.app.NotificationManager.IMPORTANCE_HIGH));
         }
 
-        Repository.getInstance().saveDataForWorker(context, Repository.getInstance().getPayments(), Repository.getInstance().getSavedChannelId(context));
+        Repository.getInstance(context).getStore().saveDataForWorker(Repository.getInstance(context).getPayments(), Repository.getInstance(context).getStore().getSavedChannelId());
 
         long delay = calculateInitialDelay();
 

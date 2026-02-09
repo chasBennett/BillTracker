@@ -5,6 +5,9 @@
     <color name="loginButton">#0E569D</color>
     <color name="loginBox">#FFFFFF</color>
     <color name="accent">#2598F4</color>
+    <color name="customer_bubble">#49ACFA</color>
+    <color name="quoteName">#49ACFA</color>
+    <color name="quote">#991382DC</color>
     <color name="blueAndBlack">#084475</color>
     <color name="lightGrey">#AEB1B1</color>
     <color name="black">#FF000000</color>
@@ -16,6 +19,7 @@
     <color name="whiteAndBlack">#FFFFFF</color>
     <color name="whiteAndGrey">#FFFFFF</color>
     <color name="tabs">#E7E6E6</color>
+    <color name="agent_quote">#1A000000</color>
     <color name="tabsSemiTransparent">#CCC4C3C3</color>
     <color name="payBill">#56AB5A</color>
     <color name="transparentBlack">#800C0C0C</color>
@@ -23,6 +27,20 @@
     <color name="grey">#7A7A7A</color>
     <color name="yellow">#E4C93F</color>
     <color name="red">#AD2323</color>
+
+    // New colors
+    <color name="sent_bubble">#2C3E50</color>
+    <color name="sent_bubble_text">#FFFFFF</color>
+    <color name="accent_line_sent">#3498DB</color>
+    <color name="accent_line_received">#ABABAB</color>
+    <color name="quote_background_sent">#20FFFFFF</color>
+    <color name="quote_text_sent">#D1D9E0</color>
+    <color name="quote_background_received">#E0E2E2</color>
+    <color name="quote_text_received">#616161</color>
+    <color name="quote_author_name">#1B7EED</color>
+    <color name="received_bubble">#E9EFF2</color>
+    <color name="received_bubble_text">#263238</color>
+    <color name="received_bubble_border">#D0D7DE</color>
 
     <color name="google_background">#FFFFFF</color>
     <color name="google_text">#000000</color>

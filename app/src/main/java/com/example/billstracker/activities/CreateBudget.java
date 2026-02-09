@@ -90,7 +90,7 @@ public class CreateBudget extends BaseActivity {
         budgetStartDate.setOnClickListener(v -> getDateFromUser(budgetStartDate, true, DateFormat.makeLong(budgetStartDate.getText().toString())));
         budgetEndDate.setOnClickListener(v -> getDateFromUser(budgetEndDate, false, DateFormat.makeLong(budgetEndDate.getText().toString())));
 
-        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(repo.getUser(CreateBudget.this).getIncome()))));
+        etPayAmount.setText(FixNumber.addSymbol(FixNumber.makeDouble(String.valueOf(repo.getUser().getIncome()))));
         etPayAmount.addTextChangedListener(new MoneyFormatterWatcher(etPayAmount));
 
         etPayAmount.addTextChangedListener(new Watcher() {
@@ -256,7 +256,7 @@ public class CreateBudget extends BaseActivity {
         }
 
         ArrayList<Budget> remove = new ArrayList<>();
-        for (Budget budget : repo.getUser(CreateBudget.this).getBudgets()) {
+        for (Budget budget : repo.getUser().getBudgets()) {
             if (budget.getStartDate() > start && budget.getStartDate() < end && budget.getBudgetId() != budgetId) {
                 budget.setStartDate(end + 1);
                 if (end + 1 > budget.getEndDate()) {
@@ -276,13 +276,13 @@ public class CreateBudget extends BaseActivity {
                 remove.add(budget);
             }
         }
-        repo.getUser(CreateBudget.this).getBudgets().removeAll(remove);
+        repo.getUser().getBudgets().removeAll(remove);
         if (a != null) {
-            repo.getUser(CreateBudget.this).getBudgets().add(a);
+            repo.getUser().getBudgets().add(a);
         }
-        User.Builder user = repo.editUser(CreateBudget.this);
+        User.Builder user = repo.editUser();
         if (user != null) {
-            repo.editUser(CreateBudget.this)
+            repo.editUser()
                     .setIncome(payAmount)
                     .setPayFrequency(payFreq)
                     .save((wasSuccessful, message) -> {
@@ -322,10 +322,10 @@ public class CreateBudget extends BaseActivity {
                 default -> monthlyPay;
             };
         } else {
-            monthlyPay = switch (repo.getUser(CreateBudget.this).getPayFrequency()) {
-                case 0 -> repo.getUser(CreateBudget.this).getIncome() * weeksInMonth;
-                case 1 -> repo.getUser(CreateBudget.this).getIncome() * ((double) weeksInMonth / 2);
-                case 2 -> repo.getUser(CreateBudget.this).getIncome();
+            monthlyPay = switch (repo.getUser().getPayFrequency()) {
+                case 0 -> repo.getUser().getIncome() * weeksInMonth;
+                case 1 -> repo.getUser().getIncome() * ((double) weeksInMonth / 2);
+                case 2 -> repo.getUser().getIncome();
                 default -> monthlyPay;
             };
         }

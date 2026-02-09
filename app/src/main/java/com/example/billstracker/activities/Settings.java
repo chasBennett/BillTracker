@@ -1,5 +1,7 @@
 package com.example.billstracker.activities;
 
+import static com.example.billstracker.tools.Keys.KEY_DELETED;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -13,6 +15,7 @@ import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.Google;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.auth.AuthCredential;
@@ -44,7 +47,7 @@ public class Settings extends BaseActivity {
         LinearLayout shareAccount = findViewById(R.id.llShareAccount);
         TextView uName = findViewById(R.id.replaceWithUsername);
 
-        thisUser = repo.getUser(Settings.this);
+        thisUser = repo.getUser();
         uName.setText(thisUser.getName());
 
         Tools.fixProgressBarLogo(pb);
@@ -62,7 +65,7 @@ public class Settings extends BaseActivity {
             cd.setPositiveButtonListener(v -> {
                 cd.dismissDialog();
                 pb.setVisibility(View.VISIBLE);
-                repo.logout(Settings.this);
+                FirebaseTools.logout(Settings.this);
             });
             cd.show();
         });
@@ -71,8 +74,6 @@ public class Settings extends BaseActivity {
     public void profileEdit(View view) {
         pb.setVisibility(View.VISIBLE);
         Intent edit = new Intent(mContext, EditProfile.class);
-        edit.putExtra("Name", thisUser.getName());
-        edit.putExtra("UserName", thisUser.getUserName());
         startActivity(edit);
         pb.setVisibility(View.GONE);
     }
@@ -100,9 +101,9 @@ public class Settings extends BaseActivity {
             });
             cd.show();
         } else {
-            CustomDialog cd = new CustomDialog(Settings.this, "Delete Account",
-                    "Enter password to confirm deletion.", "Confirm", "Cancel", null);
-            cd.setEditText("Password", null, ResourcesCompat.getDrawable(getResources(), R.drawable.padlock, getTheme()));
+            CustomDialog cd = new CustomDialog(Settings.this, getString(R.string.delete_account),
+                    getString(R.string.enter_password_to_confirm_deletion), getString(R.string.confirm), getString(R.string.cancel), null);
+            cd.setEditText(getString(R.string.password), null, ResourcesCompat.getDrawable(getResources(), R.drawable.padlock, getTheme()));
 
             cd.setPositiveButtonListener(v -> {
                 if (cd.getEditText() != null) {
@@ -114,12 +115,12 @@ public class Settings extends BaseActivity {
                         executeDeletion(cred);
                     }
                     else {
-                        Notify.createDialogPopup(cd, "Incorrect password.", null);
+                        Notify.createDialogPopup(cd, getString(R.string.incorrect_password), null);
                     }
                 }
                 else {
                     cd.dismissDialog();
-                    Notify.createPopup(Settings.this, "An unexpected error has occurred", null);
+                    Notify.createPopup(Settings.this, getString(R.string.an_unexpected_error_has_occurred), null);
                 }
             });
             cd.show();
@@ -127,18 +128,29 @@ public class Settings extends BaseActivity {
     }
 
     private void executeDeletion(AuthCredential credential) {
-        repo.deleteUserAccount(Settings.this, credential, (success, msg) -> {
+        FirebaseTools.deleteUserAccount(Settings.this, credential, (success, msg) -> {
             pb.setVisibility(View.GONE);
             if (success) {
                 Intent intent = new Intent(mContext, Login.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                intent.putExtra("Deleted", true);
+                intent.putExtra(KEY_DELETED, true);
                 startActivity(intent);
                 finish();
             } else {
                 Notify.createPopup(Settings.this, msg, null);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        thisUser = repo.getUser();
+
+        TextView uName = findViewById(R.id.replaceWithUsername);
+        if (uName != null && thisUser != null) {
+            uName.setText(thisUser.getName());
+        }
     }
 
 }

@@ -37,10 +37,10 @@ public class InstructionPopup {
             dismissDialog();
         } else {
 
-            if (Repository.getInstance().getUser(activity) != null) {
-                if (Repository.getInstance().getBills().isEmpty() && !skipInstruction1) {
+            if (Repository.getInstance(activity).getUser() != null) {
+                if (Repository.getInstance(activity).getBills().isEmpty() && !skipInstruction1) {
                     setView(1);
-                } else if (Repository.getInstance().getUser(activity).getBudgets().isEmpty() && !skipInstruction2) {
+                } else if (Repository.getInstance(activity).getUser().getBudgets().isEmpty() && !skipInstruction2) {
                     setView(2);
                 } else if (!skipInstruction2) {
                     setView(3);
@@ -71,7 +71,7 @@ public class InstructionPopup {
                 dismissDialog();
             });
             getStarted.setOnClickListener(view -> {
-                if (!Repository.getInstance().getBills().isEmpty() && !Repository.getInstance().getUser(activity).getBudgets().isEmpty()) {
+                if (!Repository.getInstance(activity).getBills().isEmpty() && !Repository.getInstance(activity).getUser().getBudgets().isEmpty()) {
                     Prefs.setTrainingDone(activity, true);
                 }
                 dismissDialog();

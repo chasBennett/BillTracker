@@ -76,6 +76,10 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".activities.AdminSupport"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".activities.MyStats"
             android:exported="false"
             android:hardwareAccelerated="true"
@@ -129,8 +133,7 @@
             android:name=".activities.EditProfile"
             android:exported="false"
             android:parentActivityName=".activities.Settings"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.EditProfile" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.Register"
             android:exported="false"

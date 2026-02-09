@@ -83,7 +83,7 @@ public class ViewBillers extends BaseActivity {
         ArrayList<String> freq = DataTools.getFrequencies(ViewBillers.this);
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        String userId = repo.getUid(ViewBillers.this);
+        String userId = repo.getUid();
         views = new ArrayList<>();
         ArrayList<Bill> billsList = new ArrayList<>();
         if (repo.getBills() != null && !repo.getBills().isEmpty()) {
@@ -237,7 +237,7 @@ public class ViewBillers extends BaseActivity {
                     cd.setPositiveButtonListener(v1 -> {
                         pb.setVisibility(View.VISIBLE);
                         if (repo.getBills() != null) {
-                            repo.deleteBill(bills.getBillerName(), ViewBillers.this, (wasSuccessful, message) -> {
+                            repo.deleteBill(bills.getBillerName(), (wasSuccessful, message) -> {
                                 if (wasSuccessful) {
                                     BillerManager.refreshPayments(ViewBillers.this);
                                     Notify.createPopup(ViewBillers.this, getString(R.string.billerWasDeletedSuccessfully), null);

@@ -92,6 +92,15 @@ public class TextTools {
 
     }
 
+    public static void addTextChangedListener (EditText editText, Runnable runnable) {
+        editText.addTextChangedListener(new Watcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                runnable.run();
+            }
+        });
+    }
+
     public static void setValidBorder(EditText editText, boolean isValid) {
         if (editText.hasFocus()) {
             if (isValid) {
@@ -107,24 +116,6 @@ public class TextTools {
                 editText.setBackground(AppCompatResources.getDrawable(editText.getContext(), R.drawable.border_stroke));
             }
         });
-    }
-
-    public static boolean isValidString(EditText editText, int minimumLength) {
-
-        Context context = editText.getContext();
-        String string = editText.getText().toString();
-        if (!string.isEmpty()) {
-            if (string.length() >= minimumLength) {
-                setValidBorder(editText, true);
-                return true;
-            } else {
-                editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
-                return false;
-            }
-        } else {
-            editText.setBackground(ResourcesCompat.getDrawable(context.getResources(), textUnsatisfactory, context.getTheme()));
-            return false;
-        }
     }
 
     public static void onEnterSelected(EditText editText, InputManager manager) {
@@ -316,6 +307,33 @@ public class TextTools {
                 }
             });
         }
+    }
+
+    public static boolean hasCapitalLetter(String string) {
+        for (int i = 0; i < string.length(); ++i) {
+            if (Character.isUpperCase(string.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasNumber(String string) {
+        for (int i = 0; i < string.length(); ++i){
+            if (Character.isDigit(string.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasLowercase(String string) {
+        for (int i = 0; i < string.length(); ++i) {
+            if (Character.isLowerCase(string.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public interface InputManager {

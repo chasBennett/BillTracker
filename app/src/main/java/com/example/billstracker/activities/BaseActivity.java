@@ -10,38 +10,29 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected Repository repo = Repository.getInstance();
+    protected Repository repo;
     protected FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 1. Get UID from Repository or FirebaseAuth
-        String uid = Repository.getInstance().getUid(BaseActivity.this);
-
-        // 2. If UID is null, check SharedPreferences for a "user_json" (the ID is usually the filename)
+        repo = Repository.getInstance(this);
+        String uid = repo.getUid();
         if (uid == null) {
-            // Retrieve from your persistent storage logic
-            uid = Repository.getInstance().getUid(BaseActivity.this);
+            redirectToLogin();
+            return;
         }
 
-        // 3. GATEKEEPER LOGIC
-        if (uid == null) {
-            // CASE A: No user found. Redirect to Login.
-            redirectToLogin();
-        } else if (!Repository.getInstance().isDataLoaded()) {
-            // CASE B: Process Death. UID exists, but static data is wiped.
-            // Show a simple loading overlay or just initialize synchronously
-            Repository.getInstance().initializeBackEnd(BaseActivity.this, (success, message) -> {
+        if (!repo.isStoreDataComplete()) {
+            repo.initializeBackEnd((success, message) -> {
                 if (success) {
-                    onDataReady(); // Trigger child activity UI setup
+                    onDataReady();
                 } else {
                     redirectToLogin();
                 }
             });
         } else {
-            // CASE C: Everything is fine.
             onDataReady();
         }
     }

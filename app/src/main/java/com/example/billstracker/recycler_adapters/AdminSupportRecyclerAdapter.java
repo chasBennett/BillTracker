@@ -96,26 +96,26 @@ public class AdminSupportRecyclerAdapter extends RecyclerView.Adapter<AdminSuppo
             if (mClickListener1 != null)
                 mClickListener1.onItemClick(position, tickets.get(position));
         });
-        if (ticket.getAgent().equals(Repository.getInstance().getUser(context).getUserName())) {
+        if (ticket.getAgent().equals(Repository.getInstance(context).getUser().getUserName())) {
             holder.btnSelfAssign.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.grey, context.getTheme())));
             holder.btnSelfAssign.setEnabled(false);
         } else {
             holder.btnSelfAssign.setOnClickListener(view -> {
-                ticket.setAgent(Repository.getInstance().getUser(context).getUserName());
+                ticket.setAgent(Repository.getInstance(context).getUser().getUserName());
                 FirebaseFirestore.getInstance().collection("tickets").document(ticket.getId()).set(ticket);
                 holder.btnSelfAssign.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.grey, context.getTheme())));
                 holder.btnSelfAssign.setEnabled(false);
-                holder.agent.setText(Repository.getInstance().getUser(context).getUserName());
+                holder.agent.setText(Repository.getInstance(context).getUser().getUserName());
             });
         }
         if (!ticket.isOpen()) {
             holder.btnResolve.setText(context.getString(R.string.re_establish_ticket));
             holder.btnResolve.setOnClickListener(view -> {
                 ticket.setOpen(true);
-                String note = ticket.getNotes() + "\n\n" + adminUid + "\n" + DateFormat.createCurrentDateStringWithTime() + "\n" + context.getString(R.string.agent) + " " + Repository.getInstance().getUser(context).getName() + "\n" + context.getString(R.string.support_ticket_was_re_established_by_agent);
+                String note = ticket.getNotes() + "\n\n" + adminUid + "\n" + DateFormat.createCurrentDateStringWithTime() + "\n" + context.getString(R.string.agent) + " " + Repository.getInstance(context).getUser().getName() + "\n" + context.getString(R.string.support_ticket_was_re_established_by_agent);
                 ticket.setNotes(note);
-                ticket.setAgentUid(Repository.getInstance().getUser(context).getId());
-                ticket.setAgent(Repository.getInstance().getUser(context).getUserName());
+                ticket.setAgentUid(Repository.getInstance(context).getUser().getId());
+                ticket.setAgent(Repository.getInstance(context).getUser().getUserName());
                 FirebaseFirestore.getInstance().collection("tickets").document(ticket.getId()).set(ticket);
                 holder.ticketOpen.setText(context.getString(R.string.open1));
                 if (mClickListener2 != null)
@@ -125,7 +125,7 @@ public class AdminSupportRecyclerAdapter extends RecyclerView.Adapter<AdminSuppo
             holder.btnResolve.setOnClickListener(view -> {
                 ticket.setOpen(false);
                 ticket.setUnreadByAgent(0);
-                String note = ticket.getNotes() + "\n\n" + adminUid + "\n" + DateFormat.createCurrentDateStringWithTime() + "\n" + context.getString(R.string.agent) + " " + Repository.getInstance().getUser(context).getName() + "\n" + context.getString(R.string.supportTicketWasClosedByAgent);
+                String note = ticket.getNotes() + "\n\n" + adminUid + "\n" + DateFormat.createCurrentDateStringWithTime() + "\n" + context.getString(R.string.agent) + " " + Repository.getInstance(context).getUser().getName() + "\n" + context.getString(R.string.supportTicketWasClosedByAgent);
                 ticket.setNotes(note);
                 ticket.setAgentUid("Unassigned");
                 ticket.setAgent("Unassigned");

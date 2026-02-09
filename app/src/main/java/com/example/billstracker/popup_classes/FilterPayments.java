@@ -78,7 +78,7 @@ public class FilterPayments {
 
     public void generateList(Activity activity) {
 
-        if (Repository.getInstance().getBills() != null && !Repository.getInstance().getBills().isEmpty()) {
+        if (Repository.getInstance(activity).getBills() != null && !Repository.getInstance(activity).getBills().isEmpty()) {
             tabs = new ArrayList<>();
             billersList.removeAllViews();
             billersList.invalidate();
@@ -94,9 +94,9 @@ public class FilterPayments {
             allBillersImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(activity.getApplicationContext()).load(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.invoices, activity.getTheme())).fitCenter().into(allBillersImage);
             billersList.addView(allBillersTab);
-            selectAllBillers.setOnCheckedChangeListener((buttonView, isChecked) -> setAllBillersChecked(selectAllBillers));
+            selectAllBillers.setOnCheckedChangeListener((buttonView, isChecked) -> setAllBillersChecked(activity, selectAllBillers));
             boolean all = true;
-            for (Bill bill : Repository.getInstance().getBills()) {
+            for (Bill bill : Repository.getInstance(activity).getBills()) {
                 View billerTab = View.inflate(activity, R.layout.found_biller, null);
                 CheckBox select = billerTab.findViewById(R.id.selectBiller);
                 com.google.android.material.imageview.ShapeableImageView billerImage = billerTab.findViewById(R.id.biller_icon);
@@ -121,12 +121,12 @@ public class FilterPayments {
 
             if (all) {
                 selectAllBillers.setChecked(true);
-                setAllBillersChecked(selectAllBillers);
+                setAllBillersChecked(activity, selectAllBillers);
             }
         }
     }
 
-    public void setAllBillersChecked(CheckBox selectAllBillers) {
+    public void setAllBillersChecked(Activity activity, CheckBox selectAllBillers) {
         if (selectAllBillers.isChecked()) {
             if (!tabs.isEmpty()) {
                 for (View tab : tabs) {
@@ -135,8 +135,8 @@ public class FilterPayments {
                 }
             }
             selectedBillers.clear();
-            if (Repository.getInstance().getBills() != null && !Repository.getInstance().getBills().isEmpty()) {
-                selectedBillers.addAll(Repository.getInstance().getBills());
+            if (Repository.getInstance(activity).getBills() != null && !Repository.getInstance(activity).getBills().isEmpty()) {
+                selectedBillers.addAll(Repository.getInstance(activity).getBills());
             }
         }
     }
@@ -153,8 +153,8 @@ public class FilterPayments {
                     CheckBox button = view.findViewById(R.id.selectBiller);
                     if (button.isChecked()) {
                         TextView name = view.findViewById(R.id.biller_name);
-                        if (Repository.getInstance().getBills() != null && !Repository.getInstance().getBills().isEmpty()) {
-                            for (Bill bill : Repository.getInstance().getBills()) {
+                        if (Repository.getInstance(allBillersTab.getContext()).getBills() != null && !Repository.getInstance(allBillersTab.getContext()).getBills().isEmpty()) {
+                            for (Bill bill : Repository.getInstance(allBillersTab.getContext()).getBills()) {
                                 if (bill.getBillerName().equals(name.getText().toString())) {
                                     if (!selectedBillers.contains(bill)) {
                                         selectedBillers.add(bill);
@@ -196,8 +196,8 @@ public class FilterPayments {
             } else {
                 allBillersButton.setChecked(true);
                 selectedBillers.clear();
-                if (Repository.getInstance().getBills() != null && !Repository.getInstance().getBills().isEmpty()) {
-                    selectedBillers.addAll(Repository.getInstance().getBills());
+                if (Repository.getInstance(allBillersTab.getContext()).getBills() != null && !Repository.getInstance(allBillersTab.getContext()).getBills().isEmpty()) {
+                    selectedBillers.addAll(Repository.getInstance(allBillersTab.getContext()).getBills());
                 }
             }
         }

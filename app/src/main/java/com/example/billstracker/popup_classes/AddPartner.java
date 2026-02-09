@@ -59,7 +59,7 @@ public class AddPartner extends DialogFragment {
 
         sendRequest.setOnClickListener(v -> {
             error.setVisibility(View.GONE);
-            if (partnerEmail.getText() != null && partnerEmail.getText().length() == 0) {
+            if (partnerEmail.getText() != null && partnerEmail.getText().length() > 0) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Query queryByEmail = db.collection("users").whereEqualTo("userName", partnerEmail.getText().toString());
                 queryByEmail.get().addOnCompleteListener(task -> {
@@ -74,30 +74,30 @@ public class AddPartner extends DialogFragment {
                                 }
                                 boolean found = false;
                                 for (Partner par : partners) {
-                                    if (par.getPartnerUid().equals(Repository.getInstance().getUid(requireContext()))) {
+                                    if (par.getPartnerUid().equals(Repository.getInstance(requireContext()).getUid())) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    partners.add(new Partner(Repository.getInstance().getUid(requireContext()), false, Repository.getInstance().getUser(requireActivity()).getName()));
+                                    partners.add(new Partner(Repository.getInstance(requireContext()).getUid(), false, Repository.getInstance(requireContext()).getUser().getName()));
                                     requested.setPartners(partners);
                                 }
-                                if (Repository.getInstance().getUser(requireActivity()).getPartners() == null) {
-                                    Repository.getInstance().getUser(requireActivity()).setPartners(new ArrayList<>());
+                                if (Repository.getInstance(requireContext()).getUser().getPartners() == null) {
+                                    Repository.getInstance(requireContext()).getUser().setPartners(new ArrayList<>());
                                 }
 
                                 db.collection("users").document(document.getId()).set(requested, SetOptions.merge());
                                 found = false;
-                                for (Partner pa : Repository.getInstance().getUser(requireActivity()).getPartners()) {
+                                for (Partner pa : Repository.getInstance(requireContext()).getUser().getPartners()) {
                                     if (pa.getPartnerUid().equals(requested.getId())) {
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    Repository.getInstance().getUser(requireActivity()).getPartners().add(new Partner(requested.getId(), true, requested.getName()));
-                                    db.collection("users").document(Repository.getInstance().getUser(requireActivity()).getId()).set(Repository.getInstance().getUser(requireActivity()), SetOptions.merge());
+                                    Repository.getInstance(requireContext()).getUser().getPartners().add(new Partner(requested.getId(), true, requested.getName()));
+                                    db.collection("users").document(Repository.getInstance(requireContext()).getUser().getId()).set(Repository.getInstance(requireContext()).getUser(), SetOptions.merge());
                                 }
                                 Notify.createPopup(requireActivity(), getString(R.string.partner_has_been_requested_successfully), null);
                                 listener1.onClick(cancel);

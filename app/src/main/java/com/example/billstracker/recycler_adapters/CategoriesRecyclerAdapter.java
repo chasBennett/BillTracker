@@ -60,8 +60,8 @@ public class CategoriesRecyclerAdapter extends RecyclerView.Adapter<CategoriesRe
         double remaining;
         double totalBudget = 0;
         holder.budgetCategory.setText(category.getCategoryName());
-        if (Repository.getInstance().getExpenses() != null) {
-            for (Expense expense : Repository.getInstance().getExpenses()) {
+        if (Repository.getInstance(holder.itemView.getContext()).getExpenses() != null) {
+            for (Expense expense : Repository.getInstance(holder.itemView.getContext()).getExpenses()) {
                 if (expense.getDate() >= start && expense.getDate() <= end && expense.getCategory().equals(category.getCategoryName())) {
                     catTotal = catTotal + expense.getAmount();
                 }

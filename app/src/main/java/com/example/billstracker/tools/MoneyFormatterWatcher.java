@@ -7,6 +7,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MoneyFormatterWatcher implements TextWatcher {
@@ -80,7 +81,7 @@ public class MoneyFormatterWatcher implements TextWatcher {
             double value = parsed / 100;
 
             // 3. Format with 2 decimal places and commas
-            String rawFormatted = String.format("%.2f", value);
+            String rawFormatted = String.format(Locale.getDefault(), "%.2f", value);
             StringBuilder sb = new StringBuilder(rawFormatted);
 
             int decimalPos = sb.indexOf(".");

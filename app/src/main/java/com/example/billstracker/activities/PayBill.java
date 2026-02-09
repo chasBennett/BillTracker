@@ -28,8 +28,8 @@ import com.example.billstracker.popup_classes.DatePicker;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.popup_classes.PaymentConfirm;
 import com.example.billstracker.tools.BillerManager;
-import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyTextWatcher;
 import com.example.billstracker.tools.NavController;
@@ -105,10 +105,8 @@ public class PayBill extends BaseActivity {
 
         int paymentId = getIntent().getIntExtra("paymentId", -1);
 
-        // Force the repository to load if it's currently empty
         if (repo.getPayments().isEmpty()) {
-            repo.loadLocalData(this, (success, message) -> {
-                // This callback runs once the data is actually ready
+            repo.loadLocalData((success, message) -> {
                 populateUI(paymentId);
             });
         } else {
@@ -118,16 +116,15 @@ public class PayBill extends BaseActivity {
 
     private void populateUI(int paymentId) {
 
-        pay = repo.getPaymentById(paymentId);
+        pay = repo.getPayment(paymentId);
 
         if (pay == null) {
-            // If still null after loading, handle navigation back
             if (isTaskRoot()) {
                 startActivity(new Intent(this, MainActivity2.class));
             }
             finish();
         } else {
-            bil = repo.getBillByName(pay.getBillerName());
+            bil = repo.getBill(pay.getBillerName());
             if (bil != null) {
                 if (bil.getCategory() == 0 || bil.getCategory() == 5 || bil.getCategory() == 6) {
                     paymentsRemainingLayout.setVisibility(View.VISIBLE);
@@ -167,7 +164,7 @@ public class PayBill extends BaseActivity {
             }
 
             double balanceForward = 0;
-            Payment payment = repo.getPaymentByBillerName(pay.getBillerName());
+            Payment payment = repo.getPayment(pay.getBillerName());
             if (payment != null) {
                 if (payment.getDueDate() < pay.getDueDate() && !payment.isPaid()) {
                     balanceForward = balanceForward + (payment.getPaymentAmount() - payment.getPartialPayment());
@@ -199,12 +196,12 @@ public class PayBill extends BaseActivity {
                 cd.isMoneyInput(true);
                 cd.setTextWatcher(new MoneyTextWatcher(cd.getEditText()));
                 cd.setPositiveButtonListener(v2 -> {
-                    repo.editPayment(pay.getPaymentId(), PayBill.this)
+                    repo.editPayment(pay.getPaymentId())
                             .setPartialPayment(FixNumber.makeDouble(cd.getInput()))
                             .setDateChanged(true)
                             .save((wasSuccessful, message) -> {
                                 if (wasSuccessful) {
-                                    pay = repo.getPaymentById(pay.getPaymentId());
+                                    pay = repo.getPayment(pay.getPaymentId());
                                     cd.dismissDialog();
                                     if (pay.getPartialPayment() > 0) {
                                         TextTools.changeMoneyTextValue(displayPartialPayment, pay.getPartialPayment(), isSuccessful -> {
@@ -219,11 +216,11 @@ public class PayBill extends BaseActivity {
                             });
                 });
                 cd.setNeutralButtonListener(v3 -> {
-                    repo.editPayment(pay.getPaymentId(), PayBill.this)
+                    repo.editPayment(pay.getPaymentId())
                             .setPartialPayment(0)
                             .setDateChanged(false)
                             .save((isSuccessful, message) -> {
-                                pay = repo.getPaymentById(pay.getPaymentId());
+                                pay = repo.getPayment(pay.getPaymentId());
                                 cd.dismissDialog();
                                 TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful2 -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
                                 }));
@@ -237,7 +234,7 @@ public class PayBill extends BaseActivity {
                 dp.setListener(v12 -> {
                     if (DatePicker.selection != null) {
                         pay.setDatePaid(DateFormat.makeLong(DatePicker.selection));
-                        repo.editPayment(pay.getPaymentId(), PayBill.this)
+                        repo.editPayment(pay.getPaymentId())
                                 .setDatePaid(pay.getDatePaid())
                                 .save((isSuccessful, message) -> {
                                     TextTools.changeMoneyTextValue(displayPartialPayment, 0, isSuccessful2 -> Tools.fadeOutAndRemove(partialPaymentLayout, isFinished -> {
@@ -250,7 +247,7 @@ public class PayBill extends BaseActivity {
             });
 
             dueThisPeriod.setOnClickListener(view -> {
-                if (DataTools.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
+                if (repo.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
                     CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_amount_due), getString(R.string.pleaseEnterYourPaymentAmount), getString(R.string.updateAllFutureBills),
                             getString(R.string.cancel), getString(R.string.justThisOccurence));
                     cd.setEditText(getString(R.string.payment_amount), String.format(Locale.getDefault(), "  %s", FixNumber.addSymbol(String.valueOf(pay.getPaymentAmount()))), null);
@@ -264,14 +261,14 @@ public class PayBill extends BaseActivity {
                         } else {
                             pb.setVisibility(View.VISIBLE);
                             double newAmountDue = FixNumber.makeDouble(cd.getInput());
-                            Bill.Builder bill = repo.editBill(bil.getBillerName(), PayBill.this);
+                            Bill.Builder bill = repo.editBill(bil.getBillerName());
                             if (bill != null) {
                                 bill.setAmountDue(newAmountDue);
                             }
-                            repo.editPayment(pay.getPaymentId(), PayBill.this)
+                            repo.editPayment(pay.getPaymentId())
                                     .setPaymentAmount(newAmountDue)
                                     .save((wasSuccessful, message) -> {
-                                        pay = repo.getPaymentById(pay.getPaymentId());
+                                        pay = repo.getPayment(pay.getPaymentId());
                                         pb.setVisibility(View.GONE);
                                         cd.dismissDialog();
                                         TextTools.changeMoneyTextValue(dueThisPeriod, pay.getPaymentAmount() - pay.getPartialPayment(), isSuccessful -> {
@@ -290,7 +287,7 @@ public class PayBill extends BaseActivity {
                             pb.setVisibility(View.VISIBLE);
                             if (pay != null) {
                                 found = false;
-                                repo.editPayment(paymentId, PayBill.this)
+                                repo.editPayment(paymentId)
                                         .setPaymentAmount(newAmountDue)
                                         .setDateChanged(true)
                                         .save((wasSuccessful, message) -> {
@@ -323,7 +320,7 @@ public class PayBill extends BaseActivity {
                             double newAmountDue = FixNumber.makeDouble(cd.getInput());
                             pb.setVisibility(View.VISIBLE);
                             if (pay != null) {
-                                repo.editPayment(paymentId, PayBill.this)
+                                repo.editPayment(paymentId)
                                         .setPaymentAmount(newAmountDue)
                                         .setDateChanged(true)
                                         .save((wasSuccessful, message) -> {
@@ -373,7 +370,7 @@ public class PayBill extends BaseActivity {
                                                 pays.setPartialPayment(pays.getPartialPayment() + paymentAmount);
                                                 pays.setDateChanged(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(repo.getUid(PayBill.this));
+                                                pays.setOwner(repo.getUid());
                                                 paymentAmount = 0;
                                                 break;
                                             } else {
@@ -382,7 +379,7 @@ public class PayBill extends BaseActivity {
                                                 pays.setDateChanged(false);
                                                 pays.setPaid(true);
                                                 pays.setDatePaid(newPaymentDate);
-                                                pays.setOwner(repo.getUid(PayBill.this));
+                                                pays.setOwner(repo.getUid());
                                                 pay = pays;
                                                 for (Bill bill : repo.getBills()) {
                                                     if (bill.getBillerName().equals(pay.getBillerName())) {
@@ -398,7 +395,7 @@ public class PayBill extends BaseActivity {
                                     }
                                 }
                             }
-                            repo.saveData(PayBill.this, (wasSuccessful, message) -> {
+                            FirebaseTools.saveData(PayBill.this, (wasSuccessful, message) -> {
 
                             });
                             pc.dismissDialog();
@@ -416,11 +413,11 @@ public class PayBill extends BaseActivity {
                     } else {
 
                         pb.setVisibility(View.VISIBLE);
-                        repo.deletePayment(pay.getPaymentId(), PayBill.this, (wasSuccessful, message) -> {
+                        repo.deletePayment(pay.getPaymentId(), (wasSuccessful, message) -> {
                             pb.setVisibility(View.GONE);
                             pay.setPaid(false);
                             pay.setDatePaid(0);
-                            repo.saveData(PayBill.this, (wasSuccessful1, message1) -> {
+                            FirebaseTools.saveData(PayBill.this, (wasSuccessful1, message1) -> {
                                 NotificationManager.scheduleNotifications(PayBill.this);
                                 Notify.createPopup(PayBill.this, getString(R.string.bill_marked_as_unpaid_successfully), null);
                                 if (getIntent().getExtras() != null) {
@@ -453,7 +450,7 @@ public class PayBill extends BaseActivity {
                             if (bill.getBillerName().equals(bil.getBillerName())) {
                                 bill.setPaymentsRemaining(remaining);
                                 bil.setPaymentsRemaining(remaining);
-                                repo.saveData(PayBill.this, (wasSuccessful, message) -> {
+                                FirebaseTools.saveData(PayBill.this, (wasSuccessful, message) -> {
                                 });
                                 break;
                             }
@@ -471,10 +468,10 @@ public class PayBill extends BaseActivity {
                 dp.setListener(v12 -> {
                     if (DatePicker.selection != null) {
                         dp.dismiss();
-                        if (DateFormat.makeLocalDate(DataTools.getBill(pay.getBillerName()).getDueDate()).isAfter(DatePicker.selection)) {
-                            Notify.createPopup(PayBill.this, getString(R.string.payment_due_date_cannot_be_before_the_biller_due_date_of) + DateFormat.makeDateString(DataTools.getBill(pay.getBillerName()).getDueDate()), null);
+                        if (DateFormat.makeLocalDate(repo.getBill(pay.getBillerName()).getDueDate()).isAfter(DatePicker.selection)) {
+                            Notify.createPopup(PayBill.this, getString(R.string.payment_due_date_cannot_be_before_the_biller_due_date_of) + DateFormat.makeDateString(repo.getBill(pay.getBillerName()).getDueDate()), null);
                         } else {
-                            if (DataTools.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
+                            if (repo.getBill(pay.getBillerName()).getPaymentsRemaining() > 1) {
                                 CustomDialog cd = new CustomDialog(PayBill.this, getString(R.string.change_all_payments), getString(R.string.would_you_like_to_apply_this_new_due_date_to_all_occurrences_of_this_bill), getString(R.string.change_all),
                                         getString(R.string.cancel), getString(R.string.just_this_one));
                                 cd.setPositiveButtonListener(v15 -> changePaymentDueDate(PayBill.this, pay, DateFormat.makeLong(DatePicker.selection), true, isSuccessful -> {

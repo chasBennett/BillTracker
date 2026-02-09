@@ -29,7 +29,7 @@
 
     <TextView
         android:id="@+id/edit_bill"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="10dp"
         android:gravity="center|start"
@@ -47,13 +47,13 @@
 
     <TextView
         android:id="@+id/paidOff"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="10dp"
         android:gravity="center|start"
         android:paddingHorizontal="40dp"
         android:paddingVertical="10dp"
-        android:text="@string/this_bill_is_paid_off"
+        android:text="Mark all as paid"
         android:textSize="16sp"
         app:drawableStartCompat="@drawable/baseline_done_all_24"
         app:drawableTint="@color/blackAndWhite" />

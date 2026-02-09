@@ -14,18 +14,18 @@ public class CountTickets {
 
     public static void countTickets(Activity view) {
 
-        Repository.getInstance().loadLocalData(view, null);
+        Repository.getInstance(view).loadLocalData(null);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        if (Repository.getInstance().getUser(view) != null) {
-            if (Repository.getInstance().getUser(view).isAdmin()) {
+        if (Repository.getInstance(view).getUser() != null) {
+            if (Repository.getInstance(view).getUser().isAdmin()) {
                 db.collection("tickets").get().addOnCompleteListener(task -> {
                     MainActivity2.tickets = 0;
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Log.d(TAG, document.getId() + " => data retrieved");
                             SupportTicket ticket = document.toObject(SupportTicket.class);
-                            if (ticket.getAgentUid().equalsIgnoreCase(Repository.getInstance().getUid(view)) || ticket.getAgentUid().equals("Unassigned")) {
+                            if (ticket.getAgentUid().equalsIgnoreCase(Repository.getInstance(view).getUid()) || ticket.getAgentUid().equals("Unassigned")) {
                                 if (ticket.getUnreadByAgent() > 0) {
                                     MainActivity2.tickets = MainActivity2.tickets + ticket.getUnreadByAgent();
                                 }
@@ -34,7 +34,7 @@ public class CountTickets {
                     }
                 });
             } else {
-                db.collection("tickets").document(Repository.getInstance().getUid(view)).get().addOnCompleteListener(task -> {
+                db.collection("tickets").document(Repository.getInstance(view).getUid()).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         SupportTicket ticket = task.getResult().toObject(SupportTicket.class);
                         if (ticket != null) {

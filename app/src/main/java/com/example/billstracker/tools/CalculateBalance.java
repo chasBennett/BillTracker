@@ -1,23 +1,25 @@
 package com.example.billstracker.tools;
 
+import android.content.Context;
+
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
 
 public interface CalculateBalance {
 
-    static double calculateNewBalance(Bill bill) {
-        int paymentsPaid = paymentsPaid(bill);
+    static double calculateNewBalance(Context context, Bill bill) {
+        int paymentsPaid = paymentsPaid(context, bill);
 
         // Principal Reduction = (Total Money Paid) - (Total Interest Paid) - (Total Escrow Paid)
         // Note: interestPaid(bill) now returns the cumulative interest for all payments made.
-        double balancePaid = (paymentsPaid * bill.getAmountDue()) - interestPaid(bill) - (paymentsPaid * bill.getEscrow());
+        double balancePaid = (paymentsPaid * bill.getAmountDue()) - interestPaid(context, bill) - (paymentsPaid * bill.getEscrow());
 
         return bill.getBalance() - balancePaid;
     }
 
-    static int paymentsPaid(Bill bill) {
+    static int paymentsPaid(Context context, Bill bill) {
         int paidPayments = 0;
-        for (Payment payment : Repository.getInstance().getPayments()) {
+        for (Payment payment : Repository.getInstance(context).getPayments()) {
             if (payment.getBillerName().equals(bill.getBillerName()) && payment.isPaid()) {
                 ++paidPayments;
             }
@@ -25,14 +27,14 @@ public interface CalculateBalance {
         return paidPayments;
     }
 
-    static double totalPaid(Bill bill) {
-        return paymentsPaid(bill) * bill.getAmountDue();
+    static double totalPaid(Context context, Bill bill) {
+        return paymentsPaid(context, bill) * bill.getAmountDue();
     }
 
-    static double interestPaid(Bill bill) {
+    static double interestPaid(Context context, Bill bill) {
         double principal = bill.getBalance();
         double periodicPayment = bill.getAmountDue() - bill.getEscrow();
-        int totalPayments = numberOfPayments(bill);
+        int totalPayments = numberOfPayments(context, bill);
 
         // Total lifetime interest = (Payment * Total Terms) - Original Principal
         double totalLifetimeInterest = (periodicPayment * totalPayments) - principal;
@@ -40,12 +42,12 @@ public interface CalculateBalance {
         if (totalLifetimeInterest <= 0) return 0.0;
 
         // Returns cumulative interest paid so far (straight-line approximation)
-        return (totalLifetimeInterest / totalPayments) * paymentsPaid(bill);
+        return (totalLifetimeInterest / totalPayments) * paymentsPaid(context, bill);
     }
 
-    static int numberOfPayments(Bill bill) {
+    static int numberOfPayments(Context context, Bill bill) {
         int numberOfPayments = bill.getPaymentsRemaining();
-        for (Payment pay : Repository.getInstance().getPayments()) {
+        for (Payment pay : Repository.getInstance(context).getPayments()) {
             if (pay.getBillerName().equals(bill.getBillerName()) && pay.isPaid()) {
                 ++numberOfPayments;
             }
@@ -56,10 +58,10 @@ public interface CalculateBalance {
     /**
      * Calculates accurate APR for amortized loans using a Binary Search solver.
      */
-    static double calculateApr(Bill bil) {
+    static double calculateApr(Context context, Bill bil) {
         double principal = bil.getBalance();
         double periodicPayment = bil.getAmountDue() - bil.getEscrow();
-        int totalPayments = numberOfPayments(bil);
+        int totalPayments = numberOfPayments(context, bil);
 
         if (principal <= 0 || periodicPayment <= 0 || totalPayments <= 0) return 0.0;
 

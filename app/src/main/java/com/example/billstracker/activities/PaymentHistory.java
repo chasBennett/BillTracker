@@ -64,7 +64,7 @@ public class PaymentHistory extends BaseActivity {
 
         if (extras != null) {
             String billId = extras.getString("Bill Id", "");
-            Bill bil = repo.getBillById(billId);
+            Bill bil = repo.getBill(billId);
             if (bil != null) selectedBillers.add(bil);
         } else {
             selectedBillers.addAll(repo.getBills());

@@ -2,6 +2,7 @@ package com.example.billstracker.custom_objects;
 
 import android.content.Context;
 
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.Repository;
 import com.google.firebase.database.Exclude;
 
@@ -144,7 +145,7 @@ public class Expense {
                 if (callback != null) callback.onComplete(false, "Expense was not found.");
                 return;
             }
-            Repository.getInstance().saveData(context, callback);
+            FirebaseTools.saveData(context, callback);
         }
     }
 }

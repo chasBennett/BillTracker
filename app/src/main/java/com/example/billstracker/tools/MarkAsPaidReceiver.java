@@ -23,22 +23,17 @@ public class MarkAsPaidReceiver extends BroadcastReceiver {
             return;
         }
 
-        Repository repo = Repository.getInstance();
-
-        // 1. Ensure data is loaded into memory first
-        repo.loadLocalData(context, (success, message) -> {
+        Repository repo = Repository.getInstance(context);
+        repo.loadLocalData((success, message) -> {
             if (success) {
                 processPayment(context, repo, paymentId);
             }
         });
-
-        // 2. Dismiss the notification immediately
         NotificationManagerCompat.from(context).cancel(paymentId);
     }
 
     private void processPayment(Context context, Repository repo, int paymentId) {
-        // Find the specific payment
-        Payment targetPayment = null;
+        Payment targetPayment = repo.getPayment(paymentId);
         for (Payment p : repo.getPayments()) {
             if (p.getPaymentId() == paymentId) {
                 targetPayment = p;
@@ -47,25 +42,20 @@ public class MarkAsPaidReceiver extends BroadcastReceiver {
         }
 
         if (targetPayment != null && !targetPayment.isPaid()) {
-            // Update Payment Status
             targetPayment.setPaid(true);
+            targetPayment.setDatePaid(DateFormat.currentDateAsLong());
             targetPayment.setNeedsSync(true);
 
-            // Update associated Bill
-            for (Bill bill : repo.getBills()) {
-                if (bill.getBillerName().equals(targetPayment.getBillerName())) {
-                    bill.setPaymentsRemaining(bill.getPaymentsRemaining() - 1);
-                    double amountToSubtract = targetPayment.getPaymentAmount() - targetPayment.getPartialPayment();
-                    bill.setBalance(bill.getBalance() - amountToSubtract);
-
-                    targetPayment.setPartialPayment(0);
-                    bill.setNeedsSync(true);
-                    break;
-                }
+            Bill bill = repo.getBill(targetPayment.getBillerName());
+            if (bill != null) {
+                bill.setBalance(bill.getBalance() - targetPayment.getPaymentAmount());
+                bill.setNeedsSync(true);
+                bill.setPaymentsRemaining(bill.getPaymentsRemaining() - 1);
+                targetPayment.setPartialPayment(0);
             }
 
             // 3. Save everything to Cloud and Local Storage
-            repo.saveData(context, (wasSuccessful, msg) -> {
+            FirebaseTools.saveData(context, (wasSuccessful, msg) -> {
                 if (wasSuccessful) {
                     Log.d(TAG, "Payment marked as paid via notification successfully.");
                 } else {

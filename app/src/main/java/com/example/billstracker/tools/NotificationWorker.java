@@ -25,8 +25,11 @@ import java.util.ArrayList;
 
 public class NotificationWorker extends Worker {
 
+    Context context;
+
     public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
+        this.context = context;
     }
 
     @NonNull
@@ -50,7 +53,7 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         Context context = getApplicationContext();
-        Repository.getInstance().loadLocalData(context, null);
+        Repository.getInstance(context).loadLocalData(null);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -58,8 +61,8 @@ public class NotificationWorker extends Worker {
             }
         }
 
-        ArrayList<Payment> payments = Repository.getInstance().getPayments();
-        String channelId = Repository.getInstance().getSavedChannelId(context);
+        ArrayList<Payment> payments = Repository.getInstance(context).getPayments();
+        String channelId = Repository.getInstance(context).getStore().getSavedChannelId();
         LocalDate today = LocalDate.from(LocalDate.now().atStartOfDay());
 
         for (Payment payment : payments) {

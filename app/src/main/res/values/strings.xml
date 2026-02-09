@@ -686,4 +686,13 @@ Assignment\n\n
     <string name="pin_must_be_4_6_digits">PIN must be 4-6 digits</string>
     <string name="pin_login_not_available">PIN login not available.</string>
     <string name="enter_your_pin">Enter your PIN</string>
+    <string name="processing">Processing...</string>
+    <string name="profile_was_updated_successfully">Profile was updated successfully</string>
+    <string name="editing_message">Editing Message</string>
+    <string name="enter_password_to_confirm_deletion">Enter password to confirm deletion.</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="password">Password</string>
+    <string name="incorrect_password">Incorrect password.</string>
+    <string name="an_unexpected_error_has_occurred">An unexpected error has occurred</string>
+    <string name="re_authenticating_with_google">Re-authenticating with Google...</string>
 </resources>

@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -13,33 +14,31 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Message;
 import com.example.billstracker.custom_objects.SupportTicket;
 import com.example.billstracker.custom_objects.User;
-import com.example.billstracker.recycler_adapters.AdminSupportRecyclerAdapter;
+import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.recycler_adapters.SupportMessageRecyclerAdapter;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.SwipeReplyCallback;
 import com.example.billstracker.tools.Tools;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
 
 public class Support extends BaseActivity {
 
@@ -48,20 +47,26 @@ public class Support extends BaseActivity {
     public static String adminUid;
     public static String userName;
     final LinearLayoutManager lm = new LinearLayoutManager(Support.this);
-    ArrayList<SupportTicket> userTickets = new ArrayList<>();
     ImageView supportBack, submit;
     EditText message;
-    LinearLayout chatBox, hideIfTicketsFound, pb;
-    ScrollView adminTickets;
-    RecyclerView adminTicketList, messageList;
+    LinearLayout pb;
+    RecyclerView messageList;
     SupportTicket customerTicket;
-    TextView exitAdmin;
-    boolean admin;
+    boolean admin = false;
     FirebaseAuth auth;
     FirebaseFirestore db;
     SupportMessageRecyclerAdapter adapter;
     InputMethodManager mgr;
     User thisUser;
+    String ticketId;
+
+    LinearLayout replyLayout, inputContainer;
+    TextView replyName, replyText, customerName;
+    ShapeableImageView profileImage;
+    ImageView cancelReply;
+    Message replyingToMessage = null;
+    Message editingMessage = null;
+    int editingPosition = -1;
 
     @Override
     protected void onDataReady() {
@@ -70,40 +75,51 @@ public class Support extends BaseActivity {
         pb = findViewById(R.id.pb13);
         message = findViewById(R.id.message);
         submit = findViewById(R.id.submitMessage);
-        chatBox = findViewById(R.id.linearLayout9);
         messageList = findViewById(R.id.messageList);
-        exitAdmin = findViewById(R.id.exitAdminTickets);
         supportBack = findViewById(R.id.supportBack);
-        adminTickets = findViewById(R.id.adminTickets);
-        adminTicketList = findViewById(R.id.adminTicketList);
-        hideIfTicketsFound = findViewById(R.id.hideIfTicketsFound);
+        customerName = findViewById(R.id.customerName);
+        profileImage = findViewById(R.id.userSupportImage);
         mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         Tools.setupUI(Support.this, findViewById(android.R.id.content));
 
-        thisUser = repo.getUser(Support.this);
+        replyLayout = findViewById(R.id.replyLayout);
+        replyName = findViewById(R.id.replyName);
+        replyText = findViewById(R.id.replyText);
+        cancelReply = findViewById(R.id.cancelReply);
+        inputContainer = findViewById(R.id.inputContainer);
+
+        cancelReply.setOnClickListener(v -> {
+            replyLayout.setVisibility(View.GONE);
+            replyingToMessage = null;
+        });
+
+        thisUser = repo.getUser();
+        admin = thisUser.isAdmin();
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && admin) {
+            if (extras.getString("ticket", null) != null) {
+                ticketId = extras.getString("ticket");
+            }
+            else {
+                Notify.createPopup(Support.this, "Ticket not found", null);
+            }
+        }
+        else {
+            ticketId = thisUser.getId();
+        }
 
         userName = "";
         userUid = "";
 
+        pb.setVisibility(View.GONE);
+
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        if (thisUser.isAdmin()) {
-            adminUid = auth.getUid();
-            loadAdmin();
-        } else {
-            loadUser();
-        }
-
         supportBack.setOnClickListener(view -> {
-            if (admin) {
-                chatBox.setVisibility(View.GONE);
-                adminTickets.setVisibility(View.VISIBLE);
-                loadAdmin();
-            } else {
-                pb.setVisibility(View.VISIBLE);
-                getOnBackPressedDispatcher().onBackPressed();
-            }
+            pb.setVisibility(View.VISIBLE);
+            getOnBackPressedDispatcher().onBackPressed();
             mgr.hideSoftInputFromWindow(message.getWindowToken(), 0);
         });
 
@@ -144,190 +160,323 @@ public class Support extends BaseActivity {
         });
 
         submit.setOnClickListener(view -> {
-            if (message.getText().length() > 1) {
-                if (admin) {
-                    name = thisUser.getName();
+            String text = message.getText().toString().trim();
+            if (text.length() > 1) {
+
+                if (editingMessage != null && editingPosition != -1) {
+                    // --- MODE: EDITING ---
+                    // Update the actual object inside the list
+                    customerTicket.getMessages().get(editingPosition).setMessage(text);
+
+                    db.collection("tickets").document(customerTicket.getId())
+                            .set(customerTicket, SetOptions.merge())
+                            .addOnCompleteListener(task -> {
+                                pb.setVisibility(View.GONE);
+                                if (task.isSuccessful()) {
+                                    // Notify the adapter of the SPECIFIC change to update the bubble text
+                                    adapter.notifyItemChanged(editingPosition);
+                                    resetInputArea();
+                                } else {
+                                    Notify.createPopup(Support.this, "Update failed", null);
+                                }
+                            });
+
                 } else {
-                    name = userName;
-                }
-
-                Message message1 = new Message(DateFormat.createCurrentDateStringWithTime(), thisUser.getId(), name, admin, message.getText().toString());
-                message.setText("");
-
-                if (admin) {
-                    userUid = customerTicket.getUserUid();
-                    userName = customerTicket.getName();
-                    customerTicket.setUnreadByUser(customerTicket.getUnreadByUser() + 1);
-                    customerTicket.setAgent(thisUser.getUserName());
-                    customerTicket.setAgentUid(thisUser.getId());
-                } else {
-                    customerTicket.setUnreadByAgent(customerTicket.getUnreadByAgent() + 1);
-                    customerTicket.setUserUid(thisUser.getId());
-                    customerTicket.setName(thisUser.getName());
-                    customerTicket.setUserEmail(thisUser.getUserName());
-                }
-                customerTicket.setOpen(true);
-                if (!admin) {
-                    thisUser.setTicketNumber(userUid);
-                }
-                customerTicket.setId(userUid);
-                if (customerTicket.getMessages() == null) {
-                    customerTicket.setMessages(new ArrayList<>());
-                }
-                customerTicket.getMessages().add(message1);
-
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("tickets").document(userUid).set(customerTicket).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        adapter.notifyItemInserted(adapter.getItemCount() + 1);
-                        messageList.smoothScrollToPosition(messageList.getBottom());
+                    // --- MODE: SENDING NEW MESSAGE ---
+                    if (admin) {
+                        name = thisUser.getName();
                     } else {
-                        Toast.makeText(Support.this, (CharSequence) task.getException(), Toast.LENGTH_SHORT).show();
+                        name = userName;
                     }
-                });
-                db.collection("users").document(repo.getUid(Support.this)).set(thisUser, SetOptions.merge());
-            }
-        });
 
-    }
+                    String replyContent = (replyingToMessage != null) ? replyingToMessage.getMessage() : null;
+                    String replyAuthor = (replyingToMessage != null) ? replyingToMessage.getName() : null;
+                    String replyAuthorUid = (replyingToMessage != null) ? replyingToMessage.getAuthorId() : null;
 
-    public void loadAdmin() {
-        adminTickets.setVisibility(View.VISIBLE);
-        chatBox.setVisibility(View.GONE);
-        userTickets.clear();
-        admin = true;
-        exitAdmin.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
+                    Message newMessage = new Message(
+                            DateFormat.createCurrentDateStringWithTime(),
+                            thisUser.getId(),
+                            name,
+                            admin,
+                            message.getText().toString(),
+                            replyContent, // Pass the quoted text
+                            replyAuthor,   // Pass the quoted author
+                            replyAuthorUid // Pass the quoted author's uid
+                    );
 
-        db.collection("tickets").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                userTickets = (ArrayList<SupportTicket>) task.getResult().toObjects(SupportTicket.class);
-                ArrayList<SupportTicket> remove = new ArrayList<>();
-                for (SupportTicket delete : userTickets) {
-                    if (delete.getAgentUid() != null) {
-                        if (!delete.getAgentUid().trim().equals(repo.getUid(Support.this)) && !delete.getAgentUid().equals("Unassigned") || !delete.isOpen()) {
-                            remove.add(delete);
-                            if (!delete.isOpen()) {
-                                delete.setUnreadByAgent(0);
-                                FirebaseFirestore.getInstance().collection("tickets").document(delete.getId()).set(delete);
-                            }
-                        }
+                    newMessage.setRead(false);
+
+                    // Update Ticket Metadata
+                    if (admin) {
+                        customerTicket.setUnreadByUser(customerTicket.getUnreadByUser() + 1);
+                        customerTicket.setAgent(thisUser.getUserName());
+                        customerTicket.setAgentUid(thisUser.getId());
+                    } else {
+                        customerTicket.setUnreadByAgent(customerTicket.getUnreadByAgent() + 1);
                     }
-                }
-                userTickets.removeAll(remove);
-                if (!userTickets.isEmpty()) {
-                    hideIfTicketsFound.setVisibility(View.GONE);
-                    generateSupportList();
-                } else {
-                    hideIfTicketsFound.setVisibility(View.VISIBLE);
+                    customerTicket.setOpen(true);
+
+                    if (customerTicket.getMessages() == null) {
+                        customerTicket.setMessages(new ArrayList<>());
+                    }
+
+                    // Add to list and get new index
+                    customerTicket.getMessages().add(newMessage);
+                    int newPosition = customerTicket.getMessages().size() - 1;
+
+                    db.collection("tickets").document(customerTicket.getId())
+                            .set(customerTicket, SetOptions.merge())
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    // Notify adapter of insertion
+                                    if (newPosition > 0) {
+                                        adapter.notifyItemChanged(newPosition - 1); // Remove margin from previous
+                                    }
+
+                                    // SAFE SCROLL: Use the index, not getBottom()
+                                    messageList.smoothScrollToPosition(newPosition);
+
+                                    resetInputArea();
+                                } else {
+                                    Log.d(TAG, "Error adding document", task.getException());
+                                    Notify.createPopup(Support.this, "Error sending message", null);
+                                }
+                            });
+
+                    // Update local user ticket number if not admin
+                    if (!admin) {
+                        db.collection("users").document(repo.getUid()).set(thisUser, SetOptions.merge());
+                    }
                 }
             } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
+                Notify.createPopup(Support.this, "Message cannot be empty", null);
             }
         });
+
     }
 
-    public void generateSupportList() {
-
-        TextView title = findViewById(R.id.textView53);
-        Set<SupportTicket> tickets = new LinkedHashSet<>(userTickets);
-        userTickets.clear();
-        userTickets.addAll(tickets);
-        userTickets.sort(Comparator.comparing(SupportTicket::getUnreadByAgent));
-        userTickets.sort(Comparator.comparing(SupportTicket::getDateOfLastActivity));
-        Collections.reverse(userTickets);
-        int counter = 0;
-        for (SupportTicket count : userTickets) {
-            if (count.getUnreadByAgent() > 0) {
-                ++counter;
-            }
-        }
-
-        title.setText(String.format(Locale.US, "Support Tickets (%d)", counter));
-        AdminSupportRecyclerAdapter asra = new AdminSupportRecyclerAdapter(Support.this, userTickets);
-        adminTicketList.setAdapter(asra);
-        adminTicketList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        adminTicketList.setNestedScrollingEnabled(false);
-        asra.setViewThreadListener((position, supportTicket) -> generateMessages(supportTicket));
-        asra.setResolveTicketListener((ignoredPosition, supportTicket) -> loadAdmin());
-    }
-
-    public void loadUser() {
-
-        userName = Objects.requireNonNull(auth.getCurrentUser()).getDisplayName();
-        userUid = Objects.requireNonNull(auth.getCurrentUser()).getUid();
-        admin = false;
+    public void loadChat () {
+        userName = thisUser.getName();
+        userUid = thisUser.getId();
         customerTicket = null;
 
-        db.collection("tickets").document(repo.getUid(Support.this)).get().addOnCompleteListener(task -> {
+        db.collection("tickets").document(ticketId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
-                Log.d(TAG, document.getId() + " => " + document.getData());
-                SupportTicket ticket = document.toObject(SupportTicket.class);
                 if (document.exists()) {
+                    SupportTicket ticket = document.toObject(SupportTicket.class);
                     if (ticket != null) {
-                        userTickets.add(ticket);
-                        ticket.setUnreadByUser(0);
+                        if (admin) {
+                            ticket.setUnreadByAgent(0);
+                        } else {
+                            ticket.setUnreadByUser(0);
+                        }
                         db.collection("tickets").document(document.getId()).set(ticket, SetOptions.merge());
                         customerTicket = ticket;
-                        generateMessages(customerTicket);
                     }
                 }
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
             }
+
             if (customerTicket == null) {
-                customerTicket = new SupportTicket(thisUser.getName(), thisUser.getId(), thisUser.getUserName(), "Unassigned", new ArrayList<>(), "",
-                        true, thisUser.getId(), 0, 0, 0, "Unassigned");
+                if (!admin) {
+                    customerTicket = new SupportTicket(thisUser.getName(), thisUser.getId(),
+                            thisUser.getUserName(), "Unassigned", new ArrayList<>(), "",
+                            true, thisUser.getId(), 0, 0, 0, "Unassigned");
+                } else {
+                    Notify.createPopup(Support.this, "Ticket not found", null);
+                    return;
+                }
             }
             generateMessages(customerTicket);
         });
     }
 
     public void generateMessages(SupportTicket ticket) {
-
-        adminTickets.setVisibility(View.GONE);
-        chatBox.setVisibility(View.VISIBLE);
         customerTicket = ticket;
         userName = ticket.getName();
         userUid = ticket.getUserUid();
         if (ticket.getMessages() == null || ticket.getMessages().isEmpty()) {
-            Message newMessage = new Message(DateFormat.createCurrentDateStringWithTime(), "Intro support message", getString(R.string.billTracker), false, getString(R.string.supportGreeting));
+            Message newMessage = new Message(DateFormat.createCurrentDateStringWithTime(), "Intro support message", getString(R.string.billTracker), false, getString(R.string.supportGreeting), null, null, null);
             if (ticket.getMessages() == null) {
                 ticket.setMessages(new ArrayList<>());
             }
             ticket.getMessages().add(newMessage);
         }
-        if (thisUser.isAdmin()) {
-            ticket.setUnreadByAgent(0);
-        } else {
-            ticket.setUnreadByUser(0);
+
+        if (admin) {
+            customerName.setText(customerTicket.getName());
+            if (customerTicket.getUserUid() != null && !customerTicket.getUserUid().isEmpty()) {
+                setUserPhoto(customerTicket.getUserUid());
+            }
+        }
+        else {
+            if (ticket.getAgentUid() != null && !ticket.getAgentUid().isEmpty()) {
+                setUserPhoto(ticket.getAgentUid());
+            }
+            if (ticket.getMessages().size() > 1) {
+                for (Message msg: ticket.getMessages()) {
+                    if (msg.isAgent()) {
+                        customerName.setText(MessageFormat.format("Agent: {0}", msg.getName()));
+                        break;
+                    }
+                }
+            }
         }
 
         adapter = new SupportMessageRecyclerAdapter(Support.this, ticket.getMessages());
-        messageList.setAdapter(adapter);
         messageList.setLayoutManager(lm);
         messageList.setNestedScrollingEnabled(true);
-        messageList.smoothScrollToPosition(messageList.getBottom());
+
+        SwipeReplyCallback.SwipeReplyListener swipeListener = position -> {
+            adapter.handleSwipeReply(position);
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeReplyCallback(swipeListener));
+        itemTouchHelper.attachToRecyclerView(messageList);
+
+        adapter.setOnReplyListener(message -> {
+            replyingToMessage = message;
+            replyLayout.setVisibility(View.VISIBLE);
+
+            inputContainer.setBackgroundResource(R.drawable.border_styles_replying);
+
+            replyName.setText(message.getName());
+            replyText.setText(message.getMessage());
+
+            this.message.requestFocus();
+            mgr.showSoftInput(this.message, InputMethodManager.SHOW_IMPLICIT);
+        });
+
+        cancelReply.setOnClickListener(v -> {
+            replyLayout.setVisibility(View.GONE);
+            replyingToMessage = null;
+
+            inputContainer.setBackgroundResource(R.drawable.border_styles_oval);
+        });
+
+        messageList.setAdapter(adapter);
+        if (adapter.getItemCount() > 0) {
+            messageList.smoothScrollToPosition(adapter.getItemCount() - 1);
+        }
+
+        adapter.setOnMessageLongClickListener((message, position) -> {
+            if (message.getAuthorId().equals(thisUser.getId())) {
+                if (position != RecyclerView.NO_POSITION) {
+                    Message freshMessage = customerTicket.getMessages().get(position);
+
+                    boolean isMyMessage = freshMessage.getAuthorId().equals(thisUser.getId());
+                    boolean isUnread = admin ? customerTicket.getUnreadByUser() > 0 : customerTicket.getUnreadByAgent() > 0;
+
+                    if (isMyMessage && isUnread) {
+                        showEditDeleteDialog(freshMessage, position);
+                    }
+                }
+            }
+        });
+    }
+
+    private void setUserPhoto (String uid) {
+            FirebaseFirestore.getInstance().collection("userPhotos").document(uid)
+                    .get().addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String url = documentSnapshot.getString("photoUrl");
+                            if (url != null && !url.isEmpty()) {
+                                Glide.with(Support.this)
+                                        .load(url)
+                                        .circleCrop()
+                                        .placeholder(R.drawable.default_user)
+                                        .into(profileImage);
+                            }
+                        }
+                    });
+    }
+
+    private void showEditDeleteDialog(Message msg, int position) {
+        String[] options = {"Reply", "Edit", "Delete"};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Message Options")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        replyingToMessage = msg;
+                        replyLayout.setVisibility(View.VISIBLE);
+
+                        inputContainer.setBackgroundResource(R.drawable.border_styles_replying);
+
+                        replyName.setText(msg.getName());
+                        replyText.setText(msg.getMessage());
+
+                        this.message.requestFocus();
+                        mgr.showSoftInput(this.message, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                    else if (which == 1) { // Edit
+                        editingMessage = msg;
+                        editingPosition = position;
+
+                        // Show the Editing UI
+                        replyLayout.setVisibility(View.VISIBLE);
+                        replyName.setText(R.string.editing_message);
+                        replyText.setText(msg.getMessage());
+                        inputContainer.setBackgroundResource(R.drawable.border_styles_replying);
+
+                        // Populate and Focus
+                        message.setText(msg.getMessage());
+                        message.setSelection(message.getText().length()); // Put cursor at end
+                        message.requestFocus();
+
+                        mgr.showSoftInput(message, InputMethodManager.SHOW_IMPLICIT);
+                    } else {
+                        deleteMessage(position);
+                    }
+                })
+                .show();
+    }
+
+    private void deleteMessage(int position) {
+        customerTicket.getMessages().remove(position);
+
+        db.collection("tickets").document(customerTicket.getId())
+                .set(customerTicket, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> {
+
+                    messageList.post(() -> {
+                        adapter.notifyItemRemoved(position);
+
+                        int countAfter = customerTicket.getMessages().size() - position;
+                        if (countAfter > 0) {
+                            adapter.notifyItemRangeChanged(position, countAfter);
+                        }
+
+                        if (position == customerTicket.getMessages().size()) {
+                            adapter.notifyItemChanged(customerTicket.getMessages().size() - 1);
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Notify.createPopup(Support.this, "Failed to delete message", null);
+                });
+    }
+
+    private void resetInputArea() {
+        message.setText("");
+        editingMessage = null;
+        editingPosition = -1;
+        replyingToMessage = null; // Clear the reference
+        replyLayout.setVisibility(View.GONE); // Hide the preview bar
+        inputContainer.setBackgroundResource(R.drawable.border_styles_oval); // Reset background
+        mgr.hideSoftInputFromWindow(message.getWindowToken(), 0);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         pb.setVisibility(View.GONE);
-        if (thisUser.isAdmin()) {
-            loadAdmin();
-        } else {
-            loadUser();
-        }
+        loadChat();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (thisUser.isAdmin()) {
-            loadAdmin();
-        } else {
-            loadUser();
-        }
+        loadChat();
     }
 }

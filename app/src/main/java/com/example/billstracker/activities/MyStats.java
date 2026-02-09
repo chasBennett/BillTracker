@@ -18,14 +18,12 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.example.billstracker.R;
 import com.example.billstracker.custom_objects.Bill;
-import com.example.billstracker.custom_objects.Partner;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.custom_objects.Stat;
 import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.DateFormat;
-import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.NavController;
@@ -135,7 +133,7 @@ public class MyStats extends BaseActivity {
 
     public void initialize() {
 
-        thisUser = repo.getUser(MyStats.this);
+        thisUser = repo.getUser();
         payments = repo.getPayments();
         bills = repo.getBills();
 
@@ -204,7 +202,7 @@ public class MyStats extends BaseActivity {
             cd.isMoneyInput(true);
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.setPositiveButtonListener(v -> {
-                User.Builder user = repo.editUser(MyStats.this);
+                User.Builder user = repo.editUser();
                 if (user != null) {
                     user.setPayFrequency(cd.getSpinnerSelection())
                             .setIncome(FixNumber.makeDouble(cd.getInput()))
@@ -233,7 +231,7 @@ public class MyStats extends BaseActivity {
             }
             cd.setSpinner(adapter2, getString(R.string.pay_frequency_), thisUser.getPayFrequency(), AppCompatResources.getDrawable(MyStats.this, R.drawable.categories));
             cd.isMoneyInput(true);
-            cd.setPositiveButtonListener(v -> repo.editUser(MyStats.this)
+            cd.setPositiveButtonListener(v -> repo.editUser()
                     .setPayFrequency(cd.getSpinnerSelection())
                     .setIncome(FixNumber.makeDouble(cd.getInput()))
                     .save((wasSuccessful, message) -> {
@@ -409,7 +407,7 @@ public class MyStats extends BaseActivity {
                 }
             }
         } else {
-            repo.loadLocalData(MyStats.this, null);
+            repo.loadLocalData(null);
         }
 
 
@@ -472,7 +470,7 @@ public class MyStats extends BaseActivity {
                 if (bill.getPaymentsRemaining() == 0) {
                     ++billersPaid;
                 }
-                Payment payment = repo.getPaymentByBillerName(bill.getBillerName());
+                Payment payment = repo.getPayment(bill.getBillerName());
                 if (payment != null) {
                     if (payment.isPaid()) {
                         ++paymentsMade;

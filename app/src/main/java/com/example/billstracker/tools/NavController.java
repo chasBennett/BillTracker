@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.billstracker.R;
 import com.example.billstracker.activities.AddBiller;
+import com.example.billstracker.activities.AdminSupport;
 import com.example.billstracker.activities.CreateBudget;
 import com.example.billstracker.activities.Login;
 import com.example.billstracker.activities.MainActivity2;
@@ -152,7 +153,7 @@ public class NavController {
             });
             budgetTab.setOnClickListener(v -> {
                 pb.setVisibility(View.VISIBLE);
-                if (!Repository.getInstance().getUser(activity).getBudgets().isEmpty()) {
+                if (!Repository.getInstance(context).getUser().getBudgets().isEmpty()) {
                     Intent budget = new Intent(context, ViewBudget.class);
                     context.startActivity(budget);
                 } else {
@@ -268,7 +269,12 @@ public class NavController {
 
             help.setOnClickListener(v -> {
                 pb.setVisibility(View.VISIBLE);
-                context.startActivity(new Intent(context, Support.class));
+                if (Repository.getInstance(context).getUser() != null && !Repository.getInstance(context).getUser().isAdmin()) {
+                    context.startActivity(new Intent(context, Support.class));
+                }
+                else {
+                    context.startActivity(new Intent(context, AdminSupport.class));
+                }
                 popupWindow.dismiss();
             });
 
@@ -278,12 +284,12 @@ public class NavController {
                 logout();
             });
 
-            if (Repository.getInstance().getUser(context) == null || Repository.getInstance().getUser(context).getName() == null || Repository.getInstance().getUser(context).getUserName() == null) {
-                Repository.getInstance().loadLocalData(context, null);
+            if (Repository.getInstance(context).getUser() == null || Repository.getInstance(context).getUser().getName() == null || Repository.getInstance(context).getUser().getUserName() == null) {
+                Repository.getInstance(context).loadLocalData(null);
             }
-            if (Repository.getInstance().getUser(context).getName() != null && Repository.getInstance().getUser(context).getUserName() != null) {
-                displayUserName.setText(Repository.getInstance().getUser(context).getName());
-                displayEmail.setText(Repository.getInstance().getUser(context).getUserName());
+            if (Repository.getInstance(context).getUser().getName() != null && Repository.getInstance(context).getUser().getUserName() != null) {
+                displayUserName.setText(Repository.getInstance(context).getUser().getName());
+                displayEmail.setText(Repository.getInstance(context).getUser().getUserName());
             } else {
                 this.activity.startActivity(new Intent(activity, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK));
             }
@@ -292,9 +298,9 @@ public class NavController {
         payNext.setOnClickListener(view -> {
 
             pb.setVisibility(View.VISIBLE);
-            Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+            Repository.getInstance(context).getPayments().sort(Comparator.comparing(Payment::getDueDate));
             boolean found = false;
-            for (Payment payment : Repository.getInstance().getPayments()) {
+            for (Payment payment : Repository.getInstance(context).getPayments()) {
                 if (!payment.isPaid()) {
                     activity.startActivity(new Intent(activity, PayBill.class).putExtra("paymentId", payment.getPaymentId()));
                     found = true;
@@ -364,7 +370,7 @@ public class NavController {
             if (progressBar != null) {
                 progressBar.setVisibility(View.VISIBLE);
             }
-            Repository.getInstance().logout(activity);
+            FirebaseTools.logout(activity);
         });
         cd.setNegativeButtonListener(view -> {
             if (progressBar != null) {

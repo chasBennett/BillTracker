@@ -41,13 +41,13 @@ import com.example.billstracker.tools.CountTickets;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
+import com.example.billstracker.tools.LocalStore;
 import com.example.billstracker.tools.MainPieChart;
 import com.example.billstracker.tools.NavController;
 import com.example.billstracker.tools.NotificationManager;
 import com.example.billstracker.tools.Prefs;
 import com.example.billstracker.tools.Tools;
 import com.github.mikephil.charting.charts.PieChart;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.DayOfWeek;
@@ -96,6 +96,7 @@ public class MainActivity2 extends BaseActivity {
     ConstraintLayout pb;
     ScrollView scroll;
     ProgressBar remainingProgressBar;
+    LocalStore store;
 
     @Override
     protected void onDataReady() {
@@ -133,14 +134,16 @@ public class MainActivity2 extends BaseActivity {
 
         Tools.fixProgressBarLogo(pb);
 
+        store = repo.getStore();
+
         if (selectedDate == null) {
             selectedDate = LocalDate.now(ZoneId.systemDefault());
         }
 
         CountTickets.countTickets(MainActivity2.this);
 
-        if (repo.getUid(MainActivity2.this) != null) {
-            repo.setSavedChannelId(MainActivity2.this, repo.getUid(MainActivity2.this));
+        if (repo.getUid() != null) {
+            store.setSavedChannelId(repo.getUid());
         }
 
         pastDue = 0;
@@ -159,7 +162,7 @@ public class MainActivity2 extends BaseActivity {
             selectedDate = DateFormat.makeLocalDate(DateFormat.currentDateAsLong());
         }
 
-        if (repo.getUser(MainActivity2.this) != null && repo.getUser(MainActivity2.this).isAdmin()) {
+        if (repo.getUser() != null && repo.getUser().isAdmin()) {
             admin.setEnabled(true);
             admin.setOnClickListener(view -> {
                 Intent admin = new Intent(MainActivity2.this, Administrator.class);
@@ -194,8 +197,8 @@ public class MainActivity2 extends BaseActivity {
             }
         });
         checkIfNewUser();
-        MainActivity2.this.getSystemService(android.app.NotificationManager.class).createNotificationChannel(new NotificationChannel(repo
-                .getSavedChannelId(MainActivity2.this), "Notifications", android.app.NotificationManager.IMPORTANCE_HIGH));
+        MainActivity2.this.getSystemService(android.app.NotificationManager.class).createNotificationChannel(new NotificationChannel(store
+                .getSavedChannelId(), "Notifications", android.app.NotificationManager.IMPORTANCE_HIGH));
     }
 
     public void showProgress() {
@@ -221,7 +224,7 @@ public class MainActivity2 extends BaseActivity {
     }
 
     public void checkIfNewUser() {
-        User user = repo.getUser(MainActivity2.this);
+        User user = repo.getUser();
 
         if (user == null) {
             return;
@@ -249,22 +252,22 @@ public class MainActivity2 extends BaseActivity {
         listBills();
         lineChartLoading.setVisibility(View.GONE);
 
-        if (repo.getSavedChannelId(MainActivity2.this) != null) {
+        if (store.getSavedChannelId() != null) {
             NotificationManager.scheduleNotifications(MainActivity2.this);
         }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        if (repo.getUser(MainActivity2.this).getPartners() == null) {
-            repo.getUser(MainActivity2.this).setPartners(new ArrayList<>());
+        if (repo.getUser().getPartners() == null) {
+            repo.getUser().setPartners(new ArrayList<>());
         }
-        if (!repo.getUser(MainActivity2.this).getPartners().isEmpty()) {
-            for (Partner partner : repo.getUser(MainActivity2.this).getPartners()) {
+        if (!repo.getUser().getPartners().isEmpty()) {
+            for (Partner partner : repo.getUser().getPartners()) {
                 if (partner.getPartnerUid() != null) {
                     db.collection("users").document(partner.getPartnerUid()).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             User partnerUser = task.getResult().toObject(User.class);
                             if (partnerUser != null && partnerUser.getPartners() != null && !partnerUser.getPartners().isEmpty()) {
                                 for (Partner part : partnerUser.getPartners()) {
-                                    if (part.getPartnerUid().equals(repo.getUid(MainActivity2.this))) {
+                                    if (part.getPartnerUid().equals(repo.getUid())) {
                                         if (part.getSharingAuthorized()) {
                                             if (!partner.getSharingAuthorized()) {
                                                 Notify.createPartnerRequestNotification(MainActivity2.this, partner, null, new Intent(MainActivity2.this, ShareAccount.class));
@@ -283,19 +286,19 @@ public class MainActivity2 extends BaseActivity {
 
     public void getValues() {
 
-        if (repo.getUser(MainActivity2.this).getName().contains(" ")) {
-            if (repo.getUser(MainActivity2.this).getName().length() > 2 && repo.getUser(MainActivity2.this).getName().indexOf(' ') != 0) {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser(MainActivity2.this).getName().substring(0, 1).toUpperCase(),
-                        repo.getUser(MainActivity2.this).getName().substring(1, repo.getUser(MainActivity2.this).getName().indexOf(' '))));
+        if (repo.getUser().getName().contains(" ")) {
+            if (repo.getUser().getName().length() > 2 && repo.getUser().getName().indexOf(' ') != 0) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser().getName().substring(0, 1).toUpperCase(),
+                        repo.getUser().getName().substring(1, repo.getUser().getName().indexOf(' '))));
             } else {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser(MainActivity2.this).getName().toUpperCase()));
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser().getName().toUpperCase()));
             }
         } else {
-            if (repo.getUser(MainActivity2.this).getName().length() > 1) {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser(MainActivity2.this).getName().substring(0, 1).toUpperCase(),
-                        repo.getUser(MainActivity2.this).getName().substring(1)));
+            if (repo.getUser().getName().length() > 1) {
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s%s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser().getName().substring(0, 1).toUpperCase(),
+                        repo.getUser().getName().substring(1)));
             } else {
-                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser(MainActivity2.this).getName().toUpperCase()));
+                admin.setText(String.format(Locale.getDefault(), "%s %s %s!", getString(R.string.good), DateFormat.currentPhaseOfDay(mContext), repo.getUser().getName().toUpperCase()));
             }
         }
     }
@@ -462,6 +465,7 @@ public class MainActivity2 extends BaseActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
                 onSwipe(adapter, viewHolder, direction);
+                adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
 
             }
 
@@ -501,11 +505,11 @@ public class MainActivity2 extends BaseActivity {
                 pb.setVisibility(View.VISIBLE);
                 startActivity(new Intent(activity, PayBill.class).putExtra("paymentId", payment.getPaymentId()));
             } else {
-                repo.loadLocalData(MainActivity2.this, null);
+                repo.loadLocalData(null);
                 recreate();
             }
         });
-        adapter.setRefreshPaymentsClickListener((ignoredPosition, payment) -> showProgress());
+        adapter.setRefreshPaymentsClickListener(this::showProgress);
         adapter.setLoadingClickListener((ignoredPosition, payment) -> {
             pb.setVisibility(View.VISIBLE);
             pb.bringToFront();
@@ -524,10 +528,10 @@ public class MainActivity2 extends BaseActivity {
                 case ItemTouchHelper.LEFT:
                     pb.setVisibility(View.VISIBLE);
 
-                    Bill bill = repo.getBillByName(payment.getBillerName());
+                    Bill bill = repo.getBill(payment.getBillerName());
                     if (bill != null) {
                         Intent history = new Intent(MainActivity2.this, PaymentHistory.class);
-                        history.putExtra("User Id", repo.getUid(MainActivity2.this));
+                        history.putExtra("User Id", repo.getUid());
                         history.putExtra("Bill Id", bill.getBillsId());
                         startActivity(history);
                     }
@@ -541,7 +545,7 @@ public class MainActivity2 extends BaseActivity {
             }
             adapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
         } else {
-            repo.loadLocalData(MainActivity2.this, null);
+            repo.loadLocalData(null);
             recreate();
         }
     }
@@ -557,8 +561,8 @@ public class MainActivity2 extends BaseActivity {
                 paymentList.sort(Comparator.comparing(Payment::getDueDate));
 
                 // 2. We use the Bill Builder for the parent bill to track balance/remaining payments
-                Bill.Builder billBuilder = repo.editBill(payment.getBillerName(), MainActivity2.this);
-                Bill parentBill = repo.getBillByName(payment.getBillerName());
+                Bill.Builder billBuilder = repo.editBill(payment.getBillerName());
+                Bill parentBill = repo.getBill(payment.getBillerName());
 
                 double remainingToDistribute = paymentAmount;
 
@@ -569,7 +573,7 @@ public class MainActivity2 extends BaseActivity {
                         double amountNeeded = pays.getPaymentAmount() - pays.getPartialPayment();
 
                         // We use the Payment Builder for each payment found
-                        Payment.Builder payBuilder = repo.editPayment(pays.getPaymentId(), MainActivity2.this);
+                        Payment.Builder payBuilder = repo.editPayment(pays.getPaymentId());
 
                         if (remainingToDistribute < amountNeeded) {
                             // PARTIAL PAYMENT CASE
@@ -600,8 +604,8 @@ public class MainActivity2 extends BaseActivity {
                     }
                 }
 
-                // 3. One single save call to rule them all (local + cloud batch)
-                repo.saveData(MainActivity2.this, (success, message) -> {
+                // 3. One single loadCloudData call to rule them all (local + cloud batch)
+                FirebaseTools.saveData(MainActivity2.this, (success, message) -> {
                     if (success) {
                         NotificationManager.scheduleNotifications(MainActivity2.this);
                         pc.dismissDialog();
@@ -627,7 +631,7 @@ public class MainActivity2 extends BaseActivity {
 
         } else {
             // Use your new deletePayment which already handles the Bill balance reversion
-            repo.deletePayment(payment.getPaymentId(), MainActivity2.this, (success, message) -> {
+            repo.deletePayment(payment.getPaymentId(), (success, message) -> {
                 NotificationManager.scheduleNotifications(MainActivity2.this);
                 showProgress();
             });

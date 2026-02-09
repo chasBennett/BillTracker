@@ -26,6 +26,7 @@ import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
 import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.Repository;
@@ -125,7 +126,7 @@ public class PaymentConfirm {
 
         double finalBalanceForward1 = balanceForward;
         changeAmountDue.setOnClickListener(v -> {
-            if (DataTools.getBill(makePayment.getBillerName()).getPaymentsRemaining() == 1) {
+            if (Repository.getInstance(activity).getBill(makePayment.getBillerName()).getPaymentsRemaining() == 1) {
                 CustomDialog cd = new CustomDialog(activity, activity.getString(R.string.change_amount_due), activity.getString(R.string.pleaseEnterYourPaymentAmount), activity.getString(R.string.update),
                         activity.getString(R.string.cancel), null);
                 cd.setEditText(activity.getString(R.string.payment_amount), String.format(Locale.getDefault(), "  %s", FixNumber.addSymbol(String.valueOf(makePayment.getPaymentAmount()))), null);
@@ -150,7 +151,7 @@ public class PaymentConfirm {
                         Notify.createPopup(activity, activity.getString(R.string.payment_amount_must_be_greater_than_zero), null);
                     } else {
                         double newAmountDue = FixNumber.makeDouble(cd.getInput());
-                        for (Payment payment : Repository.getInstance().getPayments()) {
+                        for (Payment payment : Repository.getInstance(activity).getPayments()) {
                             if (payment.getPaymentId() == (makePayment.getPaymentId())) {
                                 payment.setPaid(false);
                                 payment.setPaymentAmount(newAmountDue);
@@ -162,7 +163,7 @@ public class PaymentConfirm {
                                 TextTools.changeMoneyTextValue(payTotalDue, makePayment.getPaymentAmount() + finalBalanceForward1 - makePayment.getPartialPayment(), isSuccessful -> {
                                 });
                                 calculateBalances(activity);
-                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                                FirebaseTools.saveData(activity, (wasSuccessful, message) -> {
                                 });
                                 break;
                             }
@@ -188,13 +189,13 @@ public class PaymentConfirm {
                     } else if (FixNumber.makeDouble(cd.getInput()) <= 0) {
                         Notify.createPopup(activity, activity.getString(R.string.payment_amount_must_be_greater_than_zero), null);
                     } else {
-                        for (Bill bill : Repository.getInstance().getBills()) {
+                        for (Bill bill : Repository.getInstance(activity).getBills()) {
                             if (bill.getBillerName().equals(makePayment.getBillerName())) {
                                 bill.setAmountDue(newAmountDue);
                                 break;
                             }
                         }
-                        for (Payment payment : Repository.getInstance().getPayments()) {
+                        for (Payment payment : Repository.getInstance(activity).getPayments()) {
                             if (!payment.isPaid() && payment.getBillerName().equals(makePayment.getBillerName())) {
                                 payment.setPaymentAmount(newAmountDue);
                                 makePayment.setPaymentAmount(newAmountDue);
@@ -206,7 +207,7 @@ public class PaymentConfirm {
                         TextTools.changeMoneyTextValue(payTotalDue, makePayment.getPaymentAmount() + finalBalanceForward1 - makePayment.getPartialPayment(), isSuccessful -> {
                         });
                         calculateBalances(activity);
-                        Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                        FirebaseTools.saveData(activity, (wasSuccessful, message) -> {
                             cd.dismissDialog();
                         });
                     }
@@ -218,7 +219,7 @@ public class PaymentConfirm {
                         Notify.createPopup(activity, activity.getString(R.string.payment_amount_must_be_greater_than_zero), null);
                     } else {
                         double newAmountDue = FixNumber.makeDouble(cd.getInput());
-                        for (Payment payment : Repository.getInstance().getPayments()) {
+                        for (Payment payment : Repository.getInstance(activity).getPayments()) {
                             if (payment.getPaymentId() == (makePayment.getPaymentId())) {
                                 payment.setPaymentAmount(newAmountDue);
                                 payment.setDateChanged(true);
@@ -229,7 +230,7 @@ public class PaymentConfirm {
                                 TextTools.changeMoneyTextValue(payTotalDue, makePayment.getPaymentAmount() + finalBalanceForward1 - makePayment.getPartialPayment(), isSuccessful -> {
                                 });
                                 calculateBalances(activity);
-                                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                                FirebaseTools.saveData(activity, (wasSuccessful, message) -> {
                                 });
                                 break;
                             }
@@ -323,9 +324,9 @@ public class PaymentConfirm {
             }
             paymentDetails.setVisibility(View.GONE);
             paymentConfirmation.setVisibility(View.VISIBLE);
-            Repository.getInstance().getPayments().sort(Comparator.comparing(Payment::getDueDate));
+            Repository.getInstance(activity).getPayments().sort(Comparator.comparing(Payment::getDueDate));
             while (paymentAmount > 0) {
-                for (Payment pays : Repository.getInstance().getPayments()) {
+                for (Payment pays : Repository.getInstance(activity).getPayments()) {
                     if (pays.getBillerName().equals(makePayment.getBillerName()) && !pays.isPaid() && pays.getPaymentNumber() <= makePayment.getPaymentNumber()) {
                         View tile = View.inflate(activity, R.layout.payment_tile, null);
                         TextView billerName = tile.findViewById(R.id.confirmBillerName), paymentNumber = tile.findViewById(R.id.confirmPaymentNumber), dueDate = tile.findViewById(R.id.confirmDueDate),
@@ -373,7 +374,7 @@ public class PaymentConfirm {
             dp.setListener(v12 -> {
                 if (DatePicker.selection != null) {
                     LocalDate chosenDate = DatePicker.selection;
-                    Bill bill = DataTools.getBill(makePayment.getBillerName());
+                    Bill bill = Repository.getInstance(activity).getBill(makePayment.getBillerName());
                     if (DateFormat.makeLocalDate(bill.getDueDate()).isAfter(chosenDate)) {
                         Notify.createPopup(activity, activity.getString(R.string.payment_due_date_cannot_be_before_the_biller_due_date_of) + DateFormat.makeDateString(bill.getDueDate()), null);
                     } else {
@@ -514,7 +515,7 @@ public class PaymentConfirm {
             paymentDueDate.setText(DateFormat.makeDateString(makePayment.getDueDate()));
             paymentId.setText(String.format(Locale.getDefault(), "%s: %d", activity.getString(R.string.payment_id), makePayment.getPaymentId()));
 
-            for (Payment payment : Repository.getInstance().getPayments()) {
+            for (Payment payment : Repository.getInstance(activity).getPayments()) {
                 if (payment.getBillerName().equals(makePayment.getBillerName()) && !payment.isPaid() && payment.getDueDate() < makePayment.getDueDate()) {
                     balanceForward = balanceForward + (payment.getPaymentAmount() - payment.getPartialPayment());
                 }

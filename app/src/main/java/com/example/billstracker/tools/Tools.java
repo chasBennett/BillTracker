@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
@@ -40,7 +39,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 
 import com.bumptech.glide.Glide;
 import com.example.billstracker.R;
-import com.example.billstracker.activities.Login;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Expense;
@@ -327,12 +325,12 @@ public interface Tools {
     }
 
     static Budget getBudget(Context context, LocalDate selectedDate) {
-        if (Repository.getInstance().getUser(context) == null) {
-            Repository.getInstance().loadLocalData(context, null);
+        if (Repository.getInstance(context).getUser() == null) {
+            Repository.getInstance(context).loadLocalData(null);
         }
 
-        if (Repository.getInstance().getUser(context).getBudgets() != null && !Repository.getInstance().getUser(context).getBudgets().isEmpty()) {
-            for (Budget budget : Repository.getInstance().getUser(context).getBudgets()) {
+        if (Repository.getInstance(context).getUser().getBudgets() != null && !Repository.getInstance(context).getUser().getBudgets().isEmpty()) {
+            for (Budget budget : Repository.getInstance(context).getUser().getBudgets()) {
                 if (budget.getStartDate() <= DateFormat.makeLong(selectedDate) && budget.getEndDate() >= DateFormat.makeLong(selectedDate)) {
                     return budget;
                 }
@@ -353,29 +351,34 @@ public interface Tools {
         }
     }
 
-    static void billPaidOff(Context context, Payment payment) {
-        if (Repository.getInstance().getBills() != null) {
-            Bill biller = null;
-            for (Bill bill : Repository.getInstance().getBills()) {
-                if (bill.getBillerName().equals(payment.getBillerName())) {
-                    bill.setPaymentsRemaining(0);
-                    biller = bill;
-                    break;
-                }
+    static void billPaidOff(Context context, Payment payment, OnCompleteListener listener) {
+        Repository repo = Repository.getInstance(context);
+        if (repo.getBills() != null && payment != null) {
+            Bill biller = repo.getBill(payment.getBillerName());
+            if (biller != null) {
+                biller.setPaymentsRemaining(0);
+                biller.setBalance(0);
+                biller.setNeedsSync(true);
             }
-            if (biller != null && Repository.getInstance().getPayments() != null) {
+
+            if (biller != null && Repository.getInstance(context).getPayments() != null) {
                 ArrayList<Payment> remove = new ArrayList<>();
-                for (Payment payments : Repository.getInstance().getPayments()) {
-                    if (payments.getBillerName().equals(biller.getBillerName()) && !payments.isPaid() && payments.isDateChanged()) {
-                        remove.add(payments);
+                for (Payment p : Repository.getInstance(context).getPayments()) {
+                    if (p.getBillerName().equals(biller.getBillerName()) && !p.isPaid()) {
+                        p.setNeedsDelete(true);
+                        remove.add(p);
                     }
                 }
-                if (!remove.isEmpty()) {
-                    Repository.getInstance().getPayments().removeAll(remove);
-                }
+
+                FirebaseTools.saveData(context, (wasSuccessful, message) -> {
+                    if (wasSuccessful) {
+                        if (!remove.isEmpty()) {
+                            Repository.getInstance(context).getPayments().removeAll(remove);
+                        }
+                        listener.isFinished(true);
+                    }
+                });
             }
-            Repository.getInstance().saveData(context, (wasSuccessful, message) -> {
-            });
         }
     }
 
@@ -402,11 +405,11 @@ public interface Tools {
         }
     }
 
-    static double getBillsAmount(int frequency, LocalDate selectedDate) {
+    static double getBillsAmount(Context context, int frequency, LocalDate selectedDate) {
         double billsAmount = 0;
-        if (Repository.getInstance().getPayments() != null) {
-            if (Repository.getInstance().getPayments() != null) {
-                for (Payment payment : Repository.getInstance().getPayments()) {
+        if (Repository.getInstance(context).getPayments() != null) {
+            if (Repository.getInstance(context).getPayments() != null) {
+                for (Payment payment : Repository.getInstance(context).getPayments()) {
                     switch (frequency) {
                         case 0:
                             if (payment.getDueDate() == DateFormat.makeLong(selectedDate)) {
@@ -519,33 +522,33 @@ public interface Tools {
         }
     }
 
-    static void removePartnerData(String partnerId) {
+    static void removePartnerData(Context context, String partnerId) {
         ArrayList<Bill> removeBills = new ArrayList<>();
-        if (Repository.getInstance().getBills() != null) {
-            for (Bill bill : Repository.getInstance().getBills()) {
+        if (Repository.getInstance(context).getBills() != null) {
+            for (Bill bill : Repository.getInstance(context).getBills()) {
                 if (bill.getOwner().equals(partnerId)) {
                     removeBills.add(bill);
                 }
             }
-            Repository.getInstance().getBills().removeAll(removeBills);
+            Repository.getInstance(context).getBills().removeAll(removeBills);
         }
         ArrayList<Payment> removePayments = new ArrayList<>();
-        if (Repository.getInstance().getPayments() != null) {
-            for (Payment payment : Repository.getInstance().getPayments()) {
+        if (Repository.getInstance(context).getPayments() != null) {
+            for (Payment payment : Repository.getInstance(context).getPayments()) {
                 if (payment.getOwner().equals(partnerId)) {
                     removePayments.add(payment);
                 }
             }
-            Repository.getInstance().getPayments().removeAll(removePayments);
+            Repository.getInstance(context).getPayments().removeAll(removePayments);
         }
         ArrayList<Expense> removeExpense = new ArrayList<>();
-        if (Repository.getInstance().getExpenses() != null) {
-            for (Expense expense : Repository.getInstance().getExpenses()) {
+        if (Repository.getInstance(context).getExpenses() != null) {
+            for (Expense expense : Repository.getInstance(context).getExpenses()) {
                 if (expense.getOwner().equals(partnerId)) {
                     removeExpense.add(expense);
                 }
             }
-            Repository.getInstance().getExpenses().removeAll(removeExpense);
+            Repository.getInstance(context).getExpenses().removeAll(removeExpense);
         }
     }
 

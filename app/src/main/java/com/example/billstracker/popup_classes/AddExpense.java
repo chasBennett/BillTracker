@@ -20,6 +20,7 @@ import com.example.billstracker.custom_objects.Budget;
 import com.example.billstracker.custom_objects.Category;
 import com.example.billstracker.custom_objects.Expense;
 import com.example.billstracker.tools.DateFormat;
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
 import com.example.billstracker.tools.Repository;
@@ -87,7 +88,7 @@ public class AddExpense {
                 Notify.createPopup(activity, activity.getString(R.string.expense_amount_must_be_greater_than_0), null);
             } else {
                 if (expense != null) {
-                    for (Expense expenses : Repository.getInstance().getExpenses()) {
+                    for (Expense expenses : Repository.getInstance(activity).getExpenses()) {
                         if (expenses.getId().equals(expense.getId())) {
                             expenses.setDescription(expenseDescription.getText().toString());
                             expenses.setAmount(FixNumber.makeDouble(expenseAmount.getText().toString()));
@@ -98,10 +99,10 @@ public class AddExpense {
                     }
                 } else {
                     Expense a = new Expense(expenseDescription.getText().toString(), categories.get(expenseCategory.getSelectedItemPosition()), DateFormat.makeLong(expenseDate.getText().toString()) + 1,
-                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), Repository.getInstance().getUid(activity));
-                    Repository.getInstance().getExpenses().add(a);
+                            FixNumber.makeDouble(expenseAmount.getText().toString()), id(), Repository.getInstance(activity).getUid());
+                    Repository.getInstance(activity).getExpenses().add(a);
                 }
-                Repository.getInstance().saveData(activity, (wasSuccessful, message) -> {
+                FirebaseTools.saveData(activity, (wasSuccessful, message) -> {
                     if (wasSuccessful) {
                         dismissDialog();
                         listener.onClick(v);

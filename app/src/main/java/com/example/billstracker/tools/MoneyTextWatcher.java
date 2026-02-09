@@ -5,6 +5,7 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MoneyTextWatcher implements TextWatcher {
@@ -73,7 +74,7 @@ public class MoneyTextWatcher implements TextWatcher {
 
             // 3. Format with leading spaces and commas manually to match your FixNumber logic
             // We use String.format to ensure we always have 2 decimal places
-            String rawFormatted = String.format("%.2f", value);
+            String rawFormatted = String.format(Locale.getDefault(), "%.2f", value);
 
             StringBuilder sb = new StringBuilder(rawFormatted);
 

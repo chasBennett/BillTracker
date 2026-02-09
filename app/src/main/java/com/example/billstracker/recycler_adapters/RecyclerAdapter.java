@@ -30,6 +30,7 @@ import com.example.billstracker.activities.AddBiller;
 import com.example.billstracker.activities.MainActivity2;
 import com.example.billstracker.custom_objects.Bill;
 import com.example.billstracker.custom_objects.Payment;
+import com.example.billstracker.popup_classes.CustomDialog;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.Repository;
@@ -49,7 +50,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private final ArrayList<Payment> payments;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-    private ItemClickListener mClickListener1;
+    private UpdateListListener mClickListener1;
     private ItemClickListener listener;
 
     public RecyclerAdapter(Activity activity1, Context context, ArrayList<Payment> data, String typ) {
@@ -81,11 +82,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
 
         todayTotal += pastDue;
-        for (Bill bill : Repository.getInstance().getBills()) {
+        for (Bill bill : Repository.getInstance(holder.itemView.getContext()).getBills()) {
             if (bill.getBillerName().equals(payment.getBillerName())) {
                 bil = bill;
                 if (bill.getPaymentsRemaining() != 0) {
-                    for (Payment pay : Repository.getInstance().getPayments()) {
+                    for (Payment pay : Repository.getInstance(holder.itemView.getContext()).getPayments()) {
                         if (pay.getBillerName().equals(bill.getBillerName()) && pay.getDueDate() > finalPay && !pay.isPaid()) {
                             finalPay = pay.getDueDate();
                         }
@@ -109,15 +110,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
 
         final boolean[] showing = {false};
-        int paymentsMadeCounter = paymentsPaid(bil);
-        double totalPaidCounter = totalPaid(bil);
+        int paymentsMadeCounter = paymentsPaid(activity, bil);
+        double totalPaidCounter = totalPaid(activity, bil);
         int paymentsRemaining;
         double amountRemaining;
         double interestPaid;
         double rate;
         if (bil.getCategory() == 0 || bil.getCategory() == 1 || bil.getCategory() == 5 || bil.getCategory() == 6) {
-            rate = calculateApr(bil);
-            interestPaid = interestPaid(bil);
+            rate = calculateApr(activity, bil);
+            interestPaid = interestPaid(activity, bil);
             if (bil.getCategory() != 1) {
                 paymentsRemaining = bil.getPaymentsRemaining();
                 amountRemaining = bil.getPaymentsRemaining() * bil.getAmountDue();
@@ -132,7 +133,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             amountRemaining = 0;
         }
         double escrow = bil.getEscrow();
-        double balance = calculateNewBalance(bil);
+        double balance = calculateNewBalance(activity, bil);
 
         if (pastDue == 0) {
             holder.balanceForwardLabel.setVisibility(View.GONE);
@@ -271,7 +272,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             visitWebsite.setOnClickListener(view13 -> {
-                for (Bill bill : Repository.getInstance().getBills()) {
+                for (Bill bill : Repository.getInstance(holder.itemView.getContext()).getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         String address = bill.getWebsite();
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
@@ -283,12 +284,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                     }
                 }
                 if (mClickListener1 != null)
-                    mClickListener1.onItemClick(position, payments.get(position));
+                    mClickListener1.updateList();
 
             });
 
             editBill.setOnClickListener(view1 -> {
-                for (Bill bill : Repository.getInstance().getBills()) {
+                for (Bill bill : Repository.getInstance(holder.itemView.getContext()).getBills()) {
                     if (bill.getBillerName().equals(payment.getBillerName())) {
                         activity.startActivity(new Intent(activity, AddBiller.class).putExtra("billerId", bill.getBillsId()));
                         popupWindow.dismiss();
@@ -297,9 +298,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 if (listener != null) listener.onItemClick(position, payments.get(position));
             });
             paidOff.setOnClickListener(view12 -> {
-                Tools.billPaidOff(activity, payment);
-                if (mClickListener1 != null)
-                    mClickListener1.onItemClick(position, payments.get(position));
+                popupWindow.dismiss();
+                CustomDialog cd = new CustomDialog(activity, "Mark as paid?", "Are you sure you'd like to mark all payments for this biller as paid?", activity.getString(R.string.yes), activity.getString(R.string.cancel), null);
+                cd.setPositiveButtonListener(view3 -> {
+                    Tools.billPaidOff(activity, payment, isFinished -> {
+                        cd.dismissDialog();
+                        if (mClickListener1 != null)
+                            mClickListener1.updateList();
+                    });
+                });
+                cd.setNegativeButtonListener(view2 -> cd.dismissDialog());
+                cd.show();
             });
             return false;
         });
@@ -326,8 +335,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         this.mClickListener = itemClickListener;
     }
 
-    public void setRefreshPaymentsClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener1 = itemClickListener;
+    public void setRefreshPaymentsClickListener(UpdateListListener listener) {
+        this.mClickListener1 = listener;
     }
 
     public void setLoadingClickListener(ItemClickListener listener) {
@@ -337,6 +346,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(int ignoredPosition, Payment payment);
+    }
+
+    public interface UpdateListListener {
+        void updateList();
     }
 
     // stores and recycles views as they are scrolled off screen

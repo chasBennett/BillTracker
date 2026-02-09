@@ -38,7 +38,6 @@ import com.example.billstracker.tools.DataTools;
 import com.example.billstracker.tools.DateFormat;
 import com.example.billstracker.tools.FixNumber;
 import com.example.billstracker.tools.MoneyFormatterWatcher;
-import com.example.billstracker.tools.Repository;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
 import com.google.android.gms.tasks.Task;
@@ -55,7 +54,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class AddBiller extends BaseActivity {
 
@@ -155,7 +153,7 @@ public class AddBiller extends BaseActivity {
 
         if (!billerId.isEmpty()) {
 
-            bill = DataTools.getBill(billerId);
+            bill = repo.getBill(billerId);
 
             if (bill != null) {
                 recurring = bill.isRecurring();
@@ -369,10 +367,10 @@ public class AddBiller extends BaseActivity {
                 Notify.createPopup(AddBiller.this, getString(R.string.biller_name_can_t_be_blank), null);
                 complete = false;
             }
-            if (repo.getBillByName(addBillerName.getText().toString()) != null && !edit) {
+            if (repo.getBill(addBillerName.getText().toString()) != null && !edit) {
                 Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
                 complete = false;
-            } else if (repo.getBillByName(addBillerName.getText().toString()) != null && edit && !originalBillerName.equals(addBillerName.getText().toString())) {
+            } else if (repo.getBill(addBillerName.getText().toString()) != null && edit && !originalBillerName.equals(addBillerName.getText().toString())) {
                 Notify.createPopup(AddBiller.this, getString(R.string.biller_name_is_already_in_use), null);
                 complete = false;
             }
@@ -435,7 +433,7 @@ public class AddBiller extends BaseActivity {
                         else paymentsRemaining = bill.getPaymentsRemaining();
                     } else paymentsRemaining = bill.getPaymentsRemaining();
                 } else {
-                    boolean found = repo.getPaymentByBillerName(originalBillerName) != null && repo.getPaymentByBillerName(originalBillerName).isPaid();
+                    boolean found = repo.getPayment(originalBillerName) != null && repo.getPayment(originalBillerName).isPaid();
                     if (!found) paymentsRemaining = 1;
                     else {
                         paymentsRemaining = 0;
@@ -460,7 +458,7 @@ public class AddBiller extends BaseActivity {
                 String uri = customUri;
 
                 if (edit) {
-                    repo.updateBill(bill.getBillerName(), AddBiller.this, biller -> biller.setBillerName(billerName)
+                    repo.updateBill(bill.getBillerName(), biller -> biller.setBillerName(billerName)
                             .setWebsite(webAddress)
                             .setCategory(category)
                             .setIcon(uri)
@@ -482,8 +480,8 @@ public class AddBiller extends BaseActivity {
 
                 } else {
                     Bill newBiller = new Bill(billerName, paymentAmount, dueDate, 0, billerId, recurring, frequency, webAddress, category, uri, paymentsRemaining,
-                            balance, escrow, repo.getUid(AddBiller.this), autoPaySwitch.isChecked());
-                    repo.addBill(newBiller, AddBiller.this, (wasSuccessful, message) -> {
+                            balance, escrow, repo.getUid(), autoPaySwitch.isChecked());
+                    repo.addBill(newBiller, (wasSuccessful, message) -> {
                         if (wasSuccessful) {
                             startActivity(new Intent(AddBiller.this, MainActivity2.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         } else {

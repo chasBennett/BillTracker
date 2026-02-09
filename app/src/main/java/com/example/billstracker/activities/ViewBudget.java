@@ -213,8 +213,8 @@ public class ViewBudget extends BaseActivity {
 
         boolean found = false;
 
-        if (repo.getUser(ViewBudget.this).getBudgets() != null && !repo.getUser(ViewBudget.this).getBudgets().isEmpty()) {
-            for (Budget bud : repo.getUser(ViewBudget.this).getBudgets()) {
+        if (repo.getUser().getBudgets() != null && !repo.getUser().getBudgets().isEmpty()) {
+            for (Budget bud : repo.getUser().getBudgets()) {
                 if (bud.getStartDate() <= dateIntValue && bud.getEndDate() >= dateIntValue) {
                     budget = bud;
                     found = true;
@@ -222,10 +222,10 @@ public class ViewBudget extends BaseActivity {
                 }
             }
         } else {
-            repo.getUser(ViewBudget.this).setBudgets(new ArrayList<>());
+            repo.getUser().setBudgets(new ArrayList<>());
         }
         if (!found) {
-            budget = new Budget(repo.getUser(ViewBudget.this).getIncome(), repo.getUser(ViewBudget.this).getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
+            budget = new Budget(repo.getUser().getIncome(), repo.getUser().getPayFrequency(), weekStart, weekEnd, id(), 0, new ArrayList<>());
             editBudget.setText(getString(R.string.create_a_new_budget));
             editBudget.setOnClickListener(view -> startActivity(new Intent(ViewBudget.this, CreateBudget.class)));
         } else {
@@ -240,7 +240,7 @@ public class ViewBudget extends BaseActivity {
             }
         }
 
-        monthlyBillAmount = Tools.getBillsAmount(2, selectedDate);
+        monthlyBillAmount = Tools.getBillsAmount(ViewBudget.this, 2, selectedDate);
         if (budget.getPayFrequency() == 0) {
             dailyIncome = budget.getPayAmount() / 7;
         } else if (budget.getPayFrequency() == 1) {

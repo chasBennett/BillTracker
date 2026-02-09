@@ -2,6 +2,7 @@ package com.example.billstracker.custom_objects;
 
 import android.content.Context;
 
+import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.Repository;
 import com.google.firebase.firestore.Exclude;
 
@@ -31,6 +32,7 @@ public class User implements Serializable {
     private ArrayList<Partner> partners;
     private int versionNumber;
     private boolean needsSync = false;
+    private String photoUrl;
 
     /**
      * FIREBASE CONSTRUCTOR
@@ -252,6 +254,9 @@ public class User implements Serializable {
         this.needsSync = needsSync;
     }
 
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
     // --- BUILDER CLASS ---
     public static class Builder {
         private final User user;
@@ -345,6 +350,12 @@ public class User implements Serializable {
             return this;
         }
 
+        public Builder setTicketNumber (String ticketNumber) {
+            user.setTicketNumber(ticketNumber);
+            user.setNeedsSync(true);
+            return this;
+        }
+
         /**
          * Finds a budget by budgetId and applies the provided actions.
          *
@@ -421,7 +432,7 @@ public class User implements Serializable {
 
         public void save(Repository.OnCompleteCallback callback) {
             if (user != null) {
-                Repository.getInstance().saveData(context, callback);
+                FirebaseTools.saveData(context, callback);
             }
         }
     }

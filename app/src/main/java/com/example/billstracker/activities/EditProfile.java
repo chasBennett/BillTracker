@@ -6,12 +6,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
@@ -21,10 +23,11 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.biometric.BiometricManager;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -33,18 +36,24 @@ import com.example.billstracker.custom_objects.User;
 import com.example.billstracker.popup_classes.BottomDrawer;
 import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
+import com.example.billstracker.tools.Google;
+import com.example.billstracker.tools.LocalStore;
 import com.example.billstracker.tools.TextTools;
 import com.example.billstracker.tools.Tools;
 import com.example.billstracker.tools.Watcher;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.MessageFormat;
 import java.util.UUID;
 
 public class EditProfile extends BaseActivity {
@@ -60,12 +69,10 @@ public class EditProfile extends BaseActivity {
     com.google.android.material.imageview.ShapeableImageView icon;
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     StorageReference storageReference;
-    boolean name;
-    boolean uName;
-    boolean pass;
-    int differences;
     User thisUser;
     private Uri filePath;
+    private static boolean googleUser = false;
+    ErrorHelper error;
 
     @Override
     protected void onDataReady() {
@@ -91,7 +98,24 @@ public class EditProfile extends BaseActivity {
 
         Tools.setupUI(EditProfile.this, findViewById(android.R.id.content));
 
-        thisUser = repo.getUser(EditProfile.this);
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.blueAndBlack));
+
+        WindowInsetsController controller = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            controller = window.getInsetsController();
+        }
+
+        if (controller != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                controller.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+            }
+        }
+
+        error = new ErrorHelper(EditProfile.this, usernameError);
+
+        thisUser = repo.getUser();
 
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::loadImage);
         storageReference = FirebaseStorage.getInstance().getReference("images");
@@ -115,7 +139,7 @@ public class EditProfile extends BaseActivity {
         icon.setOnClickListener(v -> {
             BottomDrawer bd = new BottomDrawer(EditProfile.this);
             bd.setDefaultButtonListener(v1 -> {
-                if (FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
+                if (FirebaseAuth.getInstance().getCurrentUser() != null && FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
                     UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setPhotoUri(null).build();
                     FirebaseAuth.getInstance().getCurrentUser().updateProfile(request);
                     StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()));
@@ -131,7 +155,8 @@ public class EditProfile extends BaseActivity {
             });
         });
 
-        biometricSwitch2.setChecked(repo.getAllowBiometrics(EditProfile.this));
+        LocalStore store = repo.getStore();
+        biometricSwitch2.setChecked(store.getAllowBiometrics());
 
         back.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
 
@@ -144,26 +169,20 @@ public class EditProfile extends BaseActivity {
             err.setVisibility(View.GONE);
         }
 
-        biometricSwitch2.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (compoundButton.isChecked()) {
-                repo.setAllowBiometrics(true, EditProfile.this);
-                repo.setShowBiometricPrompt(true, EditProfile.this);
-            } else {
-                repo.setAllowBiometrics(false, EditProfile.this);
-                repo.setShowBiometricPrompt(false, EditProfile.this);
-            }
+        biometricSwitch2.setOnClickListener(v -> {
+            boolean isChecked = biometricSwitch2.isChecked();
+            store.setAllowBiometrics(isChecked);
             Notify.createPopup(EditProfile.this, getString(R.string.your_biometric_preferences_have_been_updated), null);
         });
 
         enterNewName.setText(thisUser.getName());
         enterNewUsername.setText(thisUser.getUserName());
         enterNewPassword.setText(thisUser.getPassword());
-        uName = true;
-        name = true;
-        pass = true;
+
         TextWatcher watcher = new Watcher() {
             @Override
             public void afterTextChanged(Editable editable) {
+                error.hide();
                 checkEntries();
             }
         };
@@ -172,204 +191,264 @@ public class EditProfile extends BaseActivity {
         enterNewPassword.addTextChangedListener(watcher);
         confirmPassword.addTextChangedListener(watcher);
 
-        if (thisUser.getPassword().equals(repo.getUid(EditProfile.this))) {
+        if (thisUser.getPassword().equals(thisUser.getId())) {
             TextView error = findViewById(R.id.googleSignInError);
             error.setVisibility(View.VISIBLE);
             editPasswordLayout.setVisibility(View.GONE);
             error.setText(getString(R.string.changes_to_email_are_not_allowed_when_signed_in_via_google));
             enterNewPassword.setEnabled(false);
             enterNewUsername.setEnabled(false);
+            biometricSwitch2.setVisibility(View.GONE);
+            err.setVisibility(View.GONE);
+            googleUser = true;
         }
-
+        submit.setOnClickListener(view -> submit());
+        disableSubmitButton();
+        checkEntries();
     }
 
     public void checkEntries() {
 
-        submit.setVisibility(View.GONE);
         submit.setEnabled(false);
-        submit.setOnClickListener(null);
-        differences = 0;
+        submit.setAlpha(0.5f);
 
-        enterNewUsername.setBackground(AppCompatResources.getDrawable(EditProfile.this, R.drawable.border_stroke));
-        enterNewName.setBackground(AppCompatResources.getDrawable(EditProfile.this, R.drawable.border_stroke));
-        enterNewPassword.setBackground(AppCompatResources.getDrawable(EditProfile.this, R.drawable.border_stroke));
+        TaskCompletionSource<Boolean> userTcs = new TaskCompletionSource<>();
+        TaskCompletionSource<Boolean> passTcs = new TaskCompletionSource<>();
+        TaskCompletionSource<Boolean> nameTcs = new TaskCompletionSource<>();
 
-        if (enterNewUsername.getText() != null) {
-            if (enterNewUsername.getText().toString().equalsIgnoreCase(thisUser.getUserName())) {
-                usernameError.setVisibility(View.GONE);
-                uName = true;
-                TextTools.setValidBorder(enterNewUsername, true);
-                checkNameAndPassword();
-            } else {
-                if (android.util.Patterns.EMAIL_ADDRESS.matcher(enterNewUsername.getText().toString()).matches() && enterNewUsername.getText().length() > 5) {
-                    FirebaseTools.isRegisteredEmail(usernameError, enterNewUsername.getText().toString(), wasSuccessful -> {
-                        uName = !wasSuccessful;
-                        if (uName) {
-                            ++differences;
-                            TextTools.setValidBorder(enterNewUsername, true);
-                            checkNameAndPassword();
-                        }
-                    });
-                } else {
-                    uName = false;
-                    TextTools.setValidBorder(enterNewUsername, false);
-                    usernameError.setVisibility(View.GONE);
-                    checkNameAndPassword();
-                }
+        validateUsername(userTcs::setResult);
+        validatePassword(passTcs::setResult);
+        validateName(nameTcs::setResult);
+
+        Tasks.whenAllSuccess(userTcs.getTask(), passTcs.getTask(), nameTcs.getTask())
+                .addOnSuccessListener(results -> {
+                    boolean isUserValid = (Boolean) results.get(0);
+                    boolean isPassValid = (Boolean) results.get(1);
+                    boolean isNameValid = (Boolean) results.get(2);
+
+                    if (isUserValid && isPassValid && isNameValid) {
+                        enableSubmitButton();
+                    } else {
+                        disableSubmitButton();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    disableSubmitButton();
+                    Log.e("Validation", "Check failed", e);
+                });
+    }
+
+    private void enableSubmitButton() {
+        submit.setVisibility(View.VISIBLE);
+        submit.setEnabled(true);
+        submit.setAlpha(1.0f);
+    }
+
+    private void disableSubmitButton() {
+        submit.setEnabled(false);
+        submit.setAlpha(0.5f);
+        submit.setVisibility(View.GONE);
+    }
+
+    private void validateUsername(Callback callback) {
+        if (googleUser) {
+            callback.isSuccessful(true);
+            addCheckMark(enterNewUsername);
+            return;
+        }
+        if (enterNewUsername.getText() == null) {
+            callback.isSuccessful(false);
+            return;
+        }
+        boolean status = enterNewUsername.getCompoundDrawablesRelative()[2] != null;
+        if (enterNewUsername.getText().toString().equals(thisUser.getUserName())) {
+            status = true;
+        }
+
+        String username = enterNewUsername.getText().toString();
+
+        if (android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            error.showProcessing();
+            if (enterNewUsername.hasFocus() && !enterNewUsername.getText().toString().equals(thisUser.getUserName())) {
+                FirebaseTools.isRegisteredEmail(username, wasSuccessful -> {
+                    if (!wasSuccessful) {
+                        error.hide();
+                        addCheckMark(enterNewUsername);
+                        callback.isSuccessful(true);
+                    } else {
+                        callback.isSuccessful(false);
+                        enterNewUsername.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                    }
+                });
+            }
+            else {
+                addCheckMark(enterNewUsername);
+                error.hide();
+                callback.isSuccessful(status);
             }
         } else {
-            uName = false;
-            TextTools.setValidBorder(enterNewUsername, false);
-            checkNameAndPassword();
+            enterNewUsername.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+            callback.isSuccessful(false);
         }
     }
 
-    public void checkNameAndPassword() {
-        if (enterNewName.getText() != null) {
-            if (enterNewName.getText().toString().equalsIgnoreCase(thisUser.getName())) {
-                name = true;
-                TextTools.setValidBorder(enterNewName, true);
-            } else {
-                if (enterNewName.getText().length() > 2) {
-                    name = true;
-                    ++differences;
-                    TextTools.setValidBorder(enterNewName, true);
-                } else {
-                    TextTools.setValidBorder(enterNewName, false);
-                    name = false;
-                }
-            }
-        } else {
-            name = false;
-            if (enterNewName.hasFocus()) {
-                TextTools.setValidBorder(enterNewName, false);
-            }
+    private void validateName(Callback callback) {
+
+        if (enterNewName.getText() == null) {
+            callback.isSuccessful(false);
+            return;
         }
-        if (enterNewPassword.getText() != null) {
-            if (enterNewPassword.getText().toString().equals(thisUser.getPassword())) {
-                passRequirements.setVisibility(View.GONE);
-                pass = true;
-                TextTools.setValidBorder(enterNewPassword, true);
-            } else {
-                passRequirements.setVisibility(View.VISIBLE);
-                boolean upCase = false, loCase = false, isDigit = false, length = false;
-                String password = enterNewPassword.getText().toString();
-                for (int i = 0; i < password.length(); i++) {
-                    if (Character.isUpperCase(password.charAt(i))) {
-                        upCase = true;
-                        noUppercase.setText(getString(R.string.uppercase_letter));
-                        noUppercase.setTextColor(getColor(R.color.payBill));
-                    }
-                    if (Character.isLowerCase(password.charAt(i))) {
-                        loCase = true;
-                        noLowercase.setText(getString(R.string.lowercase_letter));
-                        noLowercase.setTextColor(getColor(R.color.payBill));
-                    }
-                    if (Character.isDigit(password.charAt(i))) {
-                        isDigit = true;
-                        noNumber.setText(getString(R.string.number));
-                        noNumber.setTextColor(getColor(R.color.payBill));
-                    }
-                }
-                if (password.length() < 6) {
-                    passwordTooShort.setText(getString(R.string.not6));
-                    passwordTooShort.setTextColor(getColor(R.color.grey));
-                } else {
-                    length = true;
-                    passwordTooShort.setText(getString(R.string.isSixCharacters));
-                    passwordTooShort.setTextColor(getColor(R.color.payBill));
-                }
-                if (!upCase) {
-                    noUppercase.setText(getString(R.string.noUpper));
-                    noUppercase.setTextColor(getColor(R.color.grey));
-                }
-                if (!loCase) {
-                    noLowercase.setText(getString(R.string.noLower));
-                    noLowercase.setTextColor(getColor(R.color.grey));
-                }
-                if (!isDigit) {
-                    noNumber.setText(getString(R.string.notNumber));
-                    noNumber.setTextColor(getColor(R.color.grey));
-                }
-                if (upCase && loCase && isDigit && length) {
-                    passRequirements.setVisibility(View.GONE);
+        String name = enterNewName.getText().toString();
+        if (name.length() >= 3) {
+            addCheckMark(enterNewName);
+            callback.isSuccessful(true);
+        } else {
+            enterNewName.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+            callback.isSuccessful(false);
+        }
+    }
+
+    private void validatePassword(Callback callback) {
+
+        if (googleUser) {
+            callback.isSuccessful(true);
+            return;
+        }
+
+        if (enterNewPassword.getText() == null || confirmPassword.getText() == null) {
+            callback.isSuccessful(false);
+            return;
+        }
+        String password = enterNewPassword.getText().toString();
+        String confirmedPassword = confirmPassword.getText().toString();
+
+        if (password.isEmpty()) {
+            matchPassword.setVisibility(View.GONE);
+            passRequirements.setVisibility(View.GONE);
+            enterNewPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            callback.isSuccessful(false);
+        }
+        else {
+            if (!password.equals(thisUser.getPassword())) {
+                if (matchPassword.getVisibility() == View.GONE) {
                     matchPassword.setVisibility(View.VISIBLE);
-                    if (confirmPassword.getText() != null) {
-                        if (!confirmPassword.getText().toString().equals(enterNewPassword.getText().toString())) {
-                            matchPassword.setError(getString(R.string.passwords_dont_match));
-                            TextTools.setValidBorder(confirmPassword, false);
-                            pass = false;
-                        } else {
-                            matchPassword.setError(null);
-                            matchPassword.setVisibility(View.GONE);
-                            pass = true;
-                            TextTools.setValidBorder(enterNewPassword, true);
-                            ++differences;
-                        }
+                    passRequirements.setVisibility(View.VISIBLE);
+                }
+                boolean length = reqMet(passwordTooShort, password.length() >= 6);
+                boolean capitalLetter = reqMet(noUppercase, TextTools.hasCapitalLetter(password));
+                boolean lowercase = reqMet(noLowercase, TextTools.hasLowercase(password));
+                boolean number = reqMet(noNumber, TextTools.hasNumber(password));
+
+                setHintTextColor(passwordTooShort, length);
+                setHintTextColor(noUppercase, capitalLetter);
+                setHintTextColor(noLowercase, lowercase);
+                setHintTextColor(noNumber, number);
+
+                if (length && capitalLetter && lowercase && number) {
+                    if (password.equals(confirmedPassword)) {
+                        addCheckMark(enterNewPassword);
+                        matchPassword.setVisibility(View.GONE);
+                        passRequirements.setVisibility(View.GONE);
+                        callback.isSuccessful(true);
                     } else {
-                        TextTools.setValidBorder(confirmPassword, false);
-                        pass = false;
+                        enterNewPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                        callback.isSuccessful(false);
                     }
                 } else {
-                    pass = false;
-                    matchPassword.setVisibility(View.GONE);
-                    enterNewPassword.requestFocus();
-                    TextTools.setValidBorder(enterNewPassword, false);
+                    enterNewPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    callback.isSuccessful(false);
                 }
             }
-        } else {
-            pass = false;
+            else {
+                matchPassword.setVisibility(View.GONE);
+                passRequirements.setVisibility(View.GONE);
+                addCheckMark(enterNewPassword);
+                callback.isSuccessful(true);
+            }
         }
-        if (name && uName && pass && differences > 0) {
-            submit.setVisibility(View.VISIBLE);
-            submit.setEnabled(true);
-            submit.setOnClickListener(v -> submit());
+    }
+
+    public void setHintTextColor(TextView tv, boolean valid) {
+        if (tv != null) {
+            if (valid) {
+                tv.setTextColor(ResourcesCompat.getColor(getResources(), R.color.payBill, getTheme()));
+                if (tv.getText().toString().startsWith("x ")) {
+                    tv.setText(MessageFormat.format("  {0}", tv.getText().toString().substring(2)));
+                }
+                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.checkmarksmall, 0, 0, 0);
+            } else {
+                tv.setTextColor(ResourcesCompat.getColor(getResources(), R.color.lightGrey, getTheme()));
+                if (!tv.getText().toString().startsWith("x ")) {
+                    tv.setText(MessageFormat.format("x {0}", tv.getText().toString()));
+                }
+            }
+        }
+    }
+
+    public void addCheckMark (TextInputEditText edit) {
+        if (edit != null) {
+            edit.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmarksmall, 0);
+            TextViewCompat.setCompoundDrawableTintList(edit, ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.payBill, getTheme())));
+        }
+    }
+
+    public boolean reqMet (TextView textview, boolean met) {
+        if (met) {
+            textview.setTextColor(ResourcesCompat.getColor(getResources(), R.color.neutralGray, getTheme()));
+            return true;
+        }
+        else {
+            textview.setTextColor(ResourcesCompat.getColor(getResources(), R.color.lightGrey, getTheme()));
+            return false;
         }
     }
 
     public void submit() {
 
+        if (enterNewUsername.getText() == null || enterNewName.getText() == null || enterNewPassword.getText() == null) return;
         InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        mgr.hideSoftInputFromWindow(enterNewName.getWindowToken(), 0);
+        if (getCurrentFocus() != null) mgr.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 
-        if (enterNewName.getText() == null || enterNewName.getText().toString().isEmpty()) {
-            Notify.createPopup(EditProfile.this, getString(R.string.name_can_t_be_blank), null);
-        } else if (enterNewUsername.getText() == null || enterNewUsername.getText().toString().isEmpty()) {
-            Notify.createPopup(EditProfile.this, getString(R.string.username_can_t_be_blank), null);
-        } else if (enterNewPassword.getText() == null || enterNewPassword.getText().toString().isEmpty()) {
-            Notify.createPopup(EditProfile.this, getString(R.string.password_can_t_be_blank), null);
-        } else {
-            String newName = enterNewName.getText().toString();
-            String newPassword = enterNewPassword.getText().toString();
-            String newUserName = enterNewUsername.getText().toString().toLowerCase();
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user == null) {
-                repo.loadLocalData(EditProfile.this, null);
-                recreate();
-            } else {
-                FirebaseTools.updateUser(EditProfile.this, user, newUserName, newName, newPassword, isSuccessful -> {
-                    if (isSuccessful) {
-                        Notify.createPopup(EditProfile.this, getString(R.string.user_profile_updated_successfully), null);
-                        User.Builder userBuilder = repo.editUser(EditProfile.this);
-                        if (userBuilder != null) {
-                            userBuilder.setName(newName)
-                                    .setUserName(newUserName)
-                                    .setPassword(newPassword)
-                                    .save((wasSuccessful, message) -> {
-                                        if (wasSuccessful) {
-                                            recreate();
-                                        }
-                                    });
-                        }
-                        else {
-                            Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);
-                        }
+        String name = enterNewName.getText().toString();
+        String email = enterNewUsername.getText().toString();
+        String password = googleUser ? thisUser.getPassword() : enterNewPassword.getText().toString();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (googleUser) {
+            if (currentUser == null) {
+                error.showProcessing();
+                error.showError(getString(R.string.re_authenticating_with_google));
+
+                Google.launchGoogleSignIn(EditProfile.this, (wasSuccessful, user, result) -> {
+                    if (wasSuccessful && user != null) {
+                        executeProfileUpdate(email, name, password);
                     } else {
-                        Notify.createPopup(EditProfile.this, getString(R.string.anErrorHasOccurred), null);
+                        error.showError("Google Sign-In failed. Please try again.");
+                        Log.e("EditProfile", "Google Auth failed: " + (user == null ? "user is null" : user) + ", " + (result == null ? "result is null" : result));
                     }
                 });
+            } else {
+                executeProfileUpdate(email, name, password);
             }
+        } else {
+            executeProfileUpdate(email, name, password);
         }
+    }
+
+    private void executeProfileUpdate(String email, String name, String password) {
+        error.showProcessing();
+
+        FirebaseTools.updateUserProfile(EditProfile.this, email, name, password, googleUser, isSuccessful -> {
+            if (isSuccessful) {
+                error.showSuccess();
+                thisUser.setName(name);
+                thisUser.setUserName(email);
+                if (!googleUser) thisUser.setPassword(password);
+            } else {
+                error.showError("Update failed. Check your connection.");
+            }
+        });
     }
 
     public void loadImage(Uri uri) {
@@ -396,21 +475,70 @@ public class EditProfile extends BaseActivity {
             StorageReference fileReference = storageReference.child(UUID.randomUUID().toString() + "." + getFileExtension(filePath));
 
             fileReference.putFile(filePath).addOnSuccessListener(taskSnapshot -> {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(() -> {
-                }, 1000);
-                if (taskSnapshot.getMetadata() != null) {
-                    if (taskSnapshot.getMetadata().getReference() != null) {
-                        Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
-                        result.addOnSuccessListener(uri1 -> {
-                            UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setPhotoUri(uri1).build();
-                            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                                FirebaseAuth.getInstance().getCurrentUser().updateProfile(request);
-                            }
-                        });
+                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                    UserProfileChangeRequest request = new UserProfileChangeRequest.Builder().setPhotoUri(uri).build();
+                    FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (fUser != null) {
+                        fUser.updateProfile(request);
                     }
-                }
+                    syncPhotoToFirestore(uri.toString());
+                });
             });
+        }
+    }
+
+    private void syncPhotoToFirestore(String url) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        error.showProcessing();
+        WriteBatch batch = FirebaseFirestore.getInstance().batch();
+
+        batch.update(FirebaseFirestore.getInstance().collection("userPhotos").document(uid), "photoUrl", url);
+        batch.update(FirebaseFirestore.getInstance().collection("users").document(uid), "photoUrl", url);
+
+        batch.commit().addOnSuccessListener(aVoid -> {
+            Log.d(TAG, "Photo URL synced to all collections.");
+            error.showSuccess();
+        }).addOnFailureListener(e -> {
+            error.showError("Photo synced failed.");
+        });
+    }
+
+    interface Callback {
+        void isSuccessful(boolean isSuccessful);
+    }
+
+    public static class ErrorHelper {
+
+        private final TextView tv;
+        private final Context context;
+
+        public ErrorHelper (Context context, TextView textView) {
+            this.context = context;
+            this.tv = textView;
+            hide();
+        }
+        public void showProcessing() {
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(R.string.processing);
+            tv.setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.lightGrey, context.getTheme()));
+        }
+
+        public void showError(String error) {
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(error);
+            tv.setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.lightGrey, context.getTheme()));
+        }
+
+        public void showSuccess() {
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(R.string.profile_was_updated_successfully);
+            tv.setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.primary, context.getTheme()));
+        }
+
+        public void hide() {
+            tv.setText("");
         }
     }
 

@@ -80,14 +80,14 @@ public class MainPieChart {
         int counter = 0;
         ArrayList<Integer> foundPayments = new ArrayList<>();
 
-        if (Repository.getInstance().getPayments() != null) {
-            for (Payment payment : Repository.getInstance().getPayments()) {
+        if (Repository.getInstance(activity).getPayments() != null) {
+            for (Payment payment : Repository.getInstance(activity).getPayments()) {
                 if (payment.getDueDate() >= monthStart && payment.getDueDate() <= monthEnd && !foundPayments.contains(payment.getPaymentId())) {
                     foundPayments.add(payment.getPaymentId());
                     total = total + payment.getPaymentAmount();
                     ++counter;
-                    if (Repository.getInstance().getBills() != null) {
-                        for (Bill bill : Repository.getInstance().getBills()) {
+                    if (Repository.getInstance(activity).getBills() != null) {
+                        for (Bill bill : Repository.getInstance(activity).getBills()) {
                             if (bill.getBillerName().equals(payment.getBillerName())) {
                                 if (!payment.isPaid()) {
                                     remaining = remaining + (payment.getPaymentAmount() - payment.getPartialPayment());
@@ -301,7 +301,7 @@ public class MainPieChart {
             if (adapter != null && adapter.getArrayList() != null) {
                 for (Payment pay : adapter.getArrayList()) {
                     if (recycles.contains(pay)) {
-                        for (Bill bill : Repository.getInstance().getBills()) {
+                        for (Bill bill : Repository.getInstance(today.getContext()).getBills()) {
                             if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                 RecyclerView.ViewHolder viewHolder = today.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                 if (viewHolder != null) {
@@ -322,7 +322,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill : Repository.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance(today.getContext()).getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = later.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -344,7 +344,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill : Repository.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance(today.getContext()).getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = evenLater.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {
@@ -366,7 +366,7 @@ public class MainPieChart {
                 if (adapter.getArrayList() != null) {
                     for (Payment pay : adapter.getArrayList()) {
                         if (recycles.contains(pay)) {
-                            for (Bill bill : Repository.getInstance().getBills()) {
+                            for (Bill bill : Repository.getInstance(today.getContext()).getBills()) {
                                 if (bill.getBillerName().equals(pay.getBillerName()) && bill.getCategory() == categories.indexOf(selection)) {
                                     RecyclerView.ViewHolder viewHolder = earlier.findViewHolderForAdapterPosition(adapter.getArrayList().indexOf(pay));
                                     if (viewHolder != null) {

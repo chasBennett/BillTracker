@@ -30,16 +30,6 @@ public interface DateFormat {
         return zdt.toInstant().toEpochMilli();
     }
 
-    static String createLoginTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy").withLocale(Locale.US);
-        return formatter.format(LocalDate.now());
-    }
-
-    static long loginTimeToLong(String loginTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy").withLocale(Locale.US);
-        return makeLong(LocalDate.parse(loginTime, formatter));
-    }
-
     static long makeLong(String dateString) {
         return LocalDate.parse(dateString, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault())).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
@@ -50,10 +40,6 @@ public interface DateFormat {
 
     static LocalDate makeLocalDate(String dateString) {
         return LocalDate.parse(dateString, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()));
-    }
-
-    static long plusDays(long date, long days) {
-        return Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).toLocalDate().plusDays(days).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     static String currentPhaseOfDay(Context context) {
@@ -67,10 +53,6 @@ public interface DateFormat {
         } else {
             return context.getString(R.string.evening);
         }
-    }
-
-    static long makeTimedLong(long date, int hour, int minutes) {
-        return ZonedDateTime.of(makeLocalDate(date).atTime(hour, minutes), ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     static String makeDateString(LocalDate date) {
@@ -132,10 +114,6 @@ public interface DateFormat {
                     365;
             default -> 30; // Default to monthly safety margin
         };
-    }
-
-    static int daysBetween(long date1, long date2) {
-        return (int) ChronoUnit.DAYS.between(DateFormat.makeLocalDate(date1), DateFormat.makeLocalDate(date2));
     }
 
     static int daysBetween(LocalDate date1, LocalDate date2) {

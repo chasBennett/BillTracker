@@ -15,25 +15,34 @@ import com.example.billstracker.popup_classes.Notify;
 import com.example.billstracker.tools.FirebaseTools;
 import com.example.billstracker.tools.Tools;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.ArrayList;
 
 public class ShareAccount extends BaseActivity {
 
-    private TextView sharingWith;
-    private LinearLayout partnerList;
-    private Context context;
+    ImageView backButton;
+    TextView sharingWith;
+    LinearLayout partnerList;
+    Button addPartner;
+    Partner delete;
+
+    Context context;
 
     @Override
     protected void onDataReady() {
         setContentView(R.layout.activity_share_account);
-        context = this;
 
-        ImageView backButton = findViewById(R.id.backBtn);
+        backButton = findViewById(R.id.backBtn);
         sharingWith = findViewById(R.id.currentlySharingWith);
         partnerList = findViewById(R.id.partnerList);
-        Button addPartner = findViewById(R.id.btnAddPartner);
+        addPartner = findViewById(R.id.btnAddPartner);
+
+        context = getApplicationContext();
 
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        Tools.setupUI(this, findViewById(android.R.id.content));
+
+        Tools.setupUI(ShareAccount.this, findViewById(android.R.id.content));
 
         addPartner.setOnClickListener(v -> {
             AddPartner ap = new AddPartner();
@@ -45,130 +54,144 @@ public class ShareAccount extends BaseActivity {
     }
 
     public void listPartners() {
-        partnerList.removeAllViews();
-        User currentUser = repo.getUser(ShareAccount.this);
 
-        if (currentUser == null || currentUser.getPartners() == null || currentUser.getPartners().isEmpty()) {
-            sharingWith.setText(getString(R.string.you_aren_t_currently_sharing_data_with_anyone));
-            return;
+        if (delete != null) {
+            repo.getUser().getPartners().remove(delete);
+            FirebaseTools.saveData(ShareAccount.this, null);
+            delete = null;
+            listPartners();
         }
 
-        sharingWith.setText(getString(R.string.you_re_currently_sharing_your_data_with_the_following_users));
-        for (Partner partner : currentUser.getPartners()) {
-            addPartnerView(partner);
+        partnerList.removeAllViews();
+        partnerList.invalidate();
+        if (repo.getUser() == null) {
+            repo.loadLocalData(null);
+        }
+        if (repo.getUser().getPartners() == null || repo.getUser().getPartners().isEmpty()) {
+            sharingWith.setText(getString(R.string.you_aren_t_currently_sharing_data_with_anyone));
+        } else {
+            sharingWith.setText(getString(R.string.you_re_currently_sharing_your_data_with_the_following_users));
+            for (Partner partner : repo.getUser().getPartners()) {
+                checkPartner(partner);
+            }
         }
     }
 
-    private void addPartnerView(Partner partner) {
-        View userCard = View.inflate(this, R.layout.user_card, null);
+    public void checkPartner(Partner partner) {
+        View userCard = View.inflate(ShareAccount.this, R.layout.user_card, null);
         TextView userName = userCard.findViewById(R.id.sharedUserName);
         TextView shareStatus = userCard.findViewById(R.id.shareStatus);
         Button revokeAccess = userCard.findViewById(R.id.btnRevokeAccess);
         Button cancelRequest = userCard.findViewById(R.id.btnCancelRequest);
         Button removePartner = userCard.findViewById(R.id.btnRemovePartner);
         Button approve = userCard.findViewById(R.id.btnApprove);
-
-        userName.setText(partner.getPartnerName());
         removePartner.setVisibility(View.VISIBLE);
+        userName.setText(partner.getPartnerName());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Fetch partner status from cloud to check if they authorized YOU
-        FirebaseFirestore.getInstance().collection("users").document(partner.getPartnerUid())
-                .get().addOnSuccessListener(documentSnapshot -> {
-                    User partnerUser = documentSnapshot.toObject(User.class);
-                    updateUIStatus(partner, partnerUser, shareStatus, revokeAccess, cancelRequest, approve);
-                });
-
-        // ACTION: Revoke Access (You stop sharing with them)
-        revokeAccess.setOnClickListener(v -> updatePartnerAuthorization(partner, false));
-
-        // ACTION: Approve (You accept their request to see your data)
-        approve.setOnClickListener(v -> {
-            updatePartnerAuthorization(partner, true);
-            // Sync their data to your local device
-            fetchPartnerData(partner.getPartnerUid());
+        if (partner.getPartnerUid() != null) {
+            db.collection("users").document(partner.getPartnerUid()).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    User partnerUser = task.getResult().toObject(User.class);
+                    if (partnerUser != null && partnerUser.getPartners() != null && !partnerUser.getPartners().isEmpty()) {
+                        for (Partner part : partnerUser.getPartners()) {
+                            if (part.getPartnerUid().equals(repo.getUid())) {
+                                if (part.getSharingAuthorized()) {
+                                    if (partner.getSharingAuthorized()) {
+                                        shareStatus.setText(getString(R.string.active));
+                                        revokeAccess.setVisibility(View.VISIBLE);
+                                        cancelRequest.setVisibility(View.GONE);
+                                        approve.setVisibility(View.GONE);
+                                    } else {
+                                        shareStatus.setText(getString(R.string.requested_by_user));
+                                        revokeAccess.setVisibility(View.GONE);
+                                        cancelRequest.setVisibility(View.GONE);
+                                        approve.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    if (partner.getSharingAuthorized()) {
+                                        shareStatus.setText(getString(R.string.awaiting_partner_approval));
+                                        revokeAccess.setVisibility(View.GONE);
+                                        cancelRequest.setVisibility(View.VISIBLE);
+                                        approve.setVisibility(View.GONE);
+                                    } else {
+                                        delete = partner;
+                                        listPartners();
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        revokeAccess.setOnClickListener(v -> {
+            partner.setSharingAuthorized(false);
+            Tools.removePartnerData(context, partner.getPartnerUid());
+            FirebaseTools.saveData(ShareAccount.this, null);
+            listPartners();
         });
-
-        // ACTION: Remove / Cancel (Delete relationship entirely)
-        View.OnClickListener deleteAction = v -> removePartnerCompletely(partner);
-        removePartner.setOnClickListener(deleteAction);
-        cancelRequest.setOnClickListener(deleteAction);
-
-        partnerList.addView(userCard);
-    }
-
-    private void updateUIStatus(Partner localPartner, User remoteUser, TextView status, Button revoke, Button cancel, Button approve) {
-        // Find how the remote user sees YOU
-        Partner remoteMe = null;
-        if (remoteUser != null && remoteUser.getPartners() != null) {
-            for (Partner p : remoteUser.getPartners()) {
-                if (p.getPartnerUid().equals(repo.getUid(ShareAccount.this))) {
-                    remoteMe = p;
+        cancelRequest.setOnClickListener(v -> {
+            delete = partner;
+            removePartner(partner.getPartnerUid());
+            Tools.removePartnerData(context, partner.getPartnerUid());
+            FirebaseTools.saveData(ShareAccount.this, null);
+            listPartners();
+        });
+        removePartner.setOnClickListener(v -> {
+            delete = partner;
+            removePartner(partner.getPartnerUid());
+            Tools.removePartnerData(context, partner.getPartnerUid());
+            FirebaseTools.saveData(ShareAccount.this, null);
+            listPartners();
+        });
+        approve.setOnClickListener(v -> {
+            for (Partner part : repo.getUser().getPartners()) {
+                if (part.getPartnerUid().equals(partner.getPartnerUid())) {
+                    part.setSharingAuthorized(true);
                     break;
                 }
             }
-        }
-
-        if (remoteMe == null) {
-            status.setText("Pending..."); // Or auto-remove if logic dictates
-            return;
-        }
-
-        boolean iAuthorized = localPartner.getSharingAuthorized();
-        boolean theyAuthorized = remoteMe.getSharingAuthorized();
-
-        if (iAuthorized && theyAuthorized) {
-            status.setText(getString(R.string.active));
-            revoke.setVisibility(View.VISIBLE);
-        } else if (!iAuthorized && theyAuthorized) {
-            status.setText(getString(R.string.requested_by_user));
-            approve.setVisibility(View.VISIBLE);
-        } else if (iAuthorized && !theyAuthorized) {
-            status.setText(getString(R.string.awaiting_partner_approval));
-            cancel.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void updatePartnerAuthorization(Partner partner, boolean authorized) {
-        partner.setSharingAuthorized(authorized);
-        // Use the Builder to flag the User as needing sync
-        User.Builder user = repo.editUser(ShareAccount.this);
-        if (user != null) {
-            user.setNeedsSync(true).save((success, message) -> {
-                if (success) listPartners();
-            });
-        }
-        else {
-            Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
-        }
-    }
-
-    private void removePartnerCompletely(Partner partner) {
-        repo.getUser(ShareAccount.this).getPartners().remove(partner);
-        Tools.removePartnerData(partner.getPartnerUid());
-
-        // Use the Builder to save the user profile without the partner
-        User.Builder user = repo.editUser(ShareAccount.this);
-        if (user != null) {
-            user.save((success, message) -> {
-                if (success) {
-                    repo.removeFromRemotePartner(partner.getPartnerUid());
-                    listPartners();
+            partner.setSharingAuthorized(true);
+            FirebaseTools.getBills(context, partner.getPartnerUid(), isSuccessful -> {
+                if (isSuccessful) {
+                    FirebaseTools.getPayments(context, partner.getPartnerUid(), isSuccessful1 -> {
+                        if (isSuccessful1) {
+                            FirebaseTools.getExpenses(context, partner.getPartnerUid(), isSuccessful11 -> {
+                                if (!isSuccessful11) {
+                                    Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
+                                }
+                            });
+                        } else {
+                            Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
+                        }
+                    });
+                } else {
+                    Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
                 }
             });
-        }
-        else {
-            Notify.createPopup(ShareAccount.this, getString(R.string.anErrorHasOccurred), null);
-        }
+            FirebaseTools.saveData(ShareAccount.this, null);
+            listPartners();
+        });
+        partnerList.addView(userCard);
     }
 
-    private void fetchPartnerData(String partnerUid) {
-        // Use FirebaseTools as intended, but consider moving these to Repository later
-        FirebaseTools.getBills(context, partnerUid, success -> {
-            FirebaseTools.getPayments(partnerUid, success2 -> {
-                FirebaseTools.getExpenses(partnerUid, success3 -> {
-                    if (!success3) Notify.createPopup(this, "Error downloading partner data", null);
-                });
-            });
+    public void removePartner(String partnerId) {
+        ArrayList<Partner> remove = new ArrayList<>();
+        FirebaseFirestore.getInstance().collection("users").document(partnerId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                User partner = task.getResult().toObject(User.class);
+                if (partner != null && partner.getPartners() != null && !partner.getPartners().isEmpty()) {
+                    for (Partner part : partner.getPartners()) {
+                        if (part.getPartnerUid().equals(repo.getUid())) {
+                            remove.add(part);
+                        }
+                    }
+                    partner.getPartners().removeAll(remove);
+                    FirebaseFirestore.getInstance().collection("users").document(partnerId).set(partner, SetOptions.merge());
+                }
+            }
         });
     }
 }

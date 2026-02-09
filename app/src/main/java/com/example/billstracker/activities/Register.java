@@ -177,7 +177,7 @@ public class Register extends AppCompatActivity {
             if (registerEmail.getText() != null && !registerEmail.getText().toString().isEmpty()) {
                 registerError.setVisibility(View.VISIBLE);
                 if (registerEmail.getText().toString().length() > 6 && android.util.Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString()).matches()) {
-                    FirebaseTools.isRegisteredEmail(registerError, registerEmail.getText().toString(), isSuccessful -> {
+                    FirebaseTools.isRegisteredEmail(registerEmail.getText().toString(), isSuccessful -> {
                         email = !isSuccessful;
                         Tools.setEditTextChecked(registerEmail, email);
                     });
@@ -218,12 +218,9 @@ public class Register extends AppCompatActivity {
                     Notify.createPopup(Register.this, getString(R.string.user_registration_failed), null);
                 } else {
                     String userId = mAuth.getUid();
-
-                    // Create the date string for registration
                     String dateRegistered = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss"));
 
-                    // IMPLEMENTATION: Use the new addUser builder flow
-                    Repository.getInstance().addUser(email, password, name, userId, this)
+                    Repository.getInstance(Register.this).addUser(email, password, name, userId)
                             .setDateRegistered(dateRegistered)
                             .setLastLogin("01-01-2022") // Default starting point
                             .setIncome(0.0)
@@ -244,8 +241,6 @@ public class Register extends AppCompatActivity {
                                                     cd.dismissDialog();
                                                     pb.setVisibility(View.VISIBLE);
                                                     FirebaseAuth.getInstance().signOut();
-
-                                                    // Clear Credential Manager State
                                                     ClearCredentialStateRequest clearRequest = new ClearCredentialStateRequest();
                                                     CredentialManager manager = CredentialManager.create(Register.this);
                                                     manager.clearCredentialStateAsync(clearRequest, new CancellationSignal(), Executors.newSingleThreadExecutor(), new CredentialManagerCallback<>() {
@@ -260,7 +255,7 @@ public class Register extends AppCompatActivity {
                                                     });
 
                                                     pb.setVisibility(View.GONE);
-                                                    Repository.getInstance().setStaySignedIn(false, Register.this);
+                                                    Repository.getInstance(Register.this).getStore().setStaySignedIn(false);
                                                     Register.this.startActivity(new Intent(Register.this, Login.class).setFlags(FLAG_ACTIVITY_CLEAR_TASK | FLAG_ACTIVITY_NEW_TASK).putExtra("Welcome", true));
                                                 });
                                                 cd.setNeutralButtonListener(view -> Tools.openEmailApp(Register.this));

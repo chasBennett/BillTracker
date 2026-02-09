@@ -97,7 +97,7 @@
                     android:adjustViewBounds="true"
                     android:background="@color/whiteAndBlack"
                     android:padding="5dp"
-                    android:scaleType="fitStart"
+                    android:scaleType="centerCrop"
                     android:translationZ="3dp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -113,23 +113,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toTopOf="@+id/forgotPasswordHeader"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editProfileIcon" />
-
-                <TextView
-                    android:id="@+id/forgotPasswordHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="30dp"
-                    android:text="@string/editProfile"
-                    android:textColor="@color/blackAndWhite"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/editProfileIcon" />
 
@@ -137,16 +121,13 @@
                     android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="32dp"
                     android:elevation="10dp"
                     android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/forgotPasswordHeader"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:layout_constraintTop_toBottomOf="@+id/editProfileIcon">
 
                     <TextView
                         android:id="@+id/googleSignInError"
@@ -165,10 +146,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
                         android:gravity="center"
-                        android:text="@string/username_is_unavailable"
+                        android:minHeight="25dp"
                         android:textColor="@color/primary"
                         android:textStyle="italic"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
@@ -347,45 +328,44 @@
 
                 </LinearLayout>
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     android:background="@color/blueAndBlack"
-                    android:orientation="vertical"
-                    android:paddingTop="40dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/forgotPasswordHeader"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:ignore="UselessParent">
+                        android:layout_marginTop="40dp"
+                        android:text="@string/editProfile"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.501"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <ImageView
-                            android:id="@+id/backEditProfile"
-                            android:layout_width="60dp"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/back_button"
-                            android:padding="6dp"
-                            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-                            app:tint="@color/white" />
+                    <ImageView
+                        android:id="@+id/backEditProfile"
+                        android:layout_width="49dp"
+                        android:layout_height="45dp"
+                        android:layout_marginTop="32dp"
+                        android:contentDescription="@string/back_button"
+                        android:padding="6dp"
+                        app:layout_constraintEnd_toStartOf="@+id/forgotPasswordHeader"
+                        app:layout_constraintHorizontal_bias="0.168"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+                        app:tint="@color/white" />
 
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:importantForAccessibility="no"
-                            android:paddingEnd="60dp"
-                            android:paddingStart="0dp"
-                            app:srcCompat="@drawable/logo_long"
-                            app:tint="@color/white" />
-                    </LinearLayout>
-
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -412,6 +392,7 @@
 
                 <Button
                     android:id="@+id/btnSubmitUser"
+                    style="@style/TextButton"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -424,7 +405,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:translationZ="10dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
